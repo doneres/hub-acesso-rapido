@@ -2,17 +2,17 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
-        }
+            darkMode: "class",
+        };
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
     <link rel="shortcut icon" href="https://ctrlplay.com.br/wp-content/uploads/2024/11/cropped-favicon-32x32.png"
-        type="image/x-icon">
+        type="image/x-icon" />
     <title>Hub de Acessos | Ctrl+Play</title>
     <style>
         :root {
@@ -34,9 +34,10 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: "Poppins", sans-serif;
             background-color: var(--bg-color);
-            background-image: radial-gradient(var(--bg-pattern) 2px, transparent 2px);
+            background-image: radial-gradient(var(--bg-pattern) 2px,
+                    transparent 2px);
             background-size: 32px 32px;
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -132,23 +133,23 @@
         }
 
         .text-ctrl-blue {
-            color: #0054A6;
+            color: #0054a6;
         }
 
         .bg-ctrl-blue {
-            background-color: #0054A6;
+            background-color: #0054a6;
         }
 
         .text-ctrl-orange {
-            color: #F37021;
+            color: #f37021;
         }
 
         .bg-ctrl-orange {
-            background-color: #F37021;
+            background-color: #f37021;
         }
 
         .border-multi {
-            border-bottom: 5px solid #0054A6;
+            border-bottom: 5px solid #0054a6;
             border-radius: 1.5rem;
             transition: all 0.3s ease;
         }
@@ -165,31 +166,40 @@
         }
 
         .search-focus:focus {
-            border-color: #F37021;
+            border-color: #f37021;
             box-shadow: 0 0 0 4px rgba(243, 112, 33, 0.25);
         }
     </style>
 </head>
 
 <body class="min-h-screen flex flex-col items-center">
-
     <header
         class="sticky top-0 z-40 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm transition-all border-b-4 border-transparent"
-        style="border-image: linear-gradient(to right, #0054A6, #00A34E, #F37021, #6C2A81) 1; border-bottom-style: solid;">
-
+        style="
+        border-image: linear-gradient(
+            to right,
+            #0054a6,
+            #00a34e,
+            #f37021,
+            #6c2a81
+          )
+          1;
+        border-bottom-style: solid;
+      ">
         <div class="max-w-[1440px] mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
             <!-- Logo e Título -->
             <div class="flex items-center gap-3 md:gap-5">
                 <div class="transform hover:scale-105 transition-transform duration-300">
                     <img src="https://ctrlplay.com.br/wp-content/uploads/2024/11/logo-colorido.svg" alt="Ctrl+Play"
-                        class="h-8 md:h-11">
+                        class="h-8 md:h-11" />
                 </div>
 
                 <div class="hidden sm:block w-0.5 h-8 bg-gray-200 rounded-full"></div>
 
                 <h1
                     class="text-lg md:text-2xl font-black text-slate-700 uppercase tracking-tight leading-none group cursor-default">
-                    Hub de <span
+                    Hub de
+                    <span
                         class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#0054A6] to-[#F37021] group-hover:scale-105 transition-transform">Ferramentas</span>
                 </h1>
             </div>
@@ -217,11 +227,10 @@
 
                 <a href="https://portal.ctrlplay.com.br/" target="_blank"
                     class="group flex items-center gap-3 bg-white hover:bg-slate-50 px-4 py-2 md:py-2.5 md:px-5 rounded-full border-2 border-slate-100 shadow-sm hover:shadow-md hover:border-ctrl-orange/30 transition-all duration-300">
-
                     <div
                         class="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center bg-blue-50 rounded-full group-hover:bg-ctrl-orange group-hover:text-white transition-colors duration-300">
                         <img src="https://ctrlplay.com.br/wp-content/uploads/2021/04/icon-desempenho.svg" alt="Portal"
-                            class="w-4 h-4 md:w-5 md:h-5 group-hover:brightness-0 group-hover:invert transition-all">
+                            class="w-4 h-4 md:w-5 md:h-5 group-hover:brightness-0 group-hover:invert transition-all" />
                     </div>
 
                     <div class="flex flex-col items-start leading-none">
@@ -245,40 +254,55 @@
                 </svg>
             </div>
             <input type="text" id="searchInput" placeholder="O que você quer criar hoje?"
-                class="block w-full pl-12 pr-4 py-4 border border-gray-200 dark:border-slate-700 rounded-2xl leading-5 bg-white dark:bg-slate-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none search-focus transition-all text-lg dark:text-white shadow-lg shadow-blue-50/50 dark:shadow-none">
+                class="block w-full pl-12 pr-4 py-4 border border-gray-200 dark:border-slate-700 rounded-2xl leading-5 bg-white dark:bg-slate-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none search-focus transition-all text-lg dark:text-white shadow-lg shadow-blue-50/50 dark:shadow-none" />
         </div>
 
         <!-- Navegação por Categorias -->
         <div class="flex flex-wrap justify-center gap-3 mb-10 w-full max-w-7xl mx-auto px-4">
             <button
                 class="filter-btn active px-5 py-2.5 rounded-full bg-ctrl-blue text-white font-bold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all border border-transparent whitespace-nowrap"
-                data-filter="todos">Todos</button>
+                data-filter="todos">
+                Todos
+            </button>
             <button
                 class="filter-btn px-5 py-2.5 rounded-full bg-white text-gray-600 font-bold text-sm shadow-sm hover:bg-ctrl-blue hover:text-white hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-200 whitespace-nowrap"
-                data-filter="jogos-design">Jogos & Design</button>
+                data-filter="jogos-design">
+                Jogos & Design
+            </button>
             <button
                 class="filter-btn px-5 py-2.5 rounded-full bg-white text-gray-600 font-bold text-sm shadow-sm hover:bg-ctrl-blue hover:text-white hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-200 whitespace-nowrap"
-                data-filter="programacao">Programação</button>
+                data-filter="programacao">
+                Programação
+            </button>
             <button
                 class="filter-btn px-5 py-2.5 rounded-full bg-white text-gray-600 font-bold text-sm shadow-sm hover:bg-ctrl-blue hover:text-white hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-200 whitespace-nowrap"
-                data-filter="educacao-logica">Educacional</button>
+                data-filter="educacao-logica">
+                Educacional
+            </button>
             <button
                 class="filter-btn px-5 py-2.5 rounded-full bg-white text-gray-600 font-bold text-sm shadow-sm hover:bg-ctrl-blue hover:text-white hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-200 whitespace-nowrap"
-                data-filter="pratica-desafios">Prática</button>
+                data-filter="pratica-desafios">
+                Prática
+            </button>
             <button
                 class="filter-btn px-5 py-2.5 rounded-full bg-white text-gray-600 font-bold text-sm shadow-sm hover:bg-ctrl-blue hover:text-white hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-200 whitespace-nowrap"
-                data-filter="dados">Dados</button>
+                data-filter="dados">
+                Dados
+            </button>
             <button
                 class="filter-btn px-5 py-2.5 rounded-full bg-white text-gray-600 font-bold text-sm shadow-sm hover:bg-ctrl-blue hover:text-white hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-200 whitespace-nowrap"
-                data-filter="ia">Intel. Artificial</button>
+                data-filter="ia">
+                Intel. Artificial
+            </button>
             <button
                 class="filter-btn px-5 py-2.5 rounded-full bg-white text-gray-600 font-bold text-sm shadow-sm hover:bg-ctrl-blue hover:text-white hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-200 whitespace-nowrap"
-                data-filter="ferramentas">Ferramentas</button>
+                data-filter="ferramentas">
+                Ferramentas
+            </button>
         </div>
 
         <div id="toolGrid"
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-6">
-
             <!-- Arquivos Alunos - PINNED -->
             <a href="https://alunos.ctrlplaygoiania.com.br/" target="_blank" data-category="ferramentas"
                 class="tool-card relative transform transition-all duration-300 bg-gradient-to-br from-orange-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-3xl p-6 flex flex-col items-center border-[3px] border-[#F37021] dark:border-orange-500/50 shadow-lg hover:shadow-2xl hover:-translate-y-2 group overflow-hidden">
@@ -289,10 +313,10 @@
                 <div
                     class="w-20 h-20 flex items-center justify-center bg-white dark:bg-slate-700 rounded-full mb-4 shadow-md group-hover:scale-110 transition-transform">
                     <img src="https://ctrlplay.com.br/wp-content/uploads/2024/11/logo-colorido.svg" alt="Arquivos"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span
-                    class="tool-name font-black text-[#F37021] dark:text-orange-400 text-lg uppercase text-center leading-tight">Arquivos<br>do
+                    class="tool-name font-black text-[#F37021] dark:text-orange-400 text-lg uppercase text-center leading-tight">Arquivos<br />do
                     Aluno</span>
             </a>
 
@@ -306,7 +330,7 @@
                 <div
                     class="w-20 h-20 flex items-center justify-center bg-white dark:bg-slate-700 rounded-full mb-4 shadow-md group-hover:scale-110 transition-transform">
                     <img src="https://kahoot.com/files/2020/11/Kahoot-1024-rounded.png" alt="Kahoot"
-                        class="w-12 h-12 object-contain">
+                        class="w-12 h-12 object-contain" />
                 </div>
                 <span
                     class="tool-name font-black text-[#46178F] dark:text-purple-400 text-lg uppercase text-center leading-tight">Kahoot!</span>
@@ -316,9 +340,18 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
                     <img src="https://cdn.prod.website-files.com/61d6943d6b59241863c825d6/62cfb67fd0030be5352a8476_mit.webp"
-                        alt="App Inventor" class="w-12 h-12">
+                        alt="App Inventor" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">App Inventor</span>
+            </a>
+
+            <a href="https://www.google.com" target="_blank" data-category="educacao-logica"
+                class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
+                <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
+                    <img src="https://www.gstatic.com/images/branding/searchlogo/ico/favicon.ico" alt="Google"
+                        class="w-12 h-12" />
+                </div>
+                <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Google</span>
             </a>
 
             <a href="https://support.arduino.cc/hc/en-us/articles/360019833020-Download-and-install-Arduino-IDE"
@@ -326,7 +359,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://www.arduino.cc/wiki/favicon-32x32.png?v=23330209a9e4870226e34963941206b6"
-                        alt="Arduino IDE" class="w-12 h-12">
+                        alt="Arduino IDE" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Arduino IDE</span>
             </a>
@@ -335,7 +368,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-yellow-50 rounded-full mb-4">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReAmHAF2JtN_2382b4i4O6tJmOhyqnxOGmbg&s"
-                        alt="Blockly Games" class="w-12 h-12">
+                        alt="Blockly Games" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Blockly Games</span>
             </a>
@@ -344,7 +377,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-orange-50 rounded-full mb-4">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Blender_logo_no_text.svg"
-                        alt="Blender" class="w-12 h-12">
+                        alt="Blender" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Blender</span>
             </a>
@@ -353,7 +386,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-purple-50 rounded-full mb-4">
                     <img src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg" alt="Bootstrap"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Bootstrap</span>
             </a>
@@ -362,7 +395,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-purple-50 rounded-full mb-4">
                     <img src="https://icons.getbootstrap.com/assets/img/icons-hero.png" alt="Bootstrap Icons"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Bootstrap Icons</span>
             </a>
@@ -371,7 +404,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://static.canva.com/domain-assets/canva/static/images/favicon-1.ico" alt="Canva"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Canva</span>
             </a>
@@ -380,7 +413,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-purple-50 rounded-full mb-4">
                     <img src="https://d2l28oe7yi95h7.cloudfront.net/favicon/favicon-192x192.png" alt="CheckiO"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">CheckiO</span>
             </a>
@@ -388,7 +421,7 @@
             <a href="https://code.org/" target="_blank" data-category="educacao-logica"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
-                    <img src="https://code.org/images/favicon.ico" alt="Code.org" class="w-12 h-12">
+                    <img src="https://code.org/images/favicon.ico" alt="Code.org" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Code.org</span>
             </a>
@@ -396,7 +429,7 @@
             <a href="https://www.codewars.com/" target="_blank" data-category="pratica-desafios"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
-                    <img src="https://www.codewars.com/favicon.ico" alt="CodeWars" class="w-12 h-12">
+                    <img src="https://www.codewars.com/favicon.ico" alt="CodeWars" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">CodeWars</span>
             </a>
@@ -405,7 +438,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://codecombat.com/images/favicon/favicon-coco/favicon-32x32.png" alt="Code Combat"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Code Combat</span>
             </a>
@@ -414,7 +447,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
                     <img src="https://cpwebassets.codepen.io/assets/favicon/favicon-touch-de50acbf5d634ec6791894eba4ba9cf490f709b3d742597c6fc4b734e6492a5a.png"
-                        alt="CodePen" class="w-12 h-12">
+                        alt="CodePen" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">CodePen</span>
             </a>
@@ -422,7 +455,7 @@
             <a href="https://codeshare.io/" target="_blank" data-category="ferramentas"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-red-50 rounded-full mb-4">
-                    <img src="https://codeshare.io/favicon.ico" alt="CodeShare" class="w-12 h-12">
+                    <img src="https://codeshare.io/favicon.ico" alt="CodeShare" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">CodeShare</span>
             </a>
@@ -431,7 +464,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
                     <img src="https://avatars.githubusercontent.com/u/6946974?s=280&v=4" alt="CodinGame"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">CodinGame</span>
             </a>
@@ -440,7 +473,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQItk2PJTjd2l_5HloiOcXp4DyDiPrgmczCQ&s"
-                        alt="Coolors" class="w-12 h-12 object-contain">
+                        alt="Coolors" class="w-12 h-12 object-contain" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Coolors</span>
             </a>
@@ -448,7 +481,7 @@
             <a href="https://flukeout.github.io/" target="_blank" data-category="pratica-desafios"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-orange-50 rounded-full mb-4">
-                    <img src="https://flukeout.github.io/favicon.png" alt="CSS Diner" class="w-12 h-12">
+                    <img src="https://flukeout.github.io/favicon.png" alt="CSS Diner" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">CSS Diner</span>
             </a>
@@ -456,7 +489,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
                     <img src="https://editor.construct.net/r466-2/media/icon-512.png" alt="Construct 3"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Construct 3</span>
             </a>
@@ -465,7 +498,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-yellow-50 rounded-full mb-4">
                     <img src="https://www.google.com/s2/favicons?domain=dontpad.com&sz=128" alt="Dontpad"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Dontpad</span>
             </a>
@@ -473,7 +506,7 @@
             <a href="https://excalidraw.com/" target="_blank" data-category="ferramentas"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-purple-50 rounded-full mb-4">
-                    <img src="https://excalidraw.com/favicon-32x32.png" alt="Excalidraw" class="w-12 h-12">
+                    <img src="https://excalidraw.com/favicon-32x32.png" alt="Excalidraw" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Excalidraw</span>
             </a>
@@ -482,7 +515,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
                     <img src="https://s3.amazonaws.com/edabit-images/logo_main_medium.png" alt="Edabit"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Edabit</span>
             </a>
@@ -490,7 +523,7 @@
             <a href="https://www.figma.com/" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
-                    <img src="https://static.figma.com/app/icon/1/favicon.ico" alt="Figma" class="w-12 h-12">
+                    <img src="https://static.figma.com/app/icon/1/favicon.ico" alt="Figma" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Figma</span>
             </a>
@@ -499,7 +532,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
                     <img src="data:image/svg+xml;charset=utf-8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+Cjxzdmcgd2lkdGg9IjIxMHB4IiBoZWlnaHQ9IjE1OHB4IiB2aWV3Qm94PSIwIDAgMjEwIDIxMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4bWxuczpza2V0Y2g9Imh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaC9ucyI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDMuNC4zICgxNjYxOCkgLSBodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2ggLS0+CiAgICA8dGl0bGU+ZnJvZy1ncmVlbjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPjwvZGVmcz4KICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHNrZXRjaDp0eXBlPSJNU1BhZ2UiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsIDI2KSI+CiAgICAgICAgPGcgaWQ9ImZyb2ctZ3JlZW4iIHNrZXRjaDp0eXBlPSJNU0xheWVyR3JvdXAiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0xMy4wMDAwMDAsIDAuMDAwMDAwKSI+CiAgICAgICAgICAgIDxjaXJjbGUgaWQ9Ik92YWwtMjkiIGZpbGw9IiM2OURBNkIiIHNrZXRjaDp0eXBlPSJNU1NoYXBlR3JvdXAiIGN4PSI3MyIgY3k9IjI0IiByPSIyNCI+PC9jaXJjbGU+CiAgICAgICAgICAgIDxjaXJjbGUgaWQ9Ik92YWwtMjkiIGZpbGw9IiM2OURBNkIiIHNrZXRjaDp0eXBlPSJNU1NoYXBlR3JvdXAiIGN4PSIxNjMiIGN5PSIyNCIgcj0iMjQiPjwvY2lyY2xlPgogICAgICAgICAgICA8ZyBpZD0iZnJvZy1ncmVlbi0rLVJlY3RhbmdsZS0zMCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC4wMDAwMDAsIDU0LjAwMDAwMCkiIHNrZXRjaDp0eXBlPSJNU1NoYXBlR3JvdXAiIGZpbGw9IiM0Q0MyNEYiPgogICAgICAgICAgICAgICAgPGVsbGlwc2UgaWQ9ImZyb2ctZ3JlZW4iIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ2LjUzODE5MywgNTcuMDI2NTc4KSByb3RhdGUoLTI3LjAwMDAwMCkgdHJhbnNsYXRlKC00Ni41MzgxOTMsIC01Ny4wMjY1NzgpICIgY3g9IjQ2LjUzODE5MzEiIGN5PSI1Ny4wMjY1Nzc3IiByeD0iMjYuNSIgcnk9IjUwLjUiPjwvZWxsaXBzZT4KICAgICAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtMzAiIHg9IjEzIiB5PSI4OSIgd2lkdGg9IjU2IiBoZWlnaHQ9IjE1IiByeD0iOSI+PC9yZWN0PgogICAgICAgICAgICA8L2c+CiAgICAgICAgICAgIDxnIGlkPSJmcm9nLWdyZWVuLSstUmVjdGFuZ2xlLTMwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxODkuMDAwMDAwLCAxMTEuNTAwMDAwKSBzY2FsZSgtMSwgMSkgdHJhbnNsYXRlKC0xODkuMDAwMDAwLCAtMTExLjUwMDAwMCkgdHJhbnNsYXRlKDE0Mi4wMDAwMDAsIDU0LjAwMDAwMCkiIHNrZXRjaDp0eXBlPSJNU1NoYXBlR3JvdXAiIGZpbGw9IiM0Q0MyNEYiPgogICAgICAgICAgICAgICAgPGVsbGlwc2UgaWQ9ImZyb2ctZ3JlZW4iIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ2LjUzODE5MywgNTcuMDI2NTc4KSByb3RhdGUoLTI3LjAwMDAwMCkgdHJhbnNsYXRlKC00Ni41MzgxOTMsIC01Ny4wMjY1NzgpICIgY3g9IjQ2LjUzODE5MzEiIGN5PSI1Ny4wMjY1Nzc3IiByeD0iMjYuNSIgcnk9IjUwLjUiPjwvZWxsaXBzZT4KICAgICAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtMzAiIHg9IjEzIiB5PSI4OSIgd2lkdGg9IjU2IiBoZWlnaHQ9IjE1IiByeD0iOSI+PC9yZWN0PgogICAgICAgICAgICA8L2c+CiAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtMzAiIGZpbGw9IiM2OURBNkIiIHNrZXRjaDp0eXBlPSJNU1NoYXBlR3JvdXAiIHg9IjQ5IiB5PSIyMCIgd2lkdGg9IjEzOCIgaGVpZ2h0PSIxMzgiIHJ4PSI5Ij48L3JlY3Q+CiAgICAgICAgICAgIDxjaXJjbGUgaWQ9Ik92YWwtMzciIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSI1IiBmaWxsPSIjMDAwMDAwIiBza2V0Y2g6dHlwZT0iTVNTaGFwZUdyb3VwIiBjeD0iNzMiIGN5PSIyNCIgcj0iMTIiPjwvY2lyY2xlPgogICAgICAgICAgICA8Y2lyY2xlIGlkPSJPdmFsLTM3IiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iNSIgZmlsbD0iIzAwMDAwMCIgc2tldGNoOnR5cGU9Ik1TU2hhcGVHcm91cCIgY3g9IjE2MyIgY3k9IjI0IiByPSIxMiI+PC9jaXJjbGU+CiAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtMzMiIGZpbGw9IiM3N0Y4N0EiIHNrZXRjaDp0eXBlPSJNU1NoYXBlR3JvdXAiIHg9IjYyIiB5PSI3MiIgd2lkdGg9IjExMCIgaGVpZ2h0PSI3MCIgcng9IjkiPjwvcmVjdD4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPgo="
-                        alt="Flexbox Froggy" class="w-12 h-12">
+                        alt="Flexbox Froggy" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Flexbox Froggy</span>
             </a>
@@ -507,7 +540,7 @@
             <a href="https://fontawesome.com/" target="_blank" data-category="ferramentas"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
-                    <img src="https://fontawesome.com/images/favicon/icon.svg" alt="FontAwesome" class="w-12 h-12">
+                    <img src="https://fontawesome.com/images/favicon/icon.svg" alt="FontAwesome" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">FontAwesome</span>
             </a>
@@ -516,7 +549,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://www.freecodecamp.org/portuguese/favicon-32x32.png" alt="FreeCodeCamp"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">FreeCodeCamp</span>
             </a>
@@ -525,7 +558,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
                     <img src="https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/logos/gamemaker-98kqzlyi1frrscfd07vfi.png/gamemaker-os7p0j98mgnwmrd3pzgoof.png?_a=DATAg1AAZAA0"
-                        alt="GameMaker" class="w-12 h-12">
+                        alt="GameMaker" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">GameMaker</span>
             </a>
@@ -534,15 +567,24 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
                     <img src="https://game-icons.net/favicon.ico" alt="Game-Icons.net"
-                        class="w-12 h-12 object-contain bg-black rounded-lg p-1">
+                        class="w-12 h-12 object-contain bg-black rounded-lg p-1" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Game-Icons.net</span>
+            </a>
+
+            <a href="https://www.myinstants.com/pt/index/br/" target="_blank" data-category="jogos-design"
+                class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
+                <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
+                    <img src="https://www.myinstants.com/media/apple-touch-icon-57x57.png" alt="My Instants"
+                        class="w-12 h-12 object-contain bg-black rounded-lg p-1" />
+                </div>
+                <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">My Instants</span>
             </a>
 
             <a href="https://gdevelop.io/" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-purple-50 rounded-full mb-4">
-                    <img src="https://gdevelop.io/favicons/apple-touch-icon.png" alt="GDevelop" class="w-12 h-12">
+                    <img src="https://gdevelop.io/favicons/apple-touch-icon.png" alt="GDevelop" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">GDevelop</span>
             </a>
@@ -550,7 +592,7 @@
             <a href="https://github.com/" target="_blank" data-category="ferramentas"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
-                    <img src="https://github.githubassets.com/favicons/favicon.png" alt="Github" class="w-12 h-12">
+                    <img src="https://github.githubassets.com/favicons/favicon.png" alt="Github" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Github</span>
             </a>
@@ -558,7 +600,7 @@
             <a href="https://godotengine.org/" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
-                    <img src="https://godotengine.org/assets/press/icon_color.svg" alt="Godot" class="w-12 h-12">
+                    <img src="https://godotengine.org/assets/press/icon_color.svg" alt="Godot" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Godot</span>
             </a>
@@ -566,7 +608,7 @@
             <a href="https://go.dev/" target="_blank" data-category="programacao"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-cyan-50 rounded-full mb-4">
-                    <img src="https://go.dev/images/favicon-gopher.png" alt="Golang" class="w-12 h-12">
+                    <img src="https://go.dev/images/favicon-gopher.png" alt="Golang" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Golang</span>
             </a>
@@ -575,7 +617,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-orange-50 rounded-full mb-4">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Google_Colaboratory_SVG_Logo.svg"
-                        alt="Google Colab" class="w-12 h-12">
+                        alt="Google Colab" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Google Colab</span>
             </a>
@@ -584,7 +626,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-red-50 rounded-full mb-4">
                     <img src="https://www.gstatic.com/images/branding/product/1x/google_fonts_48dp.png"
-                        alt="Google Fonts" class="w-12 h-12">
+                        alt="Google Fonts" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Google Fonts</span>
             </a>
@@ -592,7 +634,7 @@
             <a href="https://cssgridgarden.com/" target="_blank" data-category="pratica-desafios"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
-                    <img src="https://cssgridgarden.com/images/carrots.svg" alt="Grid Garden" class="w-12 h-12">
+                    <img src="https://cssgridgarden.com/images/carrots.svg" alt="Grid Garden" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Grid Garden</span>
             </a>
@@ -601,7 +643,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-cyan-50 rounded-full mb-4">
                     <img src="https://csforall.org/_next/static/media/csforall.94e8a57f.ico" alt="Hora do Código"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Hora do Código</span>
             </a>
@@ -609,7 +651,7 @@
             <a href="https://html5up.net/" target="_blank" data-category="programacao"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
-                    <img src="https://html5up.net/assets/icons/favicon.ico" alt="HTML5 UP" class="w-12 h-12">
+                    <img src="https://html5up.net/assets/icons/favicon.ico" alt="HTML5 UP" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">HTML5 UP</span>
             </a>
@@ -618,7 +660,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-red-50 rounded-full mb-4">
                     <img src="https://images.icon-icons.com/2407/PNG/512/itch_icon_146025.png" alt="Itch.io"
-                        class="w-12 h-12 object-contain">
+                        class="w-12 h-12 object-contain" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Itch.io</span>
             </a>
@@ -627,7 +669,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
                     <img src="https://meet.jit.si/v1/_cdn/meetjitsi_8979.6035/images/apple-touch-icon.png"
-                        alt="Jitsi Meet" class="w-12 h-12 object-contain">
+                        alt="Jitsi Meet" class="w-12 h-12 object-contain" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Jitsi Meet</span>
             </a>
@@ -635,7 +677,8 @@
             <a href="https://lab.reaal.me/jsrobot/" target="_blank" data-category="pratica-desafios"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
-                    <img src="https://tantemalkah.at/jsrobot/icon/apple-icon-57x57.png" alt="JSRobot" class="w-12 h-12">
+                    <img src="https://tantemalkah.at/jsrobot/icon/apple-icon-57x57.png" alt="JSRobot"
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">JSRobot</span>
             </a>
@@ -643,7 +686,7 @@
             <a href="https://www.kenney.nl/assets" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-yellow-50 rounded-full mb-4">
-                    <img src="https://kenney.nl/favicon.ico" alt="Kenney Assets" class="w-12 h-12">
+                    <img src="https://kenney.nl/favicon.ico" alt="Kenney Assets" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Kenney Assets</span>
             </a>
@@ -652,7 +695,7 @@
                 data-category="educacao-logica"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
-                    <img src="https://cdn.kastatic.org/images/favicon.ico?logo" alt="Khan Academy" class="w-12 h-12">
+                    <img src="https://cdn.kastatic.org/images/favicon.ico?logo" alt="Khan Academy" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Khan Academy</span>
             </a>
@@ -660,7 +703,7 @@
             <a href="https://www.kodugamelab.com/" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
-                    <img src="https://www.kodugamelab.com/images/Kodu.png" alt="Kodu GameLab" class="w-12 h-12">
+                    <img src="https://www.kodugamelab.com/images/Kodu.png" alt="Kodu GameLab" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Kodu GameLab</span>
             </a>
@@ -669,7 +712,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-yellow-50 rounded-full mb-4">
                     <img src="https://assets.leetcode.com/static_assets/public/icons/favicon-32x32.png" alt="LeetCode"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">LeetCode</span>
             </a>
@@ -677,7 +720,8 @@
             <a href="https://picsum.photos/" target="_blank" data-category="ferramentas"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-indigo-50 rounded-full mb-4">
-                    <img src="https://picsum.photos/200" alt="Lorem Picsum" class="w-12 h-12 rounded-full object-cover">
+                    <img src="https://picsum.photos/200" alt="Lorem Picsum"
+                        class="w-12 h-12 rounded-full object-cover" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Lorem Picsum</span>
             </a>
@@ -686,7 +730,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-yellow-50 rounded-full mb-4">
                     <img src="https://monkeytype.com/images/favicon/favicon-32x32.png" alt="Monkeytype"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Monkeytype</span>
             </a>
@@ -695,7 +739,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTysI6tQs62DJ5f3bANwqlpKpU6fgjujV7ZmA&s"
-                        alt="ML for Kids" class="w-12 h-12">
+                        alt="ML for Kids" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">ML for Kids</span>
             </a>
@@ -703,7 +747,8 @@
             <a href="https://quickdraw.withgoogle.com/" target="_blank" data-category="ia"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-yellow-50 rounded-full mb-4">
-                    <img src="https://quickdraw.withgoogle.com/static/favicon.ico" alt="Quick, Draw!" class="w-12 h-12">
+                    <img src="https://quickdraw.withgoogle.com/static/favicon.ico" alt="Quick, Draw!"
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Quick, Draw!</span>
             </a>
@@ -712,7 +757,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://teachablemachine.withgoogle.com/assets/img/favicon.png" alt="Teachable Machine"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Teachable Machine</span>
             </a>
@@ -721,7 +766,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-purple-50 rounded-full mb-4">
                     <img src="https://cdn.makecode.com/blob/9ab4abfcdff3405e5cca8a3c38e129aec2b363e3/static/logo.png"
-                        alt="MakeCode Arcade" class="w-12 h-12">
+                        alt="MakeCode Arcade" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">MakeCode Arcade</span>
             </a>
@@ -730,7 +775,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
                     <img src="https://cdn.makecode.com/blob/4de54063603c8d16531078818a83f7c29a3588fa/static/icons/apple-touch-icon.png"
-                        alt="MakeCode Microbit" class="w-12 h-12">
+                        alt="MakeCode Microbit" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">MakeCode Microbit</span>
             </a>
@@ -738,7 +783,8 @@
             <a href="https://www.mongodb.com/" target="_blank" data-category="dados"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
-                    <img src="https://www.mongodb.com/assets/images/global/favicon.ico" alt="MongoDB" class="w-12 h-12">
+                    <img src="https://www.mongodb.com/assets/images/global/favicon.ico" alt="MongoDB"
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">MongoDB</span>
             </a>
@@ -746,7 +792,7 @@
             <a href="https://nodejs.org/" target="_blank" data-category="programacao"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
-                    <img src="https://cdn.worldvectorlogo.com/logos/nodejs-icon.svg" alt="Node.js" class="w-12 h-12">
+                    <img src="https://cdn.worldvectorlogo.com/logos/nodejs-icon.svg" alt="Node.js" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Node.js</span>
             </a>
@@ -755,7 +801,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
                     <img src="https://opengameart.org/sites/all/themes/oga/opengameart2_favicon.ico" alt="OpenGameArt"
-                        class="w-12 h-12 object-contain bg-black rounded-lg p-1">
+                        class="w-12 h-12 object-contain bg-black rounded-lg p-1" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">OpenGameArt</span>
             </a>
@@ -763,7 +809,7 @@
             <a href="https://www.photopea.com/" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
-                    <img src="https://www.photopea.com/promo/icon512.png" alt="Photopea" class="w-12 h-12">
+                    <img src="https://www.photopea.com/promo/icon512.png" alt="Photopea" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Photopea</span>
             </a>
@@ -773,7 +819,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://www.programiz.com/sites/tutorial2program/files/favicon.png" alt="Programiz Python"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Programiz (Python)</span>
             </a>
@@ -781,7 +827,7 @@
             <a href="https://www.piskelapp.com/" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-yellow-50 rounded-full mb-4">
-                    <img src="https://www.piskelapp.com/assets/favicon.png" alt="Piskel" class="w-12 h-12">
+                    <img src="https://www.piskelapp.com/assets/favicon.png" alt="Piskel" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Piskel</span>
             </a>
@@ -789,7 +835,7 @@
             <a href="https://www.python.org/" target="_blank" data-category="programacao"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
-                    <img src="https://cdn.worldvectorlogo.com/logos/python-5.svg" alt="Python" class="w-12 h-12">
+                    <img src="https://cdn.worldvectorlogo.com/logos/python-5.svg" alt="Python" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Python</span>
             </a>
@@ -798,7 +844,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="ReactJS"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">ReactJS</span>
             </a>
@@ -806,7 +852,7 @@
             <a href="https://replit.com/" target="_blank" data-category="ferramentas"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
-                    <img src="https://replit.com/public/icons/favicon-prompt-192.png" alt="Replit" class="w-12 h-12">
+                    <img src="https://replit.com/public/icons/favicon-prompt-192.png" alt="Replit" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Replit</span>
             </a>
@@ -814,7 +860,7 @@
             <a href="https://www.roblox.com/create" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
-                    <img src="https://cdn.worldvectorlogo.com/logos/roblox-2.svg" alt="Roblox" class="w-12 h-12">
+                    <img src="https://cdn.worldvectorlogo.com/logos/roblox-2.svg" alt="Roblox" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Roblox Studio</span>
             </a>
@@ -822,7 +868,7 @@
             <a href="https://scratch.mit.edu/" target="_blank" data-category="educacao-logica"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-orange-50 rounded-full mb-4">
-                    <img src="https://cdn.worldvectorlogo.com/logos/scratch-cat.svg" alt="Scratch" class="w-12 h-12">
+                    <img src="https://cdn.worldvectorlogo.com/logos/scratch-cat.svg" alt="Scratch" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Scratch</span>
             </a>
@@ -830,7 +876,7 @@
             <a href="https://scratch.mit.edu/studios/1866686" target="_blank" data-category="educacao-logica"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-orange-50 rounded-full mb-4">
-                    <img src="https://scratch.mit.edu/favicon.ico" alt="Scratch" class="w-12 h-12">
+                    <img src="https://scratch.mit.edu/favicon.ico" alt="Scratch" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Scratch 3.0</span>
             </a>
@@ -838,7 +884,7 @@
             <a href="https://selectstarsql.com/" target="_blank" data-category="dados"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
-                    <img src="https://selectstarsql.com/imgs/favicon-256.png" alt="Select Star SQL" class="w-12 h-12">
+                    <img src="https://selectstarsql.com/imgs/favicon-256.png" alt="Select Star SQL" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Select Star SQL</span>
             </a>
@@ -846,7 +892,7 @@
             <a href="https://sqlbolt.com/" target="_blank" data-category="dados"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
-                    <img src="https://sqlbolt.com/cs/images/favicon.png" alt="SQLBolt" class="w-12 h-12">
+                    <img src="https://sqlbolt.com/cs/images/favicon.png" alt="SQLBolt" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">SQLBolt</span>
             </a>
@@ -855,7 +901,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
                     <img src="https://cdn-icons-png.flaticon.com/512/2822/2822629.png" alt="SQL Murder Mystery"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">SQL Murder Mystery</span>
             </a>
@@ -863,7 +909,7 @@
             <a href="https://sqlzoo.net/" target="_blank" data-category="dados"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-yellow-50 rounded-full mb-4">
-                    <img src="https://sqlzoo.net/favicon.ico" alt="SQLZoo" class="w-12 h-12">
+                    <img src="https://sqlzoo.net/favicon.ico" alt="SQLZoo" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">SQLZoo</span>
             </a>
@@ -871,7 +917,7 @@
             <a href="https://stackblitz.com/" target="_blank" data-category="ferramentas"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
-                    <img src="https://stackblitz.com/_astro/favicon.svg" alt="StackBlitz" class="w-12 h-12">
+                    <img src="https://stackblitz.com/_astro/favicon.svg" alt="StackBlitz" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">StackBlitz</span>
             </a>
@@ -879,7 +925,7 @@
             <a href="https://strawpoll.com/pt" target="_blank" data-category="ferramentas"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-orange-50 rounded-full mb-4">
-                    <img src="https://strawpoll.com/apple-touch-icon.png" alt="StrawPoll" class="w-12 h-12">
+                    <img src="https://strawpoll.com/apple-touch-icon.png" alt="StrawPoll" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">StrawPoll</span>
             </a>
@@ -888,7 +934,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-cyan-50 rounded-full mb-4">
                     <img src="https://tailwindcss.com/favicons/apple-touch-icon.png" alt="TailwindCSS"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">TailwindCSS</span>
             </a>
@@ -896,7 +942,7 @@
             <a href="https://www.tinkercad.com/" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-red-50 rounded-full mb-4">
-                    <img src="https://www.tinkercad.com/img/favicon.ico" alt="Tinkercad" class="w-12 h-12">
+                    <img src="https://www.tinkercad.com/img/favicon.ico" alt="Tinkercad" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Tinkercad</span>
             </a>
@@ -904,7 +950,7 @@
             <a href="https://unity.com/" target="_blank" data-category="jogos-design"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
-                    <img src="https://cdn.worldvectorlogo.com/logos/unity-69.svg" alt="Unity" class="w-12 h-12">
+                    <img src="https://cdn.worldvectorlogo.com/logos/unity-69.svg" alt="Unity" class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Unity</span>
             </a>
@@ -913,7 +959,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-gray-50 rounded-full mb-4">
                     <img src="https://www.unrealengine.com/cosmos/static/favicons/favicon-96x96.png" alt="Unreal Engine"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Unreal Engine</span>
             </a>
@@ -922,7 +968,7 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-blue-50 rounded-full mb-4">
                     <img src="https://cdn.worldvectorlogo.com/logos/visual-studio-code-1.svg" alt="VS Code"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">VS Code</span>
             </a>
@@ -930,7 +976,8 @@
             <a href="https://wheelofnames.com/pt/" target="_blank" data-category="ferramentas"
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-purple-50 rounded-full mb-4">
-                    <img src="https://wheelofnames.com/icons/favicon-96x96.png" alt="Wheel of Names" class="w-12 h-12">
+                    <img src="https://wheelofnames.com/icons/favicon-96x96.png" alt="Wheel of Names"
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">Wheel of Names</span>
             </a>
@@ -939,22 +986,25 @@
                 class="tool-card card-hover transition-all duration-300 bg-white rounded-xl p-8 flex flex-col items-center border-multi">
                 <div class="w-20 h-20 flex items-center justify-center bg-green-50 rounded-full mb-4">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/W3Schools_logo.svg" alt="W3Schools"
-                        class="w-12 h-12">
+                        class="w-12 h-12" />
                 </div>
                 <span class="tool-name font-bold text-ctrl-blue text-lg uppercase text-center">W3Schools</span>
             </a>
-
         </div>
 
         <div id="noResults" class="hidden text-center py-20">
-            <p class="text-gray-500 dark:text-gray-400 text-xl font-medium">Ops! Não encontramos essa ferramenta.</p>
+            <p class="text-gray-500 dark:text-gray-400 text-xl font-medium">
+                Ops! Não encontramos essa ferramenta.
+            </p>
         </div>
     </main>
 
     <footer class="w-full bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-slate-800 mt-auto py-8">
         <div class="max-w-[1440px] mx-auto px-4 text-center">
-            <p class="text-gray-500 dark:text-slate-400 text-sm mb-4">© 2024 Ctrl+Play. Todos os direitos reservados.
-                Feito com 💜 para nossos alunos.</p>
+            <p class="text-gray-500 dark:text-slate-400 text-sm mb-4">
+                © 2024 Ctrl+Play. Todos os direitos reservados. Feito com 💜 para
+                nossos alunos.
+            </p>
             <div class="flex justify-center gap-6">
                 <a href="https://instagram.com/ctrlplay" target="_blank"
                     class="text-gray-400 dark:text-slate-500 hover:text-ctrl-blue dark:hover:text-ctrl-blue transition-colors">Instagram</a>
@@ -967,7 +1017,7 @@
 
     <div id="tool-tooltip"
         class="fixed hidden z-50 w-80 bg-white dark:bg-slate-800 border-2 border-ctrl-blue dark:border-slate-600 rounded-xl p-4 shadow-2xl pointer-events-none transform transition-opacity duration-200 opacity-0"
-        style="transition: opacity 0.3s ease-in-out;">
+        style="transition: opacity 0.3s ease-in-out">
         <h3 id="tt-title"
             class="font-bold text-ctrl-blue dark:text-blue-400 text-lg mb-2 border-b border-gray-100 dark:border-slate-700 pb-1">
         </h3>
@@ -1005,296 +1055,704 @@
     </button>
 
     <script>
-        const searchInput = document.getElementById('searchInput');
-        const cards = document.querySelectorAll('.tool-card');
-        const noResults = document.getElementById('noResults');
-        const filterBtns = document.querySelectorAll('.filter-btn');
+        const searchInput = document.getElementById("searchInput");
+        const cards = document.querySelectorAll(".tool-card");
+        const noResults = document.getElementById("noResults");
+        const filterBtns = document.querySelectorAll(".filter-btn");
 
         // Tooltip Elements
-        const tooltip = document.getElementById('tool-tooltip');
-        const ttTitle = document.getElementById('tt-title');
-        const ttDesc = document.getElementById('tt-desc');
-        const ttUsage = document.getElementById('tt-usage');
-        const ttWhen = document.getElementById('tt-when');
-        const ttLevel = document.getElementById('tt-level');
+        const tooltip = document.getElementById("tool-tooltip");
+        const ttTitle = document.getElementById("tt-title");
+        const ttDesc = document.getElementById("tt-desc");
+        const ttUsage = document.getElementById("tt-usage");
+        const ttWhen = document.getElementById("tt-when");
+        const ttLevel = document.getElementById("tt-level");
 
-        let currentCategory = 'todos';
-        let currentSearch = '';
+        let currentCategory = "todos";
+        let currentSearch = "";
         let tooltipTimeout;
 
         // Cores por nível de dificuldade
         const levelColors = {
-            'Iniciante': 'bg-green-500',
-            'Intermediário': 'bg-yellow-500',
-            'Avançado': 'bg-red-500'
+            Iniciante: "bg-green-500",
+            Intermediário: "bg-yellow-500",
+            Avançado: "bg-red-500",
         };
 
         // Banco de Dados das Ferramentas
         const toolData = {
-            "app inventor": { desc: "Ambiente visual do MIT para criar apps Android.", usage: "Arrastar e soltar blocos para criar lógica.", when: "Introdução a apps móveis.", level: "Iniciante" },
-            "arduino ide": { desc: "Software para escrever código para placas Arduino.", usage: "Programar microcontroladores e eletrônica.", when: "Projetos de robótica e automação.", level: "Intermediário" },
-            "arquivos alunos": { desc: "Repositório de arquivos das aulas.", usage: "Baixar material de apoio.", when: "Durante as aulas para exercícios.", level: "Iniciante" },
-            "blockly games": { desc: "Jogos educacionais que ensinam programação.", usage: "Aprender lógica jogando.", when: "Primeiros passos na programação.", level: "Iniciante" },
-            "blender": { desc: "Suíte completa de criação 3D.", usage: "Modelagem, animação, renderização.", when: "Criar assets para jogos 3D avançados.", level: "Avançado" },
-            "bootstrap": { desc: "Framework CSS popular para sites responsivos.", usage: "Criar layouts bonitos rapidamente.", when: "Projetos web que precisam de rapidez.", level: "Intermediário" },
-            "bootstrap icons": { desc: "Biblioteca oficial de ícones do Bootstrap.", usage: "Adicionar ícones aos sites.", when: "Necessidade de ícones vetoriais.", level: "Iniciante" },
-            "canva": { desc: "Ferramenta de design gráfico online.", usage: "Criar imagens, apresentações e posts.", when: "Design rápido sem softwares pesados.", level: "Iniciante" },
-            "checkio": { desc: "Jogo de estratégia para codificadores.", usage: "Melhorar habilidades em Python/JS.", when: "Prática gamificada de algoritmos.", level: "Intermediário" },
-            "code.org": { desc: "Plataforma global de ensino de CS.", usage: "Cursos interativos de fundamentos.", when: "Introdução absoluta à computação.", level: "Iniciante" },
-            "codewars": { desc: "Plataforma de desafios de código (Katas).", usage: "Resolver problemas de lógica complexos.", when: "Treinar para entrevistas e evoluir.", level: "Avançado" },
-            "code combat": { desc: "RPG onde o código controla o herói.", usage: "Aprender Python/JS jogando.", when: "Aprender sintaxe de forma divertida.", level: "Iniciante" },
-            "codepen": { desc: "Editor de código online e comunidade.", usage: "Criar e compartilhar snippets Web.", when: "Testar ideias de HTML/CSS/JS.", level: "Intermediário" },
-            "codeshare": { desc: "Editor de código em tempo real.", usage: "Programar junto com outras pessoas.", when: "Aulas remotas ou pair programming.", level: "Iniciante" },
-            "codingame": { desc: "Jogos baseados em turnos programáveis.", usage: "Resolver puzzles com código.", when: "Prática de lógica avançada.", level: "Intermediário" },
-            "css diner": { desc: "Jogo sobre seletores CSS.", usage: "Aprender a selecionar elementos HTML.", when: "Dominar CSS e estilização.", level: "Iniciante" },
-            "coolors": { desc: "Gerador de paletas de cores super rápido.", usage: "Criar esquemas de cores harmônicos.", when: "Definir cores de jogos e sites.", level: "Iniciante" },
-            "construct 3": { desc: "Engine de jogos 2D baseada no navegador.", usage: "Criar jogos sem digitar código.", when: "Prototipagem rápida de jogos 2D.", level: "Iniciante" },
-            "dontpad": { desc: "Bloco de notas online rápido.", usage: "Compartilhar texto via URL.", when: "Troca rápida de links sem login.", level: "Iniciante" },
-            "excalidraw": { desc: "Lousa virtual com estilo de mão livre.", usage: "Desenhar diagramas e explicar ideias.", when: "Brainstorming e explicações visuais.", level: "Iniciante" },
-            "edabit": { desc: "Desafios de código pequenos e rápidos.", usage: "Memorizar sintaxe e lógica básica.", when: "Preencher lacunas de conhecimento.", level: "Iniciante" },
-            "figma": { desc: "Ferramenta colaborativa de design de interface.", usage: "Criar protótipos de sites e apps.", when: "Planejamento visual de projetos.", level: "Intermediário" },
-            "flexbox froggy": { desc: "Jogo para ajudar o sapo a chegar na folha.", usage: "Aprender CSS Flexbox.", when: "Entender alinhamento de layouts.", level: "Iniciante" },
-            "fontawesome": { desc: "O conjunto de ícones mais popular.", usage: "Ícones para sites e apps.", when: "Melhorar visual de interfaces.", level: "Iniciante" },
-            "freecodecamp": { desc: "Comunidade open source de aprendizado.", usage: "Cursos completos com certificação.", when: "Aprofundamento em Web Dev.", level: "Intermediário" },
-            "game-icons.net": { desc: "Milhares de ícones de jogos gratuitos.", usage: "Ícones para RPG e UI de jogos.", when: "Precisar de ícones vetoriais CC3.0.", level: "Iniciante" },
-            "gamemaker": { desc: "Engine focada em jogos 2D.", usage: "Desenvolvimento profissional 2D.", when: "Criação de jogos indie robustos.", level: "Intermediário" },
-            "gdevelop": { desc: "Engine de jogos open-source e no-code.", usage: "Criar jogos visualmente.", when: "Iniciantes em desenvolvimento de jogos.", level: "Iniciante" },
-            "github": { desc: "Plataforma de hospedagem de código.", usage: "Versionamento e portfólio.", when: "Guardar e compartilhar projetos.", level: "Intermediário" },
-            "godot": { desc: "Engine de jogos leve e gratuita.", usage: "Jogos 2D e 3D flexíveis.", when: "Alternativa leve à Unity/Unreal.", level: "Intermediário" },
-            "golang": { desc: "Linguagem de programação do Google.", usage: "Sistemas backend rápidos.", when: "Servidores e alta performance.", level: "Avançado" },
-            "google colab": { desc: "Python na nuvem (Jupyter Notebooks).", usage: "Data Science e IA sem instalação.", when: "Aulas de IA e Python avançado.", level: "Intermediário" },
-            "google fonts": { desc: "Diretório de fontes gratuitas.", usage: "Escolher tipografia para sites.", when: "Customizar visual de textos.", level: "Iniciante" },
-            "grid garden": { desc: "Jogo de jardinagem com CSS.", usage: "Aprender CSS Grid Layout.", when: "Layouts web complexos bidimensionais.", level: "Intermediário" },
-            "hour of code (hora do código)": { desc: "Movimento global de introdução à CS.", usage: "Atividades rápidas de 1 hora.", when: "Primeiro contato com código.", level: "Iniciante" },
-            "html5 up": { desc: "Galeria de templates HTML5 gratuitos.", usage: "Baixar templates para sites.", when: "Inspiração e estudo de código HTML/CSS.", level: "Intermediário" },
-            "itch.io": { desc: "Marketplace de jogos independentes.", usage: "Publicar e jogar jogos indie.", when: "Divulgar seus primeiros jogos.", level: "Iniciante" },
-            "jitsi meet": { desc: "Videoconferência gratuita sem conta.", usage: "Compartilhar tela via navegador.", when: "Aulas online ou backup de TV.", level: "Iniciante" },
-            "jsrobot": { desc: "Controle um robô com JavaScript.", usage: "Aprender API e lógica JS.", when: "Prática visual de scripts.", level: "Iniciante" },
-            "kahoot!": { desc: "Plataforma de aprendizado baseada em jogos.", usage: "Quizzes interativos (Game-based learning).", when: "Revisão de conteúdo e dinâmicas de grupo.", level: "Iniciante" },
-            "kenney assets": { desc: "Milhares de assets de jogos domínio público.", usage: "Sprites, sons e modelos 3D livres.", when: "Prototipar jogos sem criar arte do zero.", level: "Iniciante" },
-            "khan academy": { desc: "Plataforma de educação gratuita.", usage: "Aulas de matemática e programação.", when: "Reforço e aprendizado autodidata.", level: "Iniciante" },
-            "kodu gamelab": { desc: "Programação visual 3D da Microsoft.", usage: "Criar mundos e jogos 3D.", when: "Crianças criando primeiros jogos 3D.", level: "Iniciante" },
-            "leetcode": { desc: "Plataforma líder em preparação técnica.", usage: "Problemas de algoritmos complexos.", when: "Estudo para grandes empresas tech.", level: "Avançado" },
-            "lorem picsum": { desc: "Gerador de imagens placeholder.", usage: "URLs com fotos aleatõrias.", when: "Preencher sites/jogos com imagens de teste.", level: "Iniciante" },
-            "monkeytype": { desc: "Teste de velocidade de digitação.", usage: "Medir e melhorar WPM.", when: "Treinar digitação rápida.", level: "Iniciante" },
-            "ml for kids": { desc: "Ferramenta para ensinar IA.", usage: "Treinar modelos de aprendizado de máquina.", when: "Entender como computadores aprendem.", level: "Iniciante" },
-            "quick, draw!": { desc: "Jogo de desenho com IA do Google.", usage: "Desenhar objects para a IA adivinhar.", when: "Entender como redes neurais reconhecem padrões.", level: "Iniciante" },
-            "teachable machine": { desc: "Treine IA sem programar.", usage: "Criar modelos de imagem, som ou pose.", when: "Projetos práticos de inteligência artificial.", level: "Iniciante" },
-            "makecode arcade": { desc: "Criador de jogos retrô da Microsoft.", usage: "Jogos estilo arcade com blocos.", when: "Hardware educacional e jogos 8-bit.", level: "Iniciante" },
-            "makecode microbit": { desc: "Editor para BBC Micro:bit.", usage: "Programar a placa Micro:bit.", when: "Projetos físicos e wearables.", level: "Iniciante" },
-            "mongodb": { desc: "Banco de dados orientado a documentos.", usage: "Armazenar dados em formato JSON.", when: "Aplicações modernas e flexíveis.", level: "Intermediário" },
-            "node.js": { desc: "Ambiente de execução JavaScript.", usage: "Rodar JS fora do navegador.", when: "Backend, APIs e scripts.", level: "Intermediário" },
-            "opengameart": { desc: "Repositório de arte livre para jogos.", usage: "Baixar sprites, músicas e texturas.", when: "Encontrar assets específicos feitos pela comunidade.", level: "Iniciante" },
-            "photopea": { desc: "Editor de imagens online avançado (Estilo Photoshop).", usage: "Editar fotos, criar sprites e assets.", when: "Design profissional gratuito no navegador.", level: "Intermediário" },
-            "programiz (python)": { desc: "Compilador Python online sem cadastro.", usage: "Rodar scripts Python na hora.", when: "Testes rápidos sem conta ou instalação.", level: "Iniciante" },
-            "piskel": { desc: "Editor de sprites e pixel art.", usage: "Criar arte para jogos 2D.", when: "Desenhando personagens e cenários.", level: "Iniciante" },
-            "python": { desc: "Linguagem poderosa e legível.", usage: "Data Science, Web, Automação.", when: "Quase tudo! Ótima para começar.", level: "Iniciante" },
-            "reactjs": { desc: "Biblioteca JS do Facebook.", usage: "Criar interfaces de usuário (UI).", when: "Single Page Applications modernas.", level: "Avançado" },
-            "replit": { desc: "IDE colaborativa no navegador.", usage: "Codar em 50+ linguagens online.", when: "Sem acesso a editor local.", level: "Iniciante" },
-            "strawpoll": { desc: "Crie votações instantâneas.", usage: "Enquetes rápidas sem cadastro.", when: "Eleições e decisões em grupo.", level: "Iniciante" },
-            "roblox studio": { desc: "Ferramenta de criação do Roblox.", usage: "Criar jogos com Lua.", when: "Publicar para milhões de jogadores.", level: "Intermediário" },
-            "scratch": { desc: "Comunidade de programação criativa.", usage: "Criar histórias e jogos com blocos.", when: "O ponto de partida da programação.", level: "Iniciante" },
-            "scratch 3.0": { desc: "Versão mais atual do Scratch.", usage: "Mesma funcionalidade, nova interface.", when: "Padrão para ensino infantil.", level: "Iniciante" },
-            "select star sql": { desc: "Aprendizado interativo de SQL.", usage: "Executar queries em dados reais.", when: "Entender banco de dados na prática.", level: "Iniciante" },
-            "sqlbolt": { desc: "Série de lições interativas de SQL.", usage: "Exercícios passo-a-passo.", when: "Aprender sintaxe SQL do zero.", level: "Iniciante" },
-            "sql murder mystery": { desc: "Jogo de mistério policial.", usage: "Usar SQL para achar o assassino.", when: "Praticar SQL de forma divertida.", level: "Intermediário" },
-            "sqlzoo": { desc: "Wiki e tutoriais de SQL.", usage: "Referência e quizzes.", when: "Consultas rápidas e testes.", level: "Iniciante" },
-            "stackblitz": { desc: "IDE online para Web Dev.", usage: "Projetos Node/Angular/React instantâneos.", when: "Prototipar projetos Fullstack.", level: "Intermediário" },
-            "tailwindcss": { desc: "Framework CSS utilitário.", usage: "Estilar direto no HTML.", when: "Produtividade e design customizado.", level: "Intermediário" },
-            "tinkercad": { desc: "App web de design 3D e circuitos.", usage: "Modelar 3D e simular Arduino.", when: "Impressão 3D e eletrônica básica.", level: "Iniciante" },
-            "unity": { desc: "Plataforma de desenvolvimento 3D/2D.", usage: "Criar jogos e simulações profissionais.", when: "Projetos ambiciosos multiplataforma.", level: "Avançado" },
-            "unreal engine": { desc: "Ferramenta de criação 3D em tempo real.", usage: "Gráficos fotorrealistas.", when: "Jogos AAA e produção virtual.", level: "Avançado" },
-            "vs code": { desc: "O editor de código mais popular.", usage: "Escrever e debugar código.", when: "Desenvolvimento profissional diário.", level: "Iniciante" },
-            "w3schools": { desc: "Maior site de desenvolvedores web.", usage: "Tutoriais e referências.", when: "Dúvidas de sintaxe e exemplos.", level: "Iniciante" },
-            "wheel of names": { desc: "Roleta aleatória personalizável.", usage: "Sorteios visuais divertidos.", when: "Escolher alunos ou prêmios.", level: "Iniciante" }
+            "app inventor": {
+                desc: "Ambiente visual do MIT para criar apps Android.",
+                usage: "Arrastar e soltar blocos para criar lógica.",
+                when: "Introdução a apps móveis.",
+                level: "Iniciante",
+            },
+            "arduino ide": {
+                desc: "Software para escrever código para placas Arduino.",
+                usage: "Programar microcontroladores e eletrônica.",
+                when: "Projetos de robótica e automação.",
+                level: "Intermediário",
+            },
+            "arquivos alunos": {
+                desc: "Repositório de arquivos das aulas.",
+                usage: "Baixar material de apoio.",
+                when: "Durante as aulas para exercícios.",
+                level: "Iniciante",
+            },
+            "blockly games": {
+                desc: "Jogos educacionais que ensinam programação.",
+                usage: "Aprender lógica jogando.",
+                when: "Primeiros passos na programação.",
+                level: "Iniciante",
+            },
+            blender: {
+                desc: "Suíte completa de criação 3D.",
+                usage: "Modelagem, animação, renderização.",
+                when: "Criar assets para jogos 3D avançados.",
+                level: "Avançado",
+            },
+            bootstrap: {
+                desc: "Framework CSS popular para sites responsivos.",
+                usage: "Criar layouts bonitos rapidamente.",
+                when: "Projetos web que precisam de rapidez.",
+                level: "Intermediário",
+            },
+            "bootstrap icons": {
+                desc: "Biblioteca oficial de ícones do Bootstrap.",
+                usage: "Adicionar ícones aos sites.",
+                when: "Necessidade de ícones vetoriais.",
+                level: "Iniciante",
+            },
+            canva: {
+                desc: "Ferramenta de design gráfico online.",
+                usage: "Criar imagens, apresentações e posts.",
+                when: "Design rápido sem softwares pesados.",
+                level: "Iniciante",
+            },
+            checkio: {
+                desc: "Jogo de estratégia para codificadores.",
+                usage: "Melhorar habilidades em Python/JS.",
+                when: "Prática gamificada de algoritmos.",
+                level: "Intermediário",
+            },
+            "code.org": {
+                desc: "Plataforma global de ensino de CS.",
+                usage: "Cursos interativos de fundamentos.",
+                when: "Introdução absoluta à computação.",
+                level: "Iniciante",
+            },
+            codewars: {
+                desc: "Plataforma de desafios de código (Katas).",
+                usage: "Resolver problemas de lógica complexos.",
+                when: "Treinar para entrevistas e evoluir.",
+                level: "Avançado",
+            },
+            "code combat": {
+                desc: "RPG onde o código controla o herói.",
+                usage: "Aprender Python/JS jogando.",
+                when: "Aprender sintaxe de forma divertida.",
+                level: "Iniciante",
+            },
+            codepen: {
+                desc: "Editor de código online e comunidade.",
+                usage: "Criar e compartilhar snippets Web.",
+                when: "Testar ideias de HTML/CSS/JS.",
+                level: "Intermediário",
+            },
+            codeshare: {
+                desc: "Editor de código em tempo real.",
+                usage: "Programar junto com outras pessoas.",
+                when: "Aulas remotas ou pair programming.",
+                level: "Iniciante",
+            },
+            codingame: {
+                desc: "Jogos baseados em turnos programáveis.",
+                usage: "Resolver puzzles com código.",
+                when: "Prática de lógica avançada.",
+                level: "Intermediário",
+            },
+            "css diner": {
+                desc: "Jogo sobre seletores CSS.",
+                usage: "Aprender a selecionar elementos HTML.",
+                when: "Dominar CSS e estilização.",
+                level: "Iniciante",
+            },
+            coolors: {
+                desc: "Gerador de paletas de cores super rápido.",
+                usage: "Criar esquemas de cores harmônicos.",
+                when: "Definir cores de jogos e sites.",
+                level: "Iniciante",
+            },
+            "construct 3": {
+                desc: "Engine de jogos 2D baseada no navegador.",
+                usage: "Criar jogos sem digitar código.",
+                when: "Prototipagem rápida de jogos 2D.",
+                level: "Iniciante",
+            },
+            dontpad: {
+                desc: "Bloco de notas online rápido.",
+                usage: "Compartilhar texto via URL.",
+                when: "Troca rápida de links sem login.",
+                level: "Iniciante",
+            },
+            excalidraw: {
+                desc: "Lousa virtual com estilo de mão livre.",
+                usage: "Desenhar diagramas e explicar ideias.",
+                when: "Brainstorming e explicações visuais.",
+                level: "Iniciante",
+            },
+            edabit: {
+                desc: "Desafios de código pequenos e rápidos.",
+                usage: "Memorizar sintaxe e lógica básica.",
+                when: "Preencher lacunas de conhecimento.",
+                level: "Iniciante",
+            },
+            figma: {
+                desc: "Ferramenta colaborativa de design de interface.",
+                usage: "Criar protótipos de sites e apps.",
+                when: "Planejamento visual de projetos.",
+                level: "Intermediário",
+            },
+            "flexbox froggy": {
+                desc: "Jogo para ajudar o sapo a chegar na folha.",
+                usage: "Aprender CSS Flexbox.",
+                when: "Entender alinhamento de layouts.",
+                level: "Iniciante",
+            },
+            fontawesome: {
+                desc: "O conjunto de ícones mais popular.",
+                usage: "Ícones para sites e apps.",
+                when: "Melhorar visual de interfaces.",
+                level: "Iniciante",
+            },
+            freecodecamp: {
+                desc: "Comunidade open source de aprendizado.",
+                usage: "Cursos completos com certificação.",
+                when: "Aprofundamento em Web Dev.",
+                level: "Intermediário",
+            },
+            "game-icons.net": {
+                desc: "Milhares de ícones de jogos gratuitos.",
+                usage: "Ícones para RPG e UI de jogos.",
+                when: "Precisar de ícones vetoriais CC3.0.",
+                level: "Iniciante",
+            },
+            gamemaker: {
+                desc: "Engine focada em jogos 2D.",
+                usage: "Desenvolvimento profissional 2D.",
+                when: "Criação de jogos indie robustos.",
+                level: "Intermediário",
+            },
+            gdevelop: {
+                desc: "Engine de jogos open-source e no-code.",
+                usage: "Criar jogos visualmente.",
+                when: "Iniciantes em desenvolvimento de jogos.",
+                level: "Iniciante",
+            },
+            github: {
+                desc: "Plataforma de hospedagem de código.",
+                usage: "Versionamento e portfólio.",
+                when: "Guardar e compartilhar projetos.",
+                level: "Intermediário",
+            },
+            godot: {
+                desc: "Engine de jogos leve e gratuita.",
+                usage: "Jogos 2D e 3D flexíveis.",
+                when: "Alternativa leve à Unity/Unreal.",
+                level: "Intermediário",
+            },
+            golang: {
+                desc: "Linguagem de programação do Google.",
+                usage: "Sistemas backend rápidos.",
+                when: "Servidores e alta performance.",
+                level: "Avançado",
+            },
+            "google colab": {
+                desc: "Python na nuvem (Jupyter Notebooks).",
+                usage: "Data Science e IA sem instalação.",
+                when: "Aulas de IA e Python avançado.",
+                level: "Intermediário",
+            },
+            "google fonts": {
+                desc: "Diretório de fontes gratuitas.",
+                usage: "Escolher tipografia para sites.",
+                when: "Customizar visual de textos.",
+                level: "Iniciante",
+            },
+            "grid garden": {
+                desc: "Jogo de jardinagem com CSS.",
+                usage: "Aprender CSS Grid Layout.",
+                when: "Layouts web complexos bidimensionais.",
+                level: "Intermediário",
+            },
+            "hour of code (hora do código)": {
+                desc: "Movimento global de introdução à CS.",
+                usage: "Atividades rápidas de 1 hora.",
+                when: "Primeiro contato com código.",
+                level: "Iniciante",
+            },
+            "html5 up": {
+                desc: "Galeria de templates HTML5 gratuitos.",
+                usage: "Baixar templates para sites.",
+                when: "Inspiração e estudo de código HTML/CSS.",
+                level: "Intermediário",
+            },
+            "itch.io": {
+                desc: "Marketplace de jogos independentes.",
+                usage: "Publicar e jogar jogos indie.",
+                when: "Divulgar seus primeiros jogos.",
+                level: "Iniciante",
+            },
+            "jitsi meet": {
+                desc: "Videoconferência gratuita sem conta.",
+                usage: "Compartilhar tela via navegador.",
+                when: "Aulas online ou backup de TV.",
+                level: "Iniciante",
+            },
+            jsrobot: {
+                desc: "Controle um robô com JavaScript.",
+                usage: "Aprender API e lógica JS.",
+                when: "Prática visual de scripts.",
+                level: "Iniciante",
+            },
+            "kahoot!": {
+                desc: "Plataforma de aprendizado baseada em jogos.",
+                usage: "Quizzes interativos (Game-based learning).",
+                when: "Revisão de conteúdo e dinâmicas de grupo.",
+                level: "Iniciante",
+            },
+            "kenney assets": {
+                desc: "Milhares de assets de jogos domínio público.",
+                usage: "Sprites, sons e modelos 3D livres.",
+                when: "Prototipar jogos sem criar arte do zero.",
+                level: "Iniciante",
+            },
+            "khan academy": {
+                desc: "Plataforma de educação gratuita.",
+                usage: "Aulas de matemática e programação.",
+                when: "Reforço e aprendizado autodidata.",
+                level: "Iniciante",
+            },
+            "kodu gamelab": {
+                desc: "Programação visual 3D da Microsoft.",
+                usage: "Criar mundos e jogos 3D.",
+                when: "Crianças criando primeiros jogos 3D.",
+                level: "Iniciante",
+            },
+            leetcode: {
+                desc: "Plataforma líder em preparação técnica.",
+                usage: "Problemas de algoritmos complexos.",
+                when: "Estudo para grandes empresas tech.",
+                level: "Avançado",
+            },
+            "lorem picsum": {
+                desc: "Gerador de imagens placeholder.",
+                usage: "URLs com fotos aleatõrias.",
+                when: "Preencher sites/jogos com imagens de teste.",
+                level: "Iniciante",
+            },
+            monkeytype: {
+                desc: "Teste de velocidade de digitação.",
+                usage: "Medir e melhorar WPM.",
+                when: "Treinar digitação rápida.",
+                level: "Iniciante",
+            },
+            "ml for kids": {
+                desc: "Ferramenta para ensinar IA.",
+                usage: "Treinar modelos de aprendizado de máquina.",
+                when: "Entender como computadores aprendem.",
+                level: "Iniciante",
+            },
+            "quick, draw!": {
+                desc: "Jogo de desenho com IA do Google.",
+                usage: "Desenhar objects para a IA adivinhar.",
+                when: "Entender como redes neurais reconhecem padrões.",
+                level: "Iniciante",
+            },
+            "teachable machine": {
+                desc: "Treine IA sem programar.",
+                usage: "Criar modelos de imagem, som ou pose.",
+                when: "Projetos práticos de inteligência artificial.",
+                level: "Iniciante",
+            },
+            "makecode arcade": {
+                desc: "Criador de jogos retrô da Microsoft.",
+                usage: "Jogos estilo arcade com blocos.",
+                when: "Hardware educacional e jogos 8-bit.",
+                level: "Iniciante",
+            },
+            "makecode microbit": {
+                desc: "Editor para BBC Micro:bit.",
+                usage: "Programar a placa Micro:bit.",
+                when: "Projetos físicos e wearables.",
+                level: "Iniciante",
+            },
+            mongodb: {
+                desc: "Banco de dados orientado a documentos.",
+                usage: "Armazenar dados em formato JSON.",
+                when: "Aplicações modernas e flexíveis.",
+                level: "Intermediário",
+            },
+            "node.js": {
+                desc: "Ambiente de execução JavaScript.",
+                usage: "Rodar JS fora do navegador.",
+                when: "Backend, APIs e scripts.",
+                level: "Intermediário",
+            },
+            opengameart: {
+                desc: "Repositório de arte livre para jogos.",
+                usage: "Baixar sprites, músicas e texturas.",
+                when: "Encontrar assets específicos feitos pela comunidade.",
+                level: "Iniciante",
+            },
+            photopea: {
+                desc: "Editor de imagens online avançado (Estilo Photoshop).",
+                usage: "Editar fotos, criar sprites e assets.",
+                when: "Design profissional gratuito no navegador.",
+                level: "Intermediário",
+            },
+            "programiz (python)": {
+                desc: "Compilador Python online sem cadastro.",
+                usage: "Rodar scripts Python na hora.",
+                when: "Testes rápidos sem conta ou instalação.",
+                level: "Iniciante",
+            },
+            piskel: {
+                desc: "Editor de sprites e pixel art.",
+                usage: "Criar arte para jogos 2D.",
+                when: "Desenhando personagens e cenários.",
+                level: "Iniciante",
+            },
+            python: {
+                desc: "Linguagem poderosa e legível.",
+                usage: "Data Science, Web, Automação.",
+                when: "Quase tudo! Ótima para começar.",
+                level: "Iniciante",
+            },
+            reactjs: {
+                desc: "Biblioteca JS do Facebook.",
+                usage: "Criar interfaces de usuário (UI).",
+                when: "Single Page Applications modernas.",
+                level: "Avançado",
+            },
+            replit: {
+                desc: "IDE colaborativa no navegador.",
+                usage: "Codar em 50+ linguagens online.",
+                when: "Sem acesso a editor local.",
+                level: "Iniciante",
+            },
+            strawpoll: {
+                desc: "Crie votações instantâneas.",
+                usage: "Enquetes rápidas sem cadastro.",
+                when: "Eleições e decisões em grupo.",
+                level: "Iniciante",
+            },
+            "roblox studio": {
+                desc: "Ferramenta de criação do Roblox.",
+                usage: "Criar jogos com Lua.",
+                when: "Publicar para milhões de jogadores.",
+                level: "Intermediário",
+            },
+            scratch: {
+                desc: "Comunidade de programação criativa.",
+                usage: "Criar histórias e jogos com blocos.",
+                when: "O ponto de partida da programação.",
+                level: "Iniciante",
+            },
+            "scratch 3.0": {
+                desc: "Versão mais atual do Scratch.",
+                usage: "Mesma funcionalidade, nova interface.",
+                when: "Padrão para ensino infantil.",
+                level: "Iniciante",
+            },
+            "select star sql": {
+                desc: "Aprendizado interativo de SQL.",
+                usage: "Executar queries em dados reais.",
+                when: "Entender banco de dados na prática.",
+                level: "Iniciante",
+            },
+            sqlbolt: {
+                desc: "Série de lições interativas de SQL.",
+                usage: "Exercícios passo-a-passo.",
+                when: "Aprender sintaxe SQL do zero.",
+                level: "Iniciante",
+            },
+            "sql murder mystery": {
+                desc: "Jogo de mistério policial.",
+                usage: "Usar SQL para achar o assassino.",
+                when: "Praticar SQL de forma divertida.",
+                level: "Intermediário",
+            },
+            sqlzoo: {
+                desc: "Wiki e tutoriais de SQL.",
+                usage: "Referência e quizzes.",
+                when: "Consultas rápidas e testes.",
+                level: "Iniciante",
+            },
+            stackblitz: {
+                desc: "IDE online para Web Dev.",
+                usage: "Projetos Node/Angular/React instantâneos.",
+                when: "Prototipar projetos Fullstack.",
+                level: "Intermediário",
+            },
+            tailwindcss: {
+                desc: "Framework CSS utilitário.",
+                usage: "Estilar direto no HTML.",
+                when: "Produtividade e design customizado.",
+                level: "Intermediário",
+            },
+            tinkercad: {
+                desc: "App web de design 3D e circuitos.",
+                usage: "Modelar 3D e simular Arduino.",
+                when: "Impressão 3D e eletrônica básica.",
+                level: "Iniciante",
+            },
+            unity: {
+                desc: "Plataforma de desenvolvimento 3D/2D.",
+                usage: "Criar jogos e simulações profissionais.",
+                when: "Projetos ambiciosos multiplataforma.",
+                level: "Avançado",
+            },
+            "unreal engine": {
+                desc: "Ferramenta de criação 3D em tempo real.",
+                usage: "Gráficos fotorrealistas.",
+                when: "Jogos AAA e produção virtual.",
+                level: "Avançado",
+            },
+            "vs code": {
+                desc: "O editor de código mais popular.",
+                usage: "Escrever e debugar código.",
+                when: "Desenvolvimento profissional diário.",
+                level: "Iniciante",
+            },
+            w3schools: {
+                desc: "Maior site de desenvolvedores web.",
+                usage: "Tutoriais e referências.",
+                when: "Dúvidas de sintaxe e exemplos.",
+                level: "Iniciante",
+            },
+            "wheel of names": {
+                desc: "Roleta aleatória personalizável.",
+                usage: "Sorteios visuais divertidos.",
+                when: "Escolher alunos ou prêmios.",
+                level: "Iniciante",
+            },
+            "My Instants": {
+                desc: "Myinstants é onde você descobre botões de sons divertidos em Brasil. DIVIRTA-SE!",
+                usage: "Coletar sons.",
+                when: "Colocar sons em jogos",
+                level: "Iniciante",
+            },
         };
 
         function filterTools() {
             let hasResult = false;
 
-            cards.forEach(card => {
-                const name = card.querySelector('.tool-name').textContent.toLowerCase().trim();
-                const category = card.getAttribute('data-category') || 'todos';
+            cards.forEach((card) => {
+                const name = card
+                    .querySelector(".tool-name")
+                    .textContent.toLowerCase()
+                    .trim();
+                const category = card.getAttribute("data-category") || "todos";
 
                 const matchesSearch = name.includes(currentSearch);
-                const matchesCategory = currentCategory === 'todos' || category === currentCategory;
+                const matchesCategory =
+                    currentCategory === "todos" || category === currentCategory;
 
                 if (matchesSearch && matchesCategory) {
-                    card.style.display = 'flex';
+                    card.style.display = "flex";
                     hasResult = true;
                 } else {
-                    card.style.display = 'none';
+                    card.style.display = "none";
                 }
             });
 
-            hasResult ? noResults.classList.add('hidden') : noResults.classList.remove('hidden');
+            hasResult
+                ? noResults.classList.add("hidden")
+                : noResults.classList.remove("hidden");
         }
 
-        searchInput.addEventListener('input', (e) => {
+        searchInput.addEventListener("input", (e) => {
             currentSearch = e.target.value.toLowerCase().trim();
             filterTools();
         });
 
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
+        filterBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
                 // Update buttons UI
-                filterBtns.forEach(b => {
-                    b.classList.remove('bg-ctrl-blue', 'text-white');
-                    b.classList.add('bg-white', 'text-ctrl-blue');
+                filterBtns.forEach((b) => {
+                    b.classList.remove("bg-ctrl-blue", "text-white");
+                    b.classList.add("bg-white", "text-ctrl-blue");
                 });
-                btn.classList.remove('bg-white', 'text-ctrl-blue');
-                btn.classList.add('bg-ctrl-blue', 'text-white');
+                btn.classList.remove("bg-white", "text-ctrl-blue");
+                btn.classList.add("bg-ctrl-blue", "text-white");
 
                 // Update Logic
-                currentCategory = btn.getAttribute('data-filter');
+                currentCategory = btn.getAttribute("data-filter");
                 filterTools();
             });
         });
 
         // Tooltip Logic
-        cards.forEach(card => {
-            card.addEventListener('mouseenter', (e) => {
-                const nameKey = card.querySelector('.tool-name').textContent.toLowerCase().trim();
+        cards.forEach((card) => {
+            card.addEventListener("mouseenter", (e) => {
+                const nameKey = card
+                    .querySelector(".tool-name")
+                    .textContent.toLowerCase()
+                    .trim();
                 const data = toolData[nameKey];
 
                 if (data) {
                     tooltipTimeout = setTimeout(() => {
                         // Populate Data
-                        ttTitle.textContent = card.querySelector('.tool-name').textContent;
+                        ttTitle.textContent =
+                            card.querySelector(".tool-name").textContent;
                         ttDesc.textContent = data.desc;
                         ttUsage.textContent = data.usage;
                         ttWhen.textContent = data.when;
 
                         // Level customization
                         ttLevel.textContent = data.level;
-                        ttLevel.className = `inline-block px-3 py-1 rounded-full text-[10px] font-bold text-white tracking-wide shadow-sm ${levelColors[data.level] || 'bg-gray-500'}`;
+                        ttLevel.className = `inline-block px-3 py-1 rounded-full text-[10px] font-bold text-white tracking-wide shadow-sm ${levelColors[data.level] || "bg-gray-500"
+                            }`;
 
                         // Position Code
                         // Get coordinates relative to viewport
                         const rect = card.getBoundingClientRect();
 
                         // Calculate position (centered above the card initially, but follows mouse usually better for implementation simplicity)
-                        // User asked "when hover over item", let's make it follow mouse or stick to card. 
+                        // User asked "when hover over item", let's make it follow mouse or stick to card.
                         // Mouse follow is easier with global event, but for simplicity let's do mouse position on enter
 
                         // We will use mousemove to update position, initialized here though.
-                        tooltip.classList.remove('hidden');
+                        tooltip.classList.remove("hidden");
 
                         // Small start delay for opacity transition to trigger
                         requestAnimationFrame(() => {
-                            tooltip.classList.remove('opacity-0');
+                            tooltip.classList.remove("opacity-0");
                         });
                     }, 500); // 0.5s delay
                 }
             });
 
-            card.addEventListener('mousemove', (e) => {
-                if (!tooltip.classList.contains('hidden')) {
+            card.addEventListener("mousemove", (e) => {
+                if (!tooltip.classList.contains("hidden")) {
                     const x = e.clientX + 15;
                     const y = e.clientY + 15;
 
                     // Prevent overflow right
                     if (x + 320 > window.innerWidth) {
-                        tooltip.style.left = (e.clientX - 335) + 'px';
+                        tooltip.style.left = e.clientX - 335 + "px";
                     } else {
-                        tooltip.style.left = x + 'px';
+                        tooltip.style.left = x + "px";
                     }
 
                     // Prevent overflow bottom
                     if (y + 180 > window.innerHeight) {
-                        tooltip.style.top = (e.clientY - 195) + 'px';
+                        tooltip.style.top = e.clientY - 195 + "px";
                     } else {
-                        tooltip.style.top = y + 'px';
+                        tooltip.style.top = y + "px";
                     }
                 }
             });
 
-            card.addEventListener('mouseleave', () => {
+            card.addEventListener("mouseleave", () => {
                 clearTimeout(tooltipTimeout);
-                tooltip.classList.add('opacity-0');
+                tooltip.classList.add("opacity-0");
                 setTimeout(() => {
-                    tooltip.classList.add('hidden');
+                    tooltip.classList.add("hidden");
                 }, 200); // Wait for transition
             });
         });
 
         // Back to Top Logic
-        const backToTopBtn = document.getElementById('backToTop');
+        const backToTopBtn = document.getElementById("backToTop");
 
-        window.addEventListener('scroll', () => {
+        window.addEventListener("scroll", () => {
             if (window.scrollY > 300) {
-                backToTopBtn.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+                backToTopBtn.classList.remove(
+                    "translate-y-20",
+                    "opacity-0",
+                    "pointer-events-none"
+                );
             } else {
-                backToTopBtn.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+                backToTopBtn.classList.add(
+                    "translate-y-20",
+                    "opacity-0",
+                    "pointer-events-none"
+                );
             }
         });
 
-        backToTopBtn.addEventListener('click', () => {
+        backToTopBtn.addEventListener("click", () => {
             window.scrollTo({
                 top: 0,
-                behavior: 'smooth'
+                behavior: "smooth",
             });
         });
 
         // --- NEW FEATURES: Dark Mode, Favorites, Shortcuts ---
 
         // 1. Dark Mode
-        const themeToggle = document.getElementById('themeToggle');
+        const themeToggle = document.getElementById("themeToggle");
         const htmlElement = document.documentElement;
 
         // Check localStorage
-        if (localStorage.getItem('theme') === 'dark') {
-            htmlElement.classList.add('dark');
+        if (localStorage.getItem("theme") === "dark") {
+            htmlElement.classList.add("dark");
         }
 
-        themeToggle.addEventListener('click', () => {
-            htmlElement.classList.toggle('dark');
-            localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
+        themeToggle.addEventListener("click", () => {
+            htmlElement.classList.toggle("dark");
+            localStorage.setItem(
+                "theme",
+                htmlElement.classList.contains("dark") ? "dark" : "light"
+            );
         });
 
         // 2. Favorites System
-        const toolCards = document.querySelectorAll('.tool-card');
-        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        const toolCards = document.querySelectorAll(".tool-card");
+        let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
         function toggleFavorite(e, toolName) {
             e.preventDefault();
             e.stopPropagation();
 
-            const btn = e.target.closest('.favorite-btn');
+            const btn = e.target.closest(".favorite-btn");
 
             if (favorites.includes(toolName)) {
-                favorites = favorites.filter(f => f !== toolName);
-                btn.classList.remove('active');
-                btn.textContent = '☆';
+                favorites = favorites.filter((f) => f !== toolName);
+                btn.classList.remove("active");
+                btn.textContent = "☆";
             } else {
                 favorites.push(toolName);
-                btn.classList.add('active');
-                btn.textContent = '★';
+                btn.classList.add("active");
+                btn.textContent = "★";
             }
 
-            localStorage.setItem('favorites', JSON.stringify(favorites));
+            localStorage.setItem("favorites", JSON.stringify(favorites));
         }
 
         // Initialize Cards with Stars
-        toolCards.forEach(card => {
-            const name = card.querySelector('.tool-name').textContent.trim();
+        toolCards.forEach((card) => {
+            const name = card.querySelector(".tool-name").textContent.trim();
 
             // Create Star
-            const star = document.createElement('div');
-            star.className = 'favorite-btn';
-            star.innerHTML = favorites.includes(name) ? '★' : '☆';
-            if (favorites.includes(name)) star.classList.add('active');
+            const star = document.createElement("div");
+            star.className = "favorite-btn";
+            star.innerHTML = favorites.includes(name) ? "★" : "☆";
+            if (favorites.includes(name)) star.classList.add("active");
 
-            star.addEventListener('click', (e) => toggleFavorite(e, name));
+            star.addEventListener("click", (e) => toggleFavorite(e, name));
 
             // Append relative to card
-            card.style.position = 'relative'; // create styling context
+            card.style.position = "relative"; // create styling context
             card.appendChild(star);
         });
 
         // 3. Shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === '/' && document.activeElement !== searchInput) {
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "/" && document.activeElement !== searchInput) {
                 e.preventDefault();
                 searchInput.focus();
             }
