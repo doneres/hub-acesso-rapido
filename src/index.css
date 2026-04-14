@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer utilities {
+  .bg-dot-pattern {
+    background-image: radial-gradient(circle, #cbd5e1 1.5px, transparent 1.5px);
+    background-size: 32px 32px;
+  }
+  .dark .bg-dot-pattern {
+    background-image: radial-gradient(circle, #1e293b 1.5px, transparent 1.5px);
+    background-size: 32px 32px;
+  }
+  .gradient-border-bottom {
+    border-bottom: 4px solid transparent;
+    border-image: linear-gradient(to right, #0054a6, #00a34e, #f37021, #6c2a81) 1;
+    border-image-slice: 1;
+  }
+}

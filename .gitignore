@@ -1,0 +1,16 @@
+# Dependências
+node_modules/
+
+# Pastas de build
+dist/
+dist-ssr/
+
+# Arquivos de cache do TypeScript
+*.tsbuildinfo
+
+# Pastas de ferramentas de IA / Editores
+.claude/
+.vscode/
+
+# Arquivos de ambiente local
+*.local
