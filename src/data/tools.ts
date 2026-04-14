@@ -476,20 +476,6 @@ export const TOOLS: Tool[] = [
     },
   },
   {
-    id: "my-instants",
-    name: "My Instants",
-    url: "https://www.myinstants.com/pt/index/br/",
-    category: "jogos-design",
-    iconUrl: "https://www.myinstants.com/media/apple-touch-icon-57x57.png",
-    iconBg: "bg-gray-50",
-    tooltip: {
-      desc: "Descubra e compartilhe botões de sons divertidos!",
-      usage: "Coletar efeitos sonoros e músicas.",
-      when: "Adicionar sons e efeitos ao seu jogo.",
-      level: "Iniciante",
-    },
-  },
-  {
     id: "gdevelop",
     name: "GDevelop",
     url: "https://gdevelop.io/",
@@ -1238,7 +1224,8 @@ export const TOOLS: Tool[] = [
     name: "CS50 (Harvard)",
     url: "https://cs50.harvard.edu/x/",
     category: "educacao-logica",
-    iconUrl: "https://www.google.com/s2/favicons?domain=cs50.harvard.edu&sz=128",
+    iconUrl:
+      "https://www.google.com/s2/favicons?domain=cs50.harvard.edu&sz=128",
     iconBg: "bg-red-50",
     tooltip: {
       desc: "O curso de Ciência da Computação mais famoso do mundo.",
@@ -1280,7 +1267,8 @@ export const TOOLS: Tool[] = [
     name: "The Odin Project",
     url: "https://www.theodinproject.com/",
     category: "educacao-logica",
-    iconUrl: "https://www.google.com/s2/favicons?domain=theodinproject.com&sz=128",
+    iconUrl:
+      "https://www.google.com/s2/favicons?domain=theodinproject.com&sz=128",
     iconBg: "bg-gray-50",
     tooltip: {
       desc: "Currículo gratuito e completo de desenvolvimento web.",
@@ -1310,7 +1298,8 @@ export const TOOLS: Tool[] = [
     name: "OpenProcessing",
     url: "https://openprocessing.org/",
     category: "programacao",
-    iconUrl: "https://www.google.com/s2/favicons?domain=openprocessing.org&sz=128",
+    iconUrl:
+      "https://www.google.com/s2/favicons?domain=openprocessing.org&sz=128",
     iconBg: "bg-orange-50",
     tooltip: {
       desc: "Comunidade online de arte criativa com código.",
@@ -1466,7 +1455,8 @@ export const TOOLS: Tool[] = [
     name: "SQL Island",
     url: "https://sql-island.informatik.uni-kl.de/",
     category: "pratica-desafios",
-    iconUrl: "https://www.google.com/s2/favicons?domain=sql-island.informatik.uni-kl.de&sz=128",
+    iconUrl:
+      "https://www.google.com/s2/favicons?domain=sql-island.informatik.uni-kl.de&sz=128",
     iconBg: "bg-green-50",
     tooltip: {
       desc: "Aventura em ilha onde você usa SQL para sobreviver!",
@@ -1480,7 +1470,8 @@ export const TOOLS: Tool[] = [
     name: "Vim Adventures",
     url: "https://vim-adventures.com/",
     category: "pratica-desafios",
-    iconUrl: "https://www.google.com/s2/favicons?domain=vim-adventures.com&sz=128",
+    iconUrl:
+      "https://www.google.com/s2/favicons?domain=vim-adventures.com&sz=128",
     iconBg: "bg-green-50",
     tooltip: {
       desc: "Aprenda a usar o editor Vim jogando um RPG!",
@@ -1510,7 +1501,8 @@ export const TOOLS: Tool[] = [
     name: "AI Experiments",
     url: "https://experiments.withgoogle.com/collection/ai",
     category: "ia",
-    iconUrl: "https://www.google.com/s2/favicons?domain=experiments.withgoogle.com&sz=128",
+    iconUrl:
+      "https://www.google.com/s2/favicons?domain=experiments.withgoogle.com&sz=128",
     iconBg: "bg-blue-50",
     tooltip: {
       desc: "Coleção de experimentos de IA interativos do Google.",
@@ -1524,7 +1516,8 @@ export const TOOLS: Tool[] = [
     name: "Semantris",
     url: "https://research.google.com/semantris/",
     category: "ia",
-    iconUrl: "https://www.google.com/s2/favicons?domain=research.google.com&sz=128",
+    iconUrl:
+      "https://www.google.com/s2/favicons?domain=research.google.com&sz=128",
     iconBg: "bg-indigo-50",
     tooltip: {
       desc: "Jogo de palavras onde a IA entende contexto semântico.",
