@@ -7,7 +7,8 @@ export type Category =
   | 'pratica-desafios'
   | 'dados'
   | 'ia'
-  | 'ferramentas';
+  | 'ferramentas'
+  | 'frameworks';
 
 export type DifficultyLevel = 'Iniciante' | 'Intermediário' | 'Avançado';
 
