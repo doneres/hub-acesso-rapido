@@ -6,14 +6,17 @@ interface CategoryFilterProps {
   active: Category;
   onChange: (category: Category) => void;
   favoritesCount: number;
+  counts: Record<string, number>;
 }
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ active, onChange, favoritesCount }) => {
+const CategoryFilter: React.FC<CategoryFilterProps> = ({ active, onChange, favoritesCount, counts }) => {
   return (
-    <div className="flex flex-wrap justify-center gap-2 mb-8 w-full max-w-5xl mx-auto px-2">
+    <div className="flex flex-wrap justify-center gap-2 mb-4 w-full max-w-5xl mx-auto px-2">
       {CATEGORIES.map((cat: CategoryConfig) => {
         const isActive = active === cat.id;
         const isFavorites = cat.id === 'favoritos';
+        const count = counts[cat.id] ?? 0;
+        const showCount = cat.id !== 'todos' && !isFavorites && count > 0;
 
         return (
           <button
@@ -31,12 +34,24 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ active, onChange, favor
           >
             <span className="text-base leading-none">{cat.emoji}</span>
             <span>{cat.label}</span>
+
+            {/* Favorites count badge */}
             {isFavorites && favoritesCount > 0 && (
               <span className={`
                 ml-0.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-black rounded-full
                 ${isActive ? 'bg-white/30 text-white' : 'bg-amber-500 text-white'}
               `}>
                 {favoritesCount > 9 ? '9+' : favoritesCount}
+              </span>
+            )}
+
+            {/* Tool count */}
+            {showCount && (
+              <span className={`
+                ml-0.5 text-[10px] font-bold tabular-nums
+                ${isActive ? 'opacity-70' : 'text-gray-400 dark:text-slate-500'}
+              `}>
+                {count}
               </span>
             )}
           </button>

@@ -138,6 +138,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
             src={tool.iconUrl}
             alt={tool.name}
             className="w-10 h-10 object-contain"
+            loading="lazy"
             onError={() => setImgError(true)}
           />
         ) : (

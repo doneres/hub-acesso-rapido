@@ -9,7 +9,10 @@ export type Category =
   | 'ia'
   | 'ferramentas'
   | 'frameworks'
-  | 'apis-publicas';
+  | 'apis-publicas'
+  | 'devops'
+  | 'design-prototipacao'
+  | 'bancos-dados';
 
 export type DifficultyLevel = 'Iniciante' | 'Intermediário' | 'Avançado';
 
