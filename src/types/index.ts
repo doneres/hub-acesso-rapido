@@ -8,7 +8,8 @@ export type Category =
   | 'dados'
   | 'ia'
   | 'ferramentas'
-  | 'frameworks';
+  | 'frameworks'
+  | 'apis-publicas';
 
 export type DifficultyLevel = 'Iniciante' | 'Intermediário' | 'Avançado';
 
