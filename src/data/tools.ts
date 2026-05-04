@@ -221,21 +221,6 @@ export const TOOLS: Tool[] = [
     },
   },
   {
-    id: "canva",
-    name: "Canva",
-    url: "https://www.canva.com/",
-    category: "jogos-design",
-    iconUrl:
-      "https://static.canva.com/domain-assets/canva/static/images/favicon-1.ico",
-    iconBg: "bg-blue-50",
-    tooltip: {
-      desc: "Ferramenta de design gráfico online.",
-      usage: "Criar imagens, apresentações e posts.",
-      when: "Design rápido sem softwares pesados.",
-      level: "Iniciante",
-    },
-  },
-  {
     id: "checkio",
     name: "CheckiO",
     url: "https://checkio.org/",
@@ -337,20 +322,6 @@ export const TOOLS: Tool[] = [
     },
   },
   {
-    id: "coolors",
-    name: "Coolors",
-    url: "https://coolors.co/",
-    category: "jogos-design",
-    iconUrl: "https://www.google.com/s2/favicons?domain=coolors.co&sz=128",
-    iconBg: "bg-blue-50",
-    tooltip: {
-      desc: "Gerador de paletas de cores super rápido.",
-      usage: "Criar esquemas de cores harmônicos.",
-      when: "Definir as cores de jogos e sites.",
-      level: "Iniciante",
-    },
-  },
-  {
     id: "css-diner",
     name: "CSS Diner",
     url: "https://flukeout.github.io/",
@@ -393,20 +364,6 @@ export const TOOLS: Tool[] = [
     },
   },
   {
-    id: "excalidraw",
-    name: "Excalidraw",
-    url: "https://excalidraw.com/",
-    category: "ferramentas",
-    iconUrl: "https://excalidraw.com/favicon-32x32.png",
-    iconBg: "bg-purple-50",
-    tooltip: {
-      desc: "Lousa virtual colaborativa com estilo de mão livre.",
-      usage: "Desenhar diagramas e explicar ideias.",
-      when: "Brainstorming e explicações visuais.",
-      level: "Iniciante",
-    },
-  },
-  {
     id: "edabit",
     name: "Edabit",
     url: "https://edabit.com/",
@@ -418,20 +375,6 @@ export const TOOLS: Tool[] = [
       usage: "Memorizar sintaxe e lógica básica.",
       when: "Preencher lacunas de conhecimento.",
       level: "Iniciante",
-    },
-  },
-  {
-    id: "figma",
-    name: "Figma",
-    url: "https://www.figma.com/",
-    category: "jogos-design",
-    iconUrl: "https://static.figma.com/app/icon/1/favicon.ico",
-    iconBg: "bg-gray-50",
-    tooltip: {
-      desc: "Ferramenta colaborativa de design de interface.",
-      usage: "Criar protótipos de sites e apps.",
-      when: "Planejamento visual de projetos web/mobile.",
-      level: "Intermediário",
     },
   },
   {
@@ -574,21 +517,6 @@ export const TOOLS: Tool[] = [
       usage: "Data Science e IA sem instalação.",
       when: "Aulas de IA e Python avançado.",
       level: "Intermediário",
-    },
-  },
-  {
-    id: "google-fonts",
-    name: "Google Fonts",
-    url: "https://fonts.google.com/",
-    category: "ferramentas",
-    iconUrl:
-      "https://www.gstatic.com/images/branding/product/1x/google_fonts_48dp.png",
-    iconBg: "bg-red-50",
-    tooltip: {
-      desc: "Diretório de fontes gratuitas do Google.",
-      usage: "Escolher e usar tipografia bonita em sites.",
-      when: "Customizar o visual de textos do seu projeto.",
-      level: "Iniciante",
     },
   },
   {
@@ -832,20 +760,6 @@ export const TOOLS: Tool[] = [
       usage: "Programar a plaquinha Micro:bit com blocos.",
       when: "Projetos físicos, wearables e IoT educacional.",
       level: "Iniciante",
-    },
-  },
-  {
-    id: "mongodb",
-    name: "MongoDB",
-    url: "https://www.mongodb.com/",
-    category: "dados",
-    iconUrl: "https://www.mongodb.com/assets/images/global/favicon.ico",
-    iconBg: "bg-green-50",
-    tooltip: {
-      desc: "Banco de dados NoSQL orientado a documentos.",
-      usage: "Armazenar dados em formato JSON flexível.",
-      when: "Aplicações modernas e escaláveis.",
-      level: "Intermediário",
     },
   },
   {
@@ -1615,20 +1529,6 @@ export const TOOLS: Tool[] = [
     },
   },
   {
-    id: "unsplash",
-    name: "Unsplash",
-    url: "https://unsplash.com/",
-    category: "jogos-design",
-    iconUrl: "https://unsplash.com/favicon-32x32.png",
-    iconBg: "bg-gray-50",
-    tooltip: {
-      desc: "Banco de fotos de alta qualidade completamente gratuito.",
-      usage: "Baixar fotos profissionais para projetos.",
-      when: "Precisar de imagens reais para sites e apresentações.",
-      level: "Iniciante",
-    },
-  },
-  {
     id: "flaticon",
     name: "Flaticon",
     url: "https://www.flaticon.com/",
@@ -1731,20 +1631,6 @@ export const TOOLS: Tool[] = [
 
   // Ferramentas
   {
-    id: "miro",
-    name: "Miro",
-    url: "https://miro.com/",
-    category: "ferramentas",
-    iconUrl: "https://miro.com/favicon.ico",
-    iconBg: "bg-yellow-50",
-    tooltip: {
-      desc: "Quadro branco colaborativo online e infinito.",
-      usage: "Brainstorming visual, mapas mentais e fluxogramas.",
-      when: "Planejar projetos e ideias em grupo na aula.",
-      level: "Iniciante",
-    },
-  },
-  {
     id: "regex101",
     name: "Regex 101",
     url: "https://regex101.com/",
@@ -1756,20 +1642,6 @@ export const TOOLS: Tool[] = [
       usage: "Construir e debugar regex com explicação em tempo real.",
       when: "Toda vez que precisar criar um padrão de busca regex.",
       level: "Intermediário",
-    },
-  },
-  {
-    id: "carbon",
-    name: "Carbon",
-    url: "https://carbon.now.sh/",
-    category: "ferramentas",
-    iconUrl: "https://www.google.com/s2/favicons?domain=carbon.now.sh&sz=128",
-    iconBg: "bg-gray-50",
-    tooltip: {
-      desc: "Gere imagens bonitas do seu código para compartilhar.",
-      usage: "Criar screenshots elegantes de trechos de código.",
-      when: "Compartilhar código no Instagram ou portfólio.",
-      level: "Iniciante",
     },
   },
   {
