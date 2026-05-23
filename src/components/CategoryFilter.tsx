@@ -1,9 +1,10 @@
 import React from 'react';
 import {
-  Sparkles, Star, Clock, Flame,
+  Sparkles, Star, Clock, Flame, Zap,
   Gamepad2, Code2, BookOpen, Trophy,
   BarChart2, Bot, Wrench, Puzzle,
   Globe, Rocket, Palette, Database,
+  FlaskConical, Shield,
   type LucideIcon,
 } from 'lucide-react';
 import { Category, CategoryConfig } from '../types';
@@ -15,6 +16,7 @@ const ICONS: Record<string, LucideIcon> = {
   favoritos:           Star,
   recentes:            Clock,
   populares:           Flame,
+  novos:               Zap,
   'jogos-design':      Gamepad2,
   programacao:         Code2,
   'educacao-logica':   BookOpen,
@@ -27,13 +29,15 @@ const ICONS: Record<string, LucideIcon> = {
   devops:              Rocket,
   'design-prototipacao': Palette,
   'bancos-dados':      Database,
+  testes:              FlaskConical,
+  seguranca:           Shield,
 };
 
 /** Categorias virtuais que ficam ocultas enquanto o count for zero */
-const HIDE_WHEN_EMPTY = new Set(['recentes', 'populares']);
+const HIDE_WHEN_EMPTY = new Set(['recentes', 'populares', 'novos']);
 
 /** Categorias virtuais que exibem badge de contagem (como favoritos) */
-const BADGE_CATS = new Set(['favoritos', 'recentes', 'populares']);
+const BADGE_CATS = new Set(['favoritos', 'recentes', 'populares', 'novos']);
 
 interface CategoryFilterProps {
   active: Category;
@@ -61,6 +65,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ active, onChange, count
           cat.id === 'favoritos' ? (isActive ? 'bg-white/30 text-white' : 'bg-amber-500 text-white') :
           cat.id === 'recentes'  ? (isActive ? 'bg-white/30 text-white' : 'bg-slate-500 text-white') :
           cat.id === 'populares' ? (isActive ? 'bg-white/30 text-white' : 'bg-rose-500 text-white') :
+          cat.id === 'novos'     ? (isActive ? 'bg-white/30 text-white' : 'bg-emerald-500 text-white') :
           '';
 
         return (

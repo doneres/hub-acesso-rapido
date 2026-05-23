@@ -107,6 +107,13 @@ const ToolCard: React.FC<ToolCardProps> = ({
           <span className="text-base font-black uppercase text-center leading-tight" style={{ color: accentColor }}>
             <HighlightText text={tool.name} query={searchQuery} />
           </span>
+
+          {/* Badge Novo */}
+          {tool.isNew && (
+            <div className="absolute bottom-2 left-2 bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+              ✦ novo
+            </div>
+          )}
         </a>
       </div>
     );
@@ -182,6 +189,13 @@ const ToolCard: React.FC<ToolCardProps> = ({
         <span className="text-sm font-bold text-ctrl-blue dark:text-blue-300 uppercase text-center leading-tight line-clamp-2 px-1">
           <HighlightText text={tool.name} query={searchQuery} />
         </span>
+
+        {/* Badge Novo */}
+        {tool.isNew && (
+          <div className="absolute bottom-2 left-2 bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+            ✦ novo
+          </div>
+        )}
       </a>
     </div>
   );

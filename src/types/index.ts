@@ -3,6 +3,7 @@ export type Category =
   | 'favoritos'
   | 'recentes'
   | 'populares'
+  | 'novos'
   | 'jogos-design'
   | 'programacao'
   | 'educacao-logica'
@@ -14,7 +15,9 @@ export type Category =
   | 'apis-publicas'
   | 'devops'
   | 'design-prototipacao'
-  | 'bancos-dados';
+  | 'bancos-dados'
+  | 'testes'
+  | 'seguranca';
 
 export type DifficultyLevel = 'Iniciante' | 'Intermediário' | 'Avançado';
 
@@ -39,9 +42,10 @@ export interface Tool {
   id: string;
   name: string;
   url: string;
-  category: Exclude<Category, 'todos' | 'favoritos' | 'recentes' | 'populares'>;
+  category: Exclude<Category, 'todos' | 'favoritos' | 'recentes' | 'populares' | 'novos'>;
   iconUrl: string;
   iconBg: string;
+  isNew?: boolean;
   pinned?: PinnedConfig;
   tooltip: ToolTooltip;
 }

@@ -72,6 +72,11 @@ const ToolListItem: React.FC<ToolListItemProps> = ({
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${levelStyle}`}>
               {tool.tooltip.level}
             </span>
+            {tool.isNew && (
+              <span className="text-[9px] font-black px-2 py-0.5 rounded-full shrink-0 bg-emerald-500 text-white uppercase tracking-wide">
+                ✦ novo
+              </span>
+            )}
           </div>
           <p className="text-xs text-gray-500 dark:text-slate-400 line-clamp-1">
             <HighlightText text={tool.tooltip.desc} query={searchQuery} />

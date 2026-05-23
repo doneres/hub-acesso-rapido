@@ -23,7 +23,7 @@ import { SkeletonGrid, SkeletonList } from './components/SkeletonCard';
 /* ── Constantes ──────────────────────────────────────────────────────────── */
 
 const VALID_CATEGORY_IDS = CATEGORIES.map(c => c.id);
-const VIRTUAL_CATEGORIES = new Set(['todos', 'favoritos', 'recentes', 'populares']);
+const VIRTUAL_CATEGORIES = new Set(['todos', 'favoritos', 'recentes', 'populares', 'novos']);
 
 const LEVELS: (DifficultyLevel | 'todos')[] = ['todos', 'Iniciante', 'Intermediário', 'Avançado'];
 
@@ -121,6 +121,7 @@ const App: React.FC = () => {
         activeCategory === 'favoritos' ? isFavorite(tool.id) :
         activeCategory === 'recentes'  ? recentIds.includes(tool.id) :
         activeCategory === 'populares' ? popularIds.includes(tool.id) :
+        activeCategory === 'novos'     ? tool.isNew === true :
         tool.category === activeCategory;
 
       const matchesLevel = levelFilter === 'todos' || tool.tooltip.level === levelFilter;
@@ -151,6 +152,7 @@ const App: React.FC = () => {
       favoritos: favorites.length,
       recentes:  recentIds.length,
       populares: hasEnoughData ? popularIds.length : 0,
+      novos:     TOOLS.filter(t => t.isNew).length,
     };
     CATEGORIES.forEach(cat => {
       if (!VIRTUAL_CATEGORIES.has(cat.id)) {
@@ -217,6 +219,7 @@ const App: React.FC = () => {
       activeCategory === 'todos'     ? TOOLS :
       activeCategory === 'recentes'  ? sortedTools :
       activeCategory === 'populares' ? sortedTools :
+      activeCategory === 'novos'     ? TOOLS.filter(t => t.isNew) :
       TOOLS.filter(t => t.category === activeCategory);
 
     if (pool.length === 0) return;
@@ -377,12 +380,14 @@ const App: React.FC = () => {
               {activeCategory === 'favoritos' ? '💔' :
                activeCategory === 'recentes'  ? '🕐' :
                activeCategory === 'populares' ? '🔥' :
+               activeCategory === 'novos'     ? '✨' :
                searchQuery ? '🔍' : '📭'}
             </div>
             <h3 className="text-xl font-bold text-gray-500 dark:text-slate-400 mb-2">
               {activeCategory === 'favoritos' ? 'Nenhum favorito ainda' :
                activeCategory === 'recentes'  ? 'Nenhuma ferramenta recente' :
                activeCategory === 'populares' ? 'Nenhuma ferramenta popular ainda' :
+               activeCategory === 'novos'     ? 'Nenhuma ferramenta nova' :
                'Nada encontrado aqui'}
             </h3>
             <p className="text-gray-400 dark:text-slate-500 text-sm mb-5 max-w-xs">
@@ -392,6 +397,8 @@ const App: React.FC = () => {
                 ? 'Abra algumas ferramentas e elas aparecerão aqui.'
                : activeCategory === 'populares'
                 ? 'Conforme você usa as ferramentas, as mais acessadas aparecerão aqui.'
+               : activeCategory === 'novos'
+                ? 'Novas ferramentas aparecerão aqui quando forem adicionadas.'
                : searchQuery
                 ? `Não encontramos "${searchQuery}" nessa categoria.`
                 : 'Nenhuma ferramenta com este nível de dificuldade aqui.'}
