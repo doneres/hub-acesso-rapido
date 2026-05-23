@@ -9,6 +9,18 @@ export const CATEGORIES: CategoryConfig[] = [
     activeColor: "bg-amber-500",
   },
   {
+    id: "recentes",
+    label: "Recentes",
+    emoji: "🕐",
+    activeColor: "bg-slate-600",
+  },
+  {
+    id: "populares",
+    label: "Populares",
+    emoji: "🔥",
+    activeColor: "bg-rose-500",
+  },
+  {
     id: "jogos-design",
     label: "Jogos & Design",
     emoji: "🎮",

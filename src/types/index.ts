@@ -1,6 +1,8 @@
 export type Category =
   | 'todos'
   | 'favoritos'
+  | 'recentes'
+  | 'populares'
   | 'jogos-design'
   | 'programacao'
   | 'educacao-logica'
@@ -15,6 +17,8 @@ export type Category =
   | 'bancos-dados';
 
 export type DifficultyLevel = 'Iniciante' | 'Intermediário' | 'Avançado';
+
+export type SortOption = 'default' | 'az' | 'za' | 'level-asc' | 'level-desc';
 
 export interface ToolTooltip {
   desc: string;
@@ -33,7 +37,7 @@ export interface Tool {
   id: string;
   name: string;
   url: string;
-  category: Exclude<Category, 'todos' | 'favoritos'>;
+  category: Exclude<Category, 'todos' | 'favoritos' | 'recentes' | 'populares'>;
   iconUrl: string;
   iconBg: string;
   pinned?: PinnedConfig;

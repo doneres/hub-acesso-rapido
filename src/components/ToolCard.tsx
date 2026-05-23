@@ -8,6 +8,10 @@ interface ToolCardProps {
   onMouseEnter: (tool: Tool) => void;
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseLeave: () => void;
+  /** Chamado em dispositivos desktop ao clicar (apenas tracking — a navegação fica com o <a>) */
+  onTrack?: (tool: Tool) => void;
+  /** Se fornecido, intercepta o clique no mobile e exibe o modal em vez de navegar */
+  onCardClick?: (tool: Tool) => void;
 }
 
 const ToolCard: React.FC<ToolCardProps> = ({
@@ -17,6 +21,8 @@ const ToolCard: React.FC<ToolCardProps> = ({
   onMouseEnter,
   onMouseMove,
   onMouseLeave,
+  onTrack,
+  onCardClick,
 }) => {
   const [imgError, setImgError] = useState(false);
 
@@ -26,7 +32,16 @@ const ToolCard: React.FC<ToolCardProps> = ({
     onToggleFavorite(tool.id);
   };
 
-  // Pinned card
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (onCardClick) {
+      e.preventDefault();
+      onCardClick(tool);
+    } else {
+      onTrack?.(tool);
+    }
+  };
+
+  /* ── Card Destaque (pinned) ─────────────────────────────────────────────── */
   if (tool.pinned) {
     const { accentColor, gradientFrom } = tool.pinned;
     return (
@@ -34,6 +49,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
         href={tool.url}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={handleCardClick}
         className={`
           relative group flex flex-col items-center justify-center
           bg-gradient-to-br ${gradientFrom} to-white dark:from-slate-800 dark:to-slate-900
@@ -55,7 +71,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
           {tool.pinned.badgeText ?? 'Destaque'}
         </div>
 
-        {/* Favorite */}
+        {/* Favorito */}
         <button
           onClick={handleFavoriteClick}
           className={`absolute top-2 left-2 w-7 h-7 flex items-center justify-center rounded-full transition-all duration-200 z-10
@@ -70,7 +86,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
           </svg>
         </button>
 
-        {/* Icon */}
+        {/* Ícone */}
         <div className="w-16 h-16 flex items-center justify-center bg-white dark:bg-slate-700 rounded-full mb-3 shadow-md group-hover:scale-110 transition-transform duration-300">
           {!imgError ? (
             <img
@@ -84,23 +100,21 @@ const ToolCard: React.FC<ToolCardProps> = ({
           )}
         </div>
 
-        {/* Name */}
-        <span
-          className="text-base font-black uppercase text-center leading-tight"
-          style={{ color: accentColor }}
-        >
+        {/* Nome */}
+        <span className="text-base font-black uppercase text-center leading-tight" style={{ color: accentColor }}>
           {tool.name}
         </span>
       </a>
     );
   }
 
-  // Regular card
+  /* ── Card Normal ────────────────────────────────────────────────────────── */
   return (
     <a
       href={tool.url}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleCardClick}
       className="
         relative group flex flex-col items-center justify-center
         bg-white dark:bg-slate-800
@@ -116,7 +130,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >
-      {/* Favorite button */}
+      {/* Favorito */}
       <button
         onClick={handleFavoriteClick}
         className={`absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full transition-all duration-200 z-10
@@ -131,7 +145,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
         </svg>
       </button>
 
-      {/* Icon container */}
+      {/* Ícone */}
       <div className={`w-16 h-16 flex items-center justify-center ${tool.iconBg} dark:bg-slate-700 rounded-full mb-3 group-hover:scale-110 transition-transform duration-300`}>
         {!imgError ? (
           <img
@@ -146,7 +160,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
         )}
       </div>
 
-      {/* Name */}
+      {/* Nome */}
       <span className="text-sm font-bold text-ctrl-blue dark:text-blue-300 uppercase text-center leading-tight line-clamp-2 px-1">
         {tool.name}
       </span>
