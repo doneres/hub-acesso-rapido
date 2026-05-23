@@ -13,6 +13,24 @@
 }
 
 @layer utilities {
+  .shimmer-bg {
+    background: linear-gradient(
+      90deg,
+      theme('colors.gray.100') 25%,
+      theme('colors.gray.200') 50%,
+      theme('colors.gray.100') 75%
+    );
+    background-size: 200% 100%;
+  }
+  .dark .shimmer-bg {
+    background: linear-gradient(
+      90deg,
+      theme('colors.slate.700') 25%,
+      theme('colors.slate.600') 50%,
+      theme('colors.slate.700') 75%
+    );
+    background-size: 200% 100%;
+  }
   .bg-dot-pattern {
     background-image: radial-gradient(circle, #cbd5e1 1.5px, transparent 1.5px);
     background-size: 32px 32px;

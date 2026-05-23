@@ -1,12 +1,39 @@
 import React from 'react';
+import {
+  Sparkles, Star, Clock, Flame,
+  Gamepad2, Code2, BookOpen, Trophy,
+  BarChart2, Bot, Wrench, Puzzle,
+  Globe, Rocket, Palette, Database,
+  type LucideIcon,
+} from 'lucide-react';
 import { Category, CategoryConfig } from '../types';
 import { CATEGORIES } from '../data/tools';
 
-/** Categorias virtuais que mostram badge de contagem igual a "Favoritos" */
-const BADGE_CATS = new Set(['favoritos', 'recentes', 'populares']);
+/* ── Mapeamento de ícones por categoria ────────────────────────────────── */
+const ICONS: Record<string, LucideIcon> = {
+  todos:               Sparkles,
+  favoritos:           Star,
+  recentes:            Clock,
+  populares:           Flame,
+  'jogos-design':      Gamepad2,
+  programacao:         Code2,
+  'educacao-logica':   BookOpen,
+  'pratica-desafios':  Trophy,
+  dados:               BarChart2,
+  ia:                  Bot,
+  ferramentas:         Wrench,
+  frameworks:          Puzzle,
+  'apis-publicas':     Globe,
+  devops:              Rocket,
+  'design-prototipacao': Palette,
+  'bancos-dados':      Database,
+};
 
-/** Categorias virtuais que ficam ocultas enquanto estiverem vazias */
+/** Categorias virtuais que ficam ocultas enquanto o count for zero */
 const HIDE_WHEN_EMPTY = new Set(['recentes', 'populares']);
+
+/** Categorias virtuais que exibem badge de contagem (como favoritos) */
+const BADGE_CATS = new Set(['favoritos', 'recentes', 'populares']);
 
 interface CategoryFilterProps {
   active: Category;
@@ -20,13 +47,15 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ active, onChange, count
       {CATEGORIES.map((cat: CategoryConfig) => {
         const count = counts[cat.id] ?? 0;
 
-        // Esconde "Recentes" e "Populares" quando não há itens
+        // Esconde recentes/populares quando vazios
         if (HIDE_WHEN_EMPTY.has(cat.id) && count === 0) return null;
 
-        const isActive = active === cat.id;
-        const isBadgeCat = BADGE_CATS.has(cat.id);
-        const showNumber = cat.id !== 'todos' && !isBadgeCat && count > 0;
-        const showBadge = isBadgeCat && count > 0;
+        const isActive    = active === cat.id;
+        const isBadgeCat  = BADGE_CATS.has(cat.id);
+        const showNumber  = cat.id !== 'todos' && !isBadgeCat && count > 0;
+        const showBadge   = isBadgeCat && count > 0;
+
+        const Icon = ICONS[cat.id];
 
         const badgeColor =
           cat.id === 'favoritos' ? (isActive ? 'bg-white/30 text-white' : 'bg-amber-500 text-white') :
@@ -48,10 +77,10 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ active, onChange, count
               }
             `}
           >
-            <span className="text-base leading-none">{cat.emoji}</span>
+            {Icon && <Icon className="w-3.5 h-3.5 shrink-0" strokeWidth={2.2} />}
             <span>{cat.label}</span>
 
-            {/* Badge de contagem para categorias virtuais */}
+            {/* Badge de contagem (favoritos / recentes / populares) */}
             {showBadge && (
               <span className={`ml-0.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-black rounded-full ${badgeColor}`}>
                 {count > 9 ? '9+' : count}

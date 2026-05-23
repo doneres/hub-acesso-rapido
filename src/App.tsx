@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { Shuffle, LayoutGrid, LayoutList, ArrowUpDown } from 'lucide-react';
 import { Category, DifficultyLevel, SortOption, Tool } from './types';
 import { TOOLS, CATEGORIES } from './data/tools';
 import { useTheme } from './hooks/useTheme';
@@ -6,14 +7,18 @@ import { useFavorites } from './hooks/useFavorites';
 import { useTooltip } from './hooks/useTooltip';
 import { useRecentTools } from './hooks/useRecentTools';
 import { usePopularTools } from './hooks/usePopularTools';
+import { useViewMode } from './hooks/useViewMode';
 import Header from './components/Header';
 import SearchBar from './components/SearchBar';
 import CategoryFilter from './components/CategoryFilter';
 import ToolCard from './components/ToolCard';
+import ToolListItem from './components/ToolListItem';
 import Tooltip from './components/Tooltip';
 import BackToTop from './components/BackToTop';
 import Footer from './components/Footer';
 import MobileToolModal from './components/MobileToolModal';
+import Toast from './components/Toast';
+import { SkeletonGrid, SkeletonList } from './components/SkeletonCard';
 
 /* ── Constantes ──────────────────────────────────────────────────────────── */
 
@@ -35,13 +40,9 @@ const LEVEL_ORDER: Record<DifficultyLevel, number> = {
   Avançado: 2,
 };
 
-/* ── Detecção de toque ───────────────────────────────────────────────────── */
 function detectTouchDevice() {
-  try {
-    return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-  } catch {
-    return false;
-  }
+  try { return window.matchMedia('(hover: none) and (pointer: coarse)').matches; }
+  catch { return false; }
 }
 
 /* ── App ─────────────────────────────────────────────────────────────────── */
@@ -52,6 +53,7 @@ const App: React.FC = () => {
   const { tooltipState, handleMouseEnter, handleMouseMove, handleMouseLeave } = useTooltip();
   const { recentIds, addRecent } = useRecentTools();
   const { trackClick, popularIds, hasEnoughData } = usePopularTools();
+  const { mode: viewMode, toggleMode: toggleViewMode } = useViewMode();
 
   /* Estado da URL */
   const [searchQuery, setSearchQuery] = useState(() =>
@@ -69,7 +71,14 @@ const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isTouchDevice = useMemo(detectTouchDevice, []);
 
-  /* ── Sincronização com URL ─────────────────────────────────────────────── */
+  /* Toast (cópia de link) */
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState('Link copiado! ✓');
+
+  /* Skeleton de transição de categoria */
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  /* ── URL sync ─────────────────────────────────────────────────────────── */
   useEffect(() => {
     const params = new URLSearchParams();
     if (activeCategory !== 'todos' && !VIRTUAL_CATEGORIES.has(activeCategory)) {
@@ -83,7 +92,7 @@ const App: React.FC = () => {
     );
   }, [activeCategory, searchQuery]);
 
-  /* ── Escape: reseta filtros quando a busca já está vazia ─────────────── */
+  /* ── Escape: reseta filtros quando busca está vazia ───────────────────── */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !searchQuery) {
@@ -96,11 +105,10 @@ const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handler);
   }, [searchQuery]);
 
-  /* ── Filtragem (busca expandida + categoria + nível) ─────────────────── */
+  /* ── Filtragem expandida ──────────────────────────────────────────────── */
   const filteredTools = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     return TOOLS.filter(tool => {
-      // Busca em nome + tooltip completo
       const matchesSearch = !q || [
         tool.name,
         tool.tooltip.desc,
@@ -125,32 +133,23 @@ const App: React.FC = () => {
   const sortedTools = useMemo(() => {
     const tools = [...filteredTools];
     switch (sortOption) {
-      case 'az':
-        return tools.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
-      case 'za':
-        return tools.sort((a, b) => b.name.localeCompare(a.name, 'pt-BR'));
-      case 'level-asc':
-        return tools.sort((a, b) => LEVEL_ORDER[a.tooltip.level] - LEVEL_ORDER[b.tooltip.level]);
-      case 'level-desc':
-        return tools.sort((a, b) => LEVEL_ORDER[b.tooltip.level] - LEVEL_ORDER[a.tooltip.level]);
+      case 'az':         return tools.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+      case 'za':         return tools.sort((a, b) => b.name.localeCompare(a.name, 'pt-BR'));
+      case 'level-asc':  return tools.sort((a, b) => LEVEL_ORDER[a.tooltip.level] - LEVEL_ORDER[b.tooltip.level]);
+      case 'level-desc': return tools.sort((a, b) => LEVEL_ORDER[b.tooltip.level] - LEVEL_ORDER[a.tooltip.level]);
       default:
-        // Categorias especiais: manter ordem de relevância
-        if (activeCategory === 'recentes') {
-          return tools.sort((a, b) => recentIds.indexOf(a.id) - recentIds.indexOf(b.id));
-        }
-        if (activeCategory === 'populares') {
-          return tools.sort((a, b) => popularIds.indexOf(a.id) - popularIds.indexOf(b.id));
-        }
+        if (activeCategory === 'recentes')  return tools.sort((a, b) => recentIds.indexOf(a.id)  - recentIds.indexOf(b.id));
+        if (activeCategory === 'populares') return tools.sort((a, b) => popularIds.indexOf(a.id) - popularIds.indexOf(b.id));
         return tools;
     }
   }, [filteredTools, sortOption, activeCategory, recentIds, popularIds]);
 
-  /* ── Contagens por categoria ──────────────────────────────────────────── */
+  /* ── Contagens ────────────────────────────────────────────────────────── */
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {
-      todos: TOOLS.length,
+      todos:     TOOLS.length,
       favoritos: favorites.length,
-      recentes: recentIds.length,
+      recentes:  recentIds.length,
       populares: hasEnoughData ? popularIds.length : 0,
     };
     CATEGORIES.forEach(cat => {
@@ -164,32 +163,55 @@ const App: React.FC = () => {
   /* ── Handlers ─────────────────────────────────────────────────────────── */
 
   const handleCategoryChange = (category: Category) => {
+    setIsTransitioning(true);
     setActiveCategory(category);
     setSearchQuery('');
     setLevelFilter('todos');
     setSortOption('default');
+    setTimeout(() => setIsTransitioning(false), 300);
   };
 
-  /** Tracking de clique (desktop): só registra, a navegação fica com o <a> */
   const handleTrack = useCallback((tool: Tool) => {
     addRecent(tool.id);
     trackClick(tool.id);
   }, [addRecent, trackClick]);
 
-  /** Clique no card (mobile): abre o modal em vez de navegar */
   const handleMobileCardClick = useCallback((tool: Tool) => {
     setModalTool(tool);
     setIsModalOpen(true);
   }, []);
 
-  /** Abertura real da ferramenta a partir do modal mobile */
   const handleModalOpen = useCallback((tool: Tool) => {
     addRecent(tool.id);
     trackClick(tool.id);
     window.open(tool.url, '_blank', 'noopener,noreferrer');
   }, [addRecent, trackClick]);
 
-  /** Ferramenta aleatória */
+  const handleCopy = useCallback((url: string) => {
+    navigator.clipboard.writeText(url).then(() => {
+      setToastMsg('Link copiado! ✓');
+      setToastVisible(true);
+    }).catch(() => {
+      // fallback para browsers antigos
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        setToastMsg('Link copiado! ✓');
+        setToastVisible(true);
+      } catch {
+        setToastMsg('Erro ao copiar 😕');
+        setToastVisible(true);
+      }
+    });
+  }, []);
+
   const handleRandomTool = () => {
     const pool =
       activeCategory === 'todos'     ? TOOLS :
@@ -225,7 +247,7 @@ const App: React.FC = () => {
           counts={categoryCounts}
         />
 
-        {/* Filtros secundários: nível + ordenação + aleatório */}
+        {/* Barra de controles secundários */}
         <div className="flex items-center justify-between mb-6 max-w-5xl mx-auto px-2 gap-3 flex-wrap">
 
           {/* Filtro de nível */}
@@ -259,54 +281,97 @@ const App: React.FC = () => {
             )}
           </div>
 
-          {/* Ordenação + Aleatório */}
+          {/* Ordenação + Toggle de visão + Aleatório */}
           <div className="flex items-center gap-2 shrink-0 ml-auto">
 
-            {/* Seletor de ordenação */}
-            <select
-              value={sortOption}
-              onChange={e => setSortOption(e.target.value as SortOption)}
-              title="Ordenar ferramentas"
-              className="text-xs font-bold bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 rounded-full px-3 py-1.5 hover:border-ctrl-blue/30 focus:outline-none focus:border-ctrl-blue transition-colors cursor-pointer"
+            {/* Ordenação */}
+            <div className="relative flex items-center">
+              <ArrowUpDown className="absolute left-2.5 w-3 h-3 text-gray-400 pointer-events-none" />
+              <select
+                value={sortOption}
+                onChange={e => setSortOption(e.target.value as SortOption)}
+                title="Ordenar ferramentas"
+                className="pl-7 pr-3 py-1.5 text-xs font-bold bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 rounded-full hover:border-ctrl-blue/30 focus:outline-none focus:border-ctrl-blue transition-colors cursor-pointer appearance-none"
+              >
+                <option value="default">Padrão</option>
+                <option value="az">A → Z</option>
+                <option value="za">Z → A</option>
+                <option value="level-asc">Iniciante → Avançado</option>
+                <option value="level-desc">Avançado → Iniciante</option>
+              </select>
+            </div>
+
+            {/* Toggle grade / lista */}
+            <button
+              onClick={toggleViewMode}
+              title={viewMode === 'grid' ? 'Mudar para lista' : 'Mudar para grade'}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:border-ctrl-blue/30 hover:text-ctrl-blue dark:hover:text-blue-400 hover:-translate-y-0.5 transition-all duration-200"
+              aria-label={viewMode === 'grid' ? 'Mudar para lista' : 'Mudar para grade'}
             >
-              <option value="default">Ordem padrão</option>
-              <option value="az">A → Z</option>
-              <option value="za">Z → A</option>
-              <option value="level-asc">Iniciante → Avançado</option>
-              <option value="level-desc">Avançado → Iniciante</option>
-            </select>
+              {viewMode === 'grid'
+                ? <LayoutList className="w-4 h-4" />
+                : <LayoutGrid className="w-4 h-4" />
+              }
+            </button>
 
             {/* Ferramenta aleatória */}
             <button
               onClick={handleRandomTool}
               title="Abrir uma ferramenta aleatória"
-              className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 hover:border-ctrl-orange/40 hover:text-ctrl-orange hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 hover:border-ctrl-orange/40 hover:text-ctrl-orange hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200"
             >
-              <span>🎲</span>
+              <Shuffle className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden sm:inline">Me surpreenda</span>
             </button>
           </div>
         </div>
 
-        {/* Grade de ferramentas */}
-        {sortedTools.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4">
-            {sortedTools.map(tool => (
-              <ToolCard
-                key={tool.id}
-                tool={tool}
-                isFavorite={isFavorite(tool.id)}
-                onToggleFavorite={toggleFavorite}
-                onMouseEnter={handleMouseEnter}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-                onTrack={handleTrack}
-                onCardClick={isTouchDevice ? handleMobileCardClick : undefined}
-              />
-            ))}
-          </div>
+        {/* Conteúdo principal */}
+        {isTransitioning ? (
+          viewMode === 'grid'
+            ? <SkeletonGrid count={14} />
+            : <SkeletonList count={8} />
+        ) : sortedTools.length > 0 ? (
+          viewMode === 'grid' ? (
+            /* ── Modo grade ── */
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4">
+              {sortedTools.map((tool, index) => (
+                <ToolCard
+                  key={tool.id}
+                  tool={tool}
+                  index={index}
+                  isFavorite={isFavorite(tool.id)}
+                  searchQuery={searchQuery}
+                  onToggleFavorite={toggleFavorite}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                  onTrack={handleTrack}
+                  onCardClick={isTouchDevice ? handleMobileCardClick : undefined}
+                  onCopy={handleCopy}
+                />
+              ))}
+            </div>
+          ) : (
+            /* ── Modo lista ── */
+            <div className="space-y-2 max-w-5xl mx-auto">
+              {sortedTools.map((tool, index) => (
+                <ToolListItem
+                  key={tool.id}
+                  tool={tool}
+                  index={index}
+                  isFavorite={isFavorite(tool.id)}
+                  searchQuery={searchQuery}
+                  onToggleFavorite={toggleFavorite}
+                  onTrack={handleTrack}
+                  onCardClick={isTouchDevice ? handleMobileCardClick : undefined}
+                  onCopy={handleCopy}
+                />
+              ))}
+            </div>
+          )
         ) : (
-          /* Estado vazio */
+          /* ── Estado vazio ── */
           <div className="flex flex-col items-center justify-center py-24 text-center animate-fadeIn">
             <div className="text-6xl mb-4">
               {activeCategory === 'favoritos' ? '💔' :
@@ -326,7 +391,7 @@ const App: React.FC = () => {
                : activeCategory === 'recentes'
                 ? 'Abra algumas ferramentas e elas aparecerão aqui.'
                : activeCategory === 'populares'
-                ? 'Conforme você usa as ferramentas, as mais usadas aparecerão aqui.'
+                ? 'Conforme você usa as ferramentas, as mais acessadas aparecerão aqui.'
                : searchQuery
                 ? `Não encontramos "${searchQuery}" nessa categoria.`
                 : 'Nenhuma ferramenta com este nível de dificuldade aqui.'}
@@ -367,6 +432,13 @@ const App: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         onToggleFavorite={toggleFavorite}
         onOpen={handleModalOpen}
+      />
+
+      {/* Toast de cópia */}
+      <Toast
+        message={toastMsg}
+        visible={toastVisible}
+        onHide={() => setToastVisible(false)}
       />
     </div>
   );

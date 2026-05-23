@@ -20,6 +20,8 @@ export type DifficultyLevel = 'Iniciante' | 'Intermediário' | 'Avançado';
 
 export type SortOption = 'default' | 'az' | 'za' | 'level-asc' | 'level-desc';
 
+export type ViewMode = 'grid' | 'list';
+
 export interface ToolTooltip {
   desc: string;
   usage: string;
@@ -47,7 +49,7 @@ export interface Tool {
 export interface CategoryConfig {
   id: Category;
   label: string;
-  emoji: string;
+  emoji?: string; // mantido para compatibilidade; ícone SVG é usado em vez dele
   activeColor: string;
 }
 
