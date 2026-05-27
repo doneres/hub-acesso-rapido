@@ -12,6 +12,58 @@
   }
 }
 
+/* ── ROADMAPS PAGE ── pixel/retro styles ──────────────────────────────── */
+.roadmaps-page {
+  font-family: 'Poppins', sans-serif;
+  image-rendering: pixelated;
+}
+
+.roadmaps-page * {
+  box-sizing: border-box;
+}
+
+/* Pixel scrollbar */
+.roadmaps-page ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.roadmaps-page ::-webkit-scrollbar-track {
+  background: #0a0f1e;
+}
+.roadmaps-page ::-webkit-scrollbar-thumb {
+  background: #1e3a5f;
+}
+.roadmaps-page ::-webkit-scrollbar-thumb:hover {
+  background: #06b6d4;
+}
+
+/* Press Start 2P font — ensure it loads */
+@supports (font-family: 'Press Start 2P') {
+  .roadmaps-page [style*="Press Start 2P"] {
+    font-family: 'Press Start 2P', monospace;
+  }
+}
+
+/* Neon glow keyframes */
+@keyframes neon-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes pixel-slide-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pixel-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.roadmaps-page .animate-pixel-in {
+  animation: pixel-fade-in 0.25s ease-out forwards;
+}
+
 @layer utilities {
   .shimmer-bg {
     background: linear-gradient(

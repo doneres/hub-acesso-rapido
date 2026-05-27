@@ -1,15 +1,82 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Map } from 'lucide-react';
 
 interface HeaderProps {
   isDark: boolean;
   onToggleTheme: () => void;
+  onOpenRoadmaps: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme }) => {
+const TYPEWRITER_TEXT = 'ROADMAPS';
+const CHAR_DELAY      = 110;   // ms por letra
+const HOLD_DELAY      = 2200;  // ms parado depois de completar
+const ERASE_DELAY     = 60;    // ms por letra apagada
+
+const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps }) => {
+  const [displayed, setDisplayed]   = useState('');
+  const [cursor, setCursor]         = useState(true);
+  const phaseRef = useRef<'typing' | 'holding' | 'erasing'>('typing');
+  const indexRef = useRef(0);
+
+  /* ── Máquina de escrever ──────────────────────────────────────────── */
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const tick = () => {
+      const phase = phaseRef.current;
+
+      if (phase === 'typing') {
+        if (indexRef.current < TYPEWRITER_TEXT.length) {
+          indexRef.current += 1;
+          setDisplayed(TYPEWRITER_TEXT.slice(0, indexRef.current));
+          timeout = setTimeout(tick, CHAR_DELAY);
+        } else {
+          phaseRef.current = 'holding';
+          timeout = setTimeout(tick, HOLD_DELAY);
+        }
+      } else if (phase === 'holding') {
+        phaseRef.current = 'erasing';
+        timeout = setTimeout(tick, ERASE_DELAY);
+      } else {
+        // erasing
+        if (indexRef.current > 0) {
+          indexRef.current -= 1;
+          setDisplayed(TYPEWRITER_TEXT.slice(0, indexRef.current));
+          timeout = setTimeout(tick, ERASE_DELAY);
+        } else {
+          phaseRef.current = 'typing';
+          timeout = setTimeout(tick, CHAR_DELAY * 3);
+        }
+      }
+    };
+
+    timeout = setTimeout(tick, 600);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  /* ── Cursor piscante ──────────────────────────────────────────────── */
+  useEffect(() => {
+    const t = setInterval(() => setCursor(v => !v), 530);
+    return () => clearInterval(t);
+  }, []);
+
+  /* ── Estilos do botão conforme o tema ────────────────────────────── */
+  const btnBg     = isDark
+    ? 'linear-gradient(135deg, #080d1a 0%, #111827 100%)'
+    : '#ffffff';
+  const btnBorder = '#06b6d4';
+  const btnShadow = isDark
+    ? '3px 3px 0 rgba(6,182,212,0.25)'
+    : '3px 3px 0 rgba(6,182,212,0.20)';
+  const labelColor  = isDark ? 'rgba(6,182,212,0.55)' : 'rgba(0,84,166,0.55)';
+  const textColor   = isDark ? '#06b6d4'              : '#0054a6';
+  const iconColor   = isDark ? '#06b6d4'              : '#0054a6';
+
   return (
     <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm gradient-border-bottom transition-colors duration-300">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
-        {/* Logo + Title */}
+
+        {/* ── Logo + Title ── */}
         <div className="flex items-center gap-3 md:gap-4">
           <a
             href="https://ctrlplay.com.br"
@@ -39,9 +106,84 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme }) => {
           </div>
         </div>
 
-        {/* Actions */}
+        {/* ── Actions ── */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Theme Toggle */}
+
+          {/* ── Roadmaps Button com Typewriter ── */}
+          <button
+            onClick={onOpenRoadmaps}
+            className="group flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 border-2 transition-all duration-300 hover:-translate-y-0.5"
+            style={{
+              background: btnBg,
+              borderColor: btnBorder,
+              boxShadow: btnShadow,
+              borderRadius: '9999px',
+            }}
+            onMouseEnter={e => {
+              const el = e.currentTarget as HTMLButtonElement;
+              el.style.boxShadow = isDark
+                ? '0 0 14px rgba(6,182,212,0.45), 4px 4px 0 rgba(6,182,212,0.3)'
+                : '0 0 10px rgba(0,84,166,0.25), 4px 4px 0 rgba(6,182,212,0.25)';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = btnShadow;
+            }}
+            title="Ver trilhas de aprendizado"
+            aria-label="Abrir Roadmaps"
+          >
+            {/* Ícone */}
+            <div
+              className="flex items-center justify-center w-6 h-6 md:w-7 md:h-7 flex-shrink-0"
+              style={{ color: iconColor }}
+            >
+              <Map className="w-4 h-4 md:w-5 md:h-5" />
+            </div>
+
+            {/* Texto typewriter — só em telas ≥ sm */}
+            <div className="hidden sm:flex flex-col items-start leading-none gap-1">
+              {/* Label "TRILHAS" */}
+              <span
+                style={{
+                  color: labelColor,
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: '7px',
+                  letterSpacing: '0.08em',
+                  lineHeight: 1,
+                }}
+              >
+                TRILHAS
+              </span>
+
+              {/* Texto animado + cursor */}
+              <span
+                style={{
+                  color: textColor,
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: '8px',
+                  lineHeight: 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  minWidth: '68px',  /* evita layout shift */
+                }}
+              >
+                {displayed}
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '2px',
+                    height: '10px',
+                    marginLeft: '2px',
+                    background: textColor,
+                    opacity: cursor ? 1 : 0,
+                    transition: 'none',
+                    verticalAlign: 'middle',
+                  }}
+                />
+              </span>
+            </div>
+          </button>
+
+          {/* ── Theme Toggle ── */}
           <button
             onClick={onToggleTheme}
             className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ctrl-blue"
@@ -61,7 +203,7 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme }) => {
             )}
           </button>
 
-          {/* Student Portal */}
+          {/* ── Student Portal ── */}
           <a
             href="https://portal.ctrlplay.com.br/"
             target="_blank"
