@@ -226,7 +226,6 @@ const App: React.FC = () => {
   const handleCategoryChange = (category: Category) => {
     if (category === 'noticias') { setCurrentPage('noticias'); return; }
     if (category === 'robotica') { setCurrentPage('maker');    return; }
-    if (category === 'desafios') { setCurrentPage('desafios'); return; }
     setIsTransitioning(true);
     setActiveCategory(category);
     setSearchQuery('');

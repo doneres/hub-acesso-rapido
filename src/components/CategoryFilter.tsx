@@ -4,7 +4,7 @@ import {
   Gamepad2, Code2, BookOpen, Trophy,
   BarChart2, Bot, Wrench, Puzzle,
   Globe, Rocket, Palette, Database,
-  FlaskConical, Shield, Medal, Lightbulb, Search,
+  FlaskConical, Shield, Medal, Lightbulb,
   type LucideIcon,
 } from 'lucide-react';
 import { Category, CategoryConfig } from '../types';
@@ -33,7 +33,6 @@ const ICONS: Record<string, LucideIcon> = {
   seguranca:           Shield,
   'competicao-codigo': Medal,
   hackathons:          Lightbulb,
-  desafios:            Search,
 };
 
 /** Categorias virtuais que ficam ocultas enquanto o count for zero */
