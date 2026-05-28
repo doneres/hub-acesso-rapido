@@ -20,15 +20,15 @@ export interface RankInfo {
   title: string;
   color: string;
   next: number | null;
-  emoji: string;
+  icon: string; // lucide icon name
 }
 
 export function getRank(points: number): RankInfo {
-  if (points >= 1000) return { title: 'Mestre Detetive', color: '#FFD600', next: null,  emoji: '🏆' };
-  if (points >= 500)  return { title: 'Especialista',    color: '#a78bfa', next: 1000, emoji: '🌟' };
-  if (points >= 200)  return { title: 'Detetive',        color: '#60a5fa', next: 500,  emoji: '🔍' };
-  if (points >= 75)   return { title: 'Investigador',    color: '#34d399', next: 200,  emoji: '🕵️' };
-  return                     { title: 'Aprendiz',        color: '#94a3b8', next: 75,   emoji: '📚' };
+  if (points >= 1000) return { title: 'Mestre Detetive', color: '#fbbf24', next: null,  icon: 'Crown'    };
+  if (points >= 500)  return { title: 'Especialista',    color: '#a78bfa', next: 1000,  icon: 'Star'     };
+  if (points >= 200)  return { title: 'Detetive',        color: '#60a5fa', next: 500,   icon: 'Search'   };
+  if (points >= 75)   return { title: 'Investigador',    color: '#34d399', next: 200,   icon: 'Eye'      };
+  return                     { title: 'Aprendiz',        color: '#94a3b8', next: 75,    icon: 'BookOpen' };
 }
 
 export const CATEGORY_CONFIG = {
