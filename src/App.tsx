@@ -63,23 +63,40 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor'>(() => {
     if (window.location.hash === '#roadmaps') return 'roadmaps';
     if (window.location.hash === '#suporte')  return 'suporte';
-    if (window.location.hash === '#professor') return 'professor';
+    // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
   });
 
   const [showProfessorModal, setShowProfessorModal] = useState(false);
 
+  const handleCloseProfessorModal = useCallback(() => setShowProfessorModal(false), []);
+  const handleProfessorSuccess    = useCallback(() => {
+    setShowProfessorModal(false);
+    setCurrentPage('professor');
+  }, []);
+
+  /* ── Sincroniza hash da URL com currentPage ───────────────────────────── */
   useEffect(() => {
     if (currentPage === 'roadmaps') {
       window.location.hash = 'roadmaps';
     } else if (currentPage === 'suporte') {
       window.location.hash = 'suporte';
-    } else if (currentPage === 'professor') {
-      window.location.hash = 'professor';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
   }, [currentPage]);
+
+  /* ── Sincroniza currentPage com o botão Voltar do browser ────────────── */
+  useEffect(() => {
+    const handlePopstate = () => {
+      const hash = window.location.hash;
+      if (hash === '#roadmaps') setCurrentPage('roadmaps');
+      else if (hash === '#suporte') setCurrentPage('suporte');
+      else setCurrentPage('hub');
+    };
+    window.addEventListener('popstate', handlePopstate);
+    return () => window.removeEventListener('popstate', handlePopstate);
+  }, []);
 
   /* Estado da URL */
   const [searchQuery, setSearchQuery] = useState(() =>
@@ -271,7 +288,12 @@ const App: React.FC = () => {
 
   /* Professor page */
   if (currentPage === 'professor') {
-    return <ProfessorPage onBackToHub={() => setCurrentPage('hub')} />;
+    return (
+      <ProfessorPage
+        onBackToHub={() => setCurrentPage('hub')}
+        onOpenRoadmaps={() => setCurrentPage('roadmaps')}
+      />
+    );
   }
 
   return (
@@ -499,8 +521,8 @@ const App: React.FC = () => {
       {/* Modal de acesso ao professor */}
       {showProfessorModal && (
         <PasswordModal
-          onSuccess={() => { setShowProfessorModal(false); setCurrentPage('professor'); }}
-          onClose={() => setShowProfessorModal(false)}
+          onSuccess={handleProfessorSuccess}
+          onClose={handleCloseProfessorModal}
         />
       )}
     </div>

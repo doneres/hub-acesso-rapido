@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Lock, X } from 'lucide-react';
 
 // Senha de acesso à área do professor — altere aqui se necessário
@@ -12,17 +12,19 @@ interface PasswordModalProps {
 const PasswordModal: React.FC<PasswordModalProps> = ({ onSuccess, onClose }) => {
   const [value, setValue] = useState('');
   const [error, setError] = useState(false);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => { onCloseRef.current = onClose; });
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
+  }, []);
 
   const submit = () => {
-    if (value === PROFESSOR_PASSWORD) {
+    if (value.trim() === PROFESSOR_PASSWORD) {
       onSuccess();
     } else {
       setError(true);

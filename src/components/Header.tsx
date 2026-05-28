@@ -280,24 +280,24 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps, 
                   </div>
                 </a>
 
-                {/* Divider */}
-                <div className="mx-4 h-px bg-gray-100 dark:bg-slate-700" />
-
-                {/* Área do Professor */}
+                {/* Área do Professor — divider incluído no mesmo guard */}
                 {onOpenProfessorLogin && (
-                  <button
-                    onClick={() => { setPortalOpen(false); onOpenProfessorLogin(); }}
-                    className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/70 transition-colors"
-                  >
-                    <div className="w-9 h-9 flex items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-900/30 shrink-0">
-                      <Users className="w-4 h-4 text-ctrl-orange" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <div className="text-xs font-black text-slate-700 dark:text-slate-100">Área do Professor</div>
-                      <div className="text-[10px] text-slate-400 dark:text-slate-500">Acesso restrito</div>
-                    </div>
-                    <Lock className="w-3 h-3 text-slate-300 dark:text-slate-600 shrink-0" />
-                  </button>
+                  <>
+                    <div className="mx-4 h-px bg-gray-100 dark:bg-slate-700" />
+                    <button
+                      onClick={() => { setPortalOpen(false); onOpenProfessorLogin(); }}
+                      className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/70 transition-colors"
+                    >
+                      <div className="w-9 h-9 flex items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-900/30 shrink-0">
+                        <Users className="w-4 h-4 text-ctrl-orange" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className="text-xs font-black text-slate-700 dark:text-slate-100">Área do Professor</div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500">Acesso restrito</div>
+                      </div>
+                      <Lock className="w-3 h-3 text-slate-300 dark:text-slate-600 shrink-0" />
+                    </button>
+                  </>
                 )}
               </div>
             )}

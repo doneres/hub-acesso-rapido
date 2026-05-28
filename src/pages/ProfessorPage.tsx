@@ -6,9 +6,10 @@ import { useTheme } from '../hooks/useTheme';
 
 interface ProfessorPageProps {
   onBackToHub: () => void;
+  onOpenRoadmaps: () => void;
 }
 
-const ProfessorPage: React.FC<ProfessorPageProps> = ({ onBackToHub }) => {
+const ProfessorPage: React.FC<ProfessorPageProps> = ({ onBackToHub, onOpenRoadmaps }) => {
   const { isDark, toggleTheme } = useTheme();
 
   return (
@@ -16,7 +17,7 @@ const ProfessorPage: React.FC<ProfessorPageProps> = ({ onBackToHub }) => {
       <Header
         isDark={isDark}
         onToggleTheme={toggleTheme}
-        onOpenRoadmaps={onBackToHub}
+        onOpenRoadmaps={onOpenRoadmaps}
       />
 
       <main className="flex-1 max-w-[1100px] w-full mx-auto px-4 md:px-8 py-12 md:py-16">
