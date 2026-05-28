@@ -21,6 +21,8 @@ import Toast from './components/Toast';
 import { SkeletonGrid, SkeletonList } from './components/SkeletonCard';
 import RoadmapsPage from './pages/RoadmapsPage';
 import SuportePage from './pages/SuportePage';
+import ProfessorPage from './pages/ProfessorPage';
+import PasswordModal from './components/PasswordModal';
 
 /* ── Constantes ──────────────────────────────────────────────────────────── */
 
@@ -57,18 +59,23 @@ const App: React.FC = () => {
   const { trackClick, popularIds, hasEnoughData } = usePopularTools();
   const { mode: viewMode, toggleMode: toggleViewMode } = useViewMode();
 
-  /* ── Página atual (hub | roadmaps) ───────────────────────────────────── */
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte'>(() => {
+  /* ── Página atual ────────────────────────────────────────────────────── */
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor'>(() => {
     if (window.location.hash === '#roadmaps') return 'roadmaps';
     if (window.location.hash === '#suporte')  return 'suporte';
+    if (window.location.hash === '#professor') return 'professor';
     return 'hub';
   });
+
+  const [showProfessorModal, setShowProfessorModal] = useState(false);
 
   useEffect(() => {
     if (currentPage === 'roadmaps') {
       window.location.hash = 'roadmaps';
     } else if (currentPage === 'suporte') {
       window.location.hash = 'suporte';
+    } else if (currentPage === 'professor') {
+      window.location.hash = 'professor';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -262,6 +269,11 @@ const App: React.FC = () => {
     return <SuportePage onBackToHub={() => setCurrentPage('hub')} />;
   }
 
+  /* Professor page */
+  if (currentPage === 'professor') {
+    return <ProfessorPage onBackToHub={() => setCurrentPage('hub')} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#eef2f6] dark:bg-[#0f172a] bg-dot-pattern transition-colors duration-300">
       <Header
@@ -269,6 +281,7 @@ const App: React.FC = () => {
         onToggleTheme={toggleTheme}
         onOpenRoadmaps={() => setCurrentPage('roadmaps')}
         onOpenSuporte={() => setCurrentPage('suporte')}
+        onOpenProfessorLogin={() => setShowProfessorModal(true)}
       />
 
       <main className="flex-1 max-w-[1440px] w-full px-4 md:px-8 py-8 mx-auto">
@@ -482,6 +495,14 @@ const App: React.FC = () => {
         visible={toastVisible}
         onHide={() => setToastVisible(false)}
       />
+
+      {/* Modal de acesso ao professor */}
+      {showProfessorModal && (
+        <PasswordModal
+          onSuccess={() => { setShowProfessorModal(false); setCurrentPage('professor'); }}
+          onClose={() => setShowProfessorModal(false)}
+        />
+      )}
     </div>
   );
 };

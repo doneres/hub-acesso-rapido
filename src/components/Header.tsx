@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Map, HelpCircle } from 'lucide-react';
+import { Map, HelpCircle, ChevronDown, GraduationCap, Users, Lock } from 'lucide-react';
 
 interface HeaderProps {
   isDark: boolean;
   onToggleTheme: () => void;
   onOpenRoadmaps: () => void;
   onOpenSuporte?: () => void;
+  onOpenProfessorLogin?: () => void;
 }
 
 const TYPEWRITER_TEXT = 'ROADMAPS';
@@ -13,11 +14,14 @@ const CHAR_DELAY      = 110;
 const HOLD_DELAY      = 2200;
 const ERASE_DELAY     = 60;
 
-const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps, onOpenSuporte }) => {
+const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps, onOpenSuporte, onOpenProfessorLogin }) => {
   const [displayed, setDisplayed] = useState('');
   const [cursor, setCursor]       = useState(true);
   const phaseRef = useRef<'typing' | 'holding' | 'erasing'>('typing');
   const indexRef = useRef(0);
+
+  const [portalOpen, setPortalOpen] = useState(false);
+  const portalRef = useRef<HTMLDivElement>(null);
 
   /* ── Máquina de escrever ────────────────────────────────────────── */
   useEffect(() => {
@@ -56,6 +60,18 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps, 
     const t = setInterval(() => setCursor(v => !v), 530);
     return () => clearInterval(t);
   }, []);
+
+  /* ── Fecha o dropdown ao clicar fora ──────────────────────────── */
+  useEffect(() => {
+    if (!portalOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (portalRef.current && !portalRef.current.contains(e.target as Node)) {
+        setPortalOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [portalOpen]);
 
   /* ── Estilos do botão Roadmaps conforme o tema ──────────────── */
   const rmBg     = isDark ? 'linear-gradient(135deg, #080d1a 0%, #111827 100%)' : '#ffffff';
@@ -215,29 +231,77 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps, 
             )}
           </button>
 
-          {/* ── Student Portal ── */}
-          <a
-            href="https://portal.ctrlplay.com.br/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 px-3 py-2 md:px-4 md:py-2.5 rounded-full border-2 border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-ctrl-orange/40 transition-all duration-300"
-          >
-            <div className="w-7 h-7 flex items-center justify-center bg-blue-50 dark:bg-slate-700 rounded-full group-hover:bg-ctrl-orange transition-colors duration-300">
-              <img
-                src="https://ctrlplay.com.br/wp-content/uploads/2021/04/icon-desempenho.svg"
-                alt="Portal"
-                className="w-4 h-4 group-hover:brightness-0 group-hover:invert transition-all"
+          {/* ── Portal Dropdown ── */}
+          <div ref={portalRef} className="relative">
+            <button
+              onClick={() => setPortalOpen(v => !v)}
+              className="group flex items-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 px-3 py-2 md:px-4 md:py-2.5 rounded-full border-2 border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-ctrl-orange/40 transition-all duration-300"
+              aria-label="Acessar portal"
+              aria-expanded={portalOpen}
+            >
+              <div className="w-7 h-7 flex items-center justify-center bg-blue-50 dark:bg-slate-700 rounded-full group-hover:bg-ctrl-orange transition-colors duration-300">
+                <img
+                  src="https://ctrlplay.com.br/wp-content/uploads/2021/04/icon-desempenho.svg"
+                  alt="Portal"
+                  className="w-4 h-4 group-hover:brightness-0 group-hover:invert transition-all"
+                />
+              </div>
+              <div className="hidden sm:flex flex-col items-start leading-none gap-0.5">
+                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider group-hover:text-ctrl-orange/70 transition-colors">
+                  Acessar
+                </span>
+                <span className="text-xs font-black text-ctrl-blue dark:text-blue-400 uppercase group-hover:text-ctrl-orange transition-colors">
+                  Portal
+                </span>
+              </div>
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${portalOpen ? 'rotate-180' : ''}`}
               />
-            </div>
-            <div className="hidden sm:flex flex-col items-start leading-none gap-0.5">
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider group-hover:text-ctrl-orange/70 transition-colors">
-                Acessar
-              </span>
-              <span className="text-xs font-black text-ctrl-blue dark:text-blue-400 uppercase group-hover:text-ctrl-orange transition-colors">
-                Área do Aluno
-              </span>
-            </div>
-          </a>
+            </button>
+
+            {/* Dropdown panel */}
+            {portalOpen && (
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-xl overflow-hidden z-50 animate-fadeIn">
+
+                {/* Área do Aluno */}
+                <a
+                  href="https://portal.ctrlplay.com.br/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setPortalOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/70 transition-colors"
+                >
+                  <div className="w-9 h-9 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 shrink-0">
+                    <GraduationCap className="w-4 h-4 text-ctrl-blue" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-black text-slate-700 dark:text-slate-100">Área do Aluno</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">Portal Ctrl+Play</div>
+                  </div>
+                </a>
+
+                {/* Divider */}
+                <div className="mx-4 h-px bg-gray-100 dark:bg-slate-700" />
+
+                {/* Área do Professor */}
+                {onOpenProfessorLogin && (
+                  <button
+                    onClick={() => { setPortalOpen(false); onOpenProfessorLogin(); }}
+                    className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/70 transition-colors"
+                  >
+                    <div className="w-9 h-9 flex items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-900/30 shrink-0">
+                      <Users className="w-4 h-4 text-ctrl-orange" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="text-xs font-black text-slate-700 dark:text-slate-100">Área do Professor</div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500">Acesso restrito</div>
+                    </div>
+                    <Lock className="w-3 h-3 text-slate-300 dark:text-slate-600 shrink-0" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
 
         </div>
       </div>
