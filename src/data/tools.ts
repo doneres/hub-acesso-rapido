@@ -117,6 +117,12 @@ export const CATEGORIES: CategoryConfig[] = [
     emoji: "⚡",
     activeColor: "bg-pink-600",
   },
+  {
+    id: "desafios",
+    label: "Desafios",
+    emoji: "🔍",
+    activeColor: "bg-amber-500",
+  },
 ];
 
 export const TOOLS: Tool[] = [

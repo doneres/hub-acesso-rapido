@@ -21,7 +21,8 @@ export type Category =
   | 'competicao-codigo'
   | 'hackathons'
   | 'noticias'
-  | 'robotica';
+  | 'robotica'
+  | 'desafios';
 
 export type DifficultyLevel = 'Iniciante' | 'Intermediário' | 'Avançado';
 
