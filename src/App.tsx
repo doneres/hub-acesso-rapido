@@ -20,6 +20,7 @@ import MobileToolModal from './components/MobileToolModal';
 import Toast from './components/Toast';
 import { SkeletonGrid, SkeletonList } from './components/SkeletonCard';
 import RoadmapsPage from './pages/RoadmapsPage';
+import SuportePage from './pages/SuportePage';
 
 /* ── Constantes ──────────────────────────────────────────────────────────── */
 
@@ -57,13 +58,17 @@ const App: React.FC = () => {
   const { mode: viewMode, toggleMode: toggleViewMode } = useViewMode();
 
   /* ── Página atual (hub | roadmaps) ───────────────────────────────────── */
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps'>(() => {
-    return window.location.hash === '#roadmaps' ? 'roadmaps' : 'hub';
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte'>(() => {
+    if (window.location.hash === '#roadmaps') return 'roadmaps';
+    if (window.location.hash === '#suporte')  return 'suporte';
+    return 'hub';
   });
 
   useEffect(() => {
     if (currentPage === 'roadmaps') {
       window.location.hash = 'roadmaps';
+    } else if (currentPage === 'suporte') {
+      window.location.hash = 'suporte';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -252,9 +257,19 @@ const App: React.FC = () => {
     return <RoadmapsPage onBackToHub={() => setCurrentPage('hub')} />;
   }
 
+  /* Suporte page */
+  if (currentPage === 'suporte') {
+    return <SuportePage onBackToHub={() => setCurrentPage('hub')} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#eef2f6] dark:bg-[#0f172a] bg-dot-pattern transition-colors duration-300">
-      <Header isDark={isDark} onToggleTheme={toggleTheme} onOpenRoadmaps={() => setCurrentPage('roadmaps')} />
+      <Header
+        isDark={isDark}
+        onToggleTheme={toggleTheme}
+        onOpenRoadmaps={() => setCurrentPage('roadmaps')}
+        onOpenSuporte={() => setCurrentPage('suporte')}
+      />
 
       <main className="flex-1 max-w-[1440px] w-full px-4 md:px-8 py-8 mx-auto">
 

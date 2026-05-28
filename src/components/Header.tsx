@@ -1,30 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Map } from 'lucide-react';
+import { Map, HelpCircle } from 'lucide-react';
 
 interface HeaderProps {
   isDark: boolean;
   onToggleTheme: () => void;
   onOpenRoadmaps: () => void;
+  onOpenSuporte?: () => void;
 }
 
 const TYPEWRITER_TEXT = 'ROADMAPS';
-const CHAR_DELAY      = 110;   // ms por letra
-const HOLD_DELAY      = 2200;  // ms parado depois de completar
-const ERASE_DELAY     = 60;    // ms por letra apagada
+const CHAR_DELAY      = 110;
+const HOLD_DELAY      = 2200;
+const ERASE_DELAY     = 60;
 
-const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps }) => {
-  const [displayed, setDisplayed]   = useState('');
-  const [cursor, setCursor]         = useState(true);
+const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps, onOpenSuporte }) => {
+  const [displayed, setDisplayed] = useState('');
+  const [cursor, setCursor]       = useState(true);
   const phaseRef = useRef<'typing' | 'holding' | 'erasing'>('typing');
   const indexRef = useRef(0);
 
-  /* ── Máquina de escrever ──────────────────────────────────────────── */
+  /* ── Máquina de escrever ────────────────────────────────────────── */
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
-
     const tick = () => {
       const phase = phaseRef.current;
-
       if (phase === 'typing') {
         if (indexRef.current < TYPEWRITER_TEXT.length) {
           indexRef.current += 1;
@@ -38,7 +37,6 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps }
         phaseRef.current = 'erasing';
         timeout = setTimeout(tick, ERASE_DELAY);
       } else {
-        // erasing
         if (indexRef.current > 0) {
           indexRef.current -= 1;
           setDisplayed(TYPEWRITER_TEXT.slice(0, indexRef.current));
@@ -49,28 +47,22 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps }
         }
       }
     };
-
     timeout = setTimeout(tick, 600);
     return () => clearTimeout(timeout);
   }, []);
 
-  /* ── Cursor piscante ──────────────────────────────────────────────── */
+  /* ── Cursor piscante ──────────────────────────────────────────── */
   useEffect(() => {
     const t = setInterval(() => setCursor(v => !v), 530);
     return () => clearInterval(t);
   }, []);
 
-  /* ── Estilos do botão conforme o tema ────────────────────────────── */
-  const btnBg     = isDark
-    ? 'linear-gradient(135deg, #080d1a 0%, #111827 100%)'
-    : '#ffffff';
-  const btnBorder = '#06b6d4';
-  const btnShadow = isDark
-    ? '3px 3px 0 rgba(6,182,212,0.25)'
-    : '3px 3px 0 rgba(6,182,212,0.20)';
-  const labelColor  = isDark ? 'rgba(6,182,212,0.55)' : 'rgba(0,84,166,0.55)';
-  const textColor   = isDark ? '#06b6d4'              : '#0054a6';
-  const iconColor   = isDark ? '#06b6d4'              : '#0054a6';
+  /* ── Estilos do botão Roadmaps conforme o tema ──────────────── */
+  const rmBg     = isDark ? 'linear-gradient(135deg, #080d1a 0%, #111827 100%)' : '#ffffff';
+  const rmBorder = '#06b6d4';
+  const rmShadow = isDark ? '3px 3px 0 rgba(6,182,212,0.25)' : '3px 3px 0 rgba(6,182,212,0.20)';
+  const rmLabel  = isDark ? 'rgba(6,182,212,0.55)' : 'rgba(0,84,166,0.55)';
+  const rmText   = isDark ? '#06b6d4' : '#0054a6';
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm gradient-border-bottom transition-colors duration-300">
@@ -109,76 +101,96 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps }
         {/* ── Actions ── */}
         <div className="flex items-center gap-2 md:gap-3">
 
-          {/* ── Roadmaps Button com Typewriter ── */}
+          {/* ── Botão Ajuda & Suporte ── */}
+          {onOpenSuporte && (
+            <button
+              onClick={onOpenSuporte}
+              className="group flex items-center gap-1.5 px-3 py-2 md:px-3.5 md:py-2 rounded-full border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+              style={{
+                background: isDark ? '#1e293b' : '#ffffff',
+                borderColor: isDark ? '#334155' : '#e2e8f0',
+                boxShadow: isDark ? '2px 2px 0 rgba(0,0,0,0.3)' : '2px 2px 0 rgba(0,0,0,0.06)',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.borderColor = '#f37021';
+                el.style.boxShadow   = isDark
+                  ? '0 0 10px rgba(243,112,33,0.3), 3px 3px 0 rgba(243,112,33,0.2)'
+                  : '0 0 8px rgba(243,112,33,0.15), 3px 3px 0 rgba(243,112,33,0.15)';
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.borderColor = isDark ? '#334155' : '#e2e8f0';
+                el.style.boxShadow   = isDark ? '2px 2px 0 rgba(0,0,0,0.3)' : '2px 2px 0 rgba(0,0,0,0.06)';
+              }}
+              title="Central de Ajuda & Suporte"
+              aria-label="Abrir Central de Ajuda"
+            >
+              <HelpCircle
+                className="w-4 h-4 flex-shrink-0 transition-colors"
+                style={{ color: isDark ? '#94a3b8' : '#64748b' }}
+              />
+              {/* Label — visível a partir de md */}
+              <div className="hidden md:flex flex-col items-start leading-none gap-0.5">
+                <span className="text-[8px] font-bold uppercase tracking-wider"
+                  style={{ color: isDark ? 'rgba(148,163,184,0.6)' : 'rgba(100,116,139,0.7)' }}>
+                  PRECISA DE
+                </span>
+                <span className="text-[9px] font-black uppercase"
+                  style={{ color: isDark ? '#94a3b8' : '#475569' }}>
+                  AJUDA?
+                </span>
+              </div>
+            </button>
+          )}
+
+          {/* ── Botão Roadmaps com Typewriter ── */}
           <button
             onClick={onOpenRoadmaps}
-            className="group flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 border-2 transition-all duration-300 hover:-translate-y-0.5"
+            className="group flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 rounded-full border-2 transition-all duration-300 hover:-translate-y-0.5"
             style={{
-              background: btnBg,
-              borderColor: btnBorder,
-              boxShadow: btnShadow,
-              borderRadius: '9999px',
+              background: rmBg,
+              borderColor: rmBorder,
+              boxShadow: rmShadow,
             }}
             onMouseEnter={e => {
-              const el = e.currentTarget as HTMLButtonElement;
-              el.style.boxShadow = isDark
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = isDark
                 ? '0 0 14px rgba(6,182,212,0.45), 4px 4px 0 rgba(6,182,212,0.3)'
                 : '0 0 10px rgba(0,84,166,0.25), 4px 4px 0 rgba(6,182,212,0.25)';
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow = btnShadow;
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = rmShadow;
             }}
             title="Ver trilhas de aprendizado"
             aria-label="Abrir Roadmaps"
           >
-            {/* Ícone */}
-            <div
-              className="flex items-center justify-center w-6 h-6 md:w-7 md:h-7 flex-shrink-0"
-              style={{ color: iconColor }}
-            >
+            <div className="flex items-center justify-center w-6 h-6 md:w-7 md:h-7 flex-shrink-0"
+              style={{ color: rmText }}>
               <Map className="w-4 h-4 md:w-5 md:h-5" />
             </div>
-
-            {/* Texto typewriter — só em telas ≥ sm */}
             <div className="hidden sm:flex flex-col items-start leading-none gap-1">
-              {/* Label "TRILHAS" */}
-              <span
-                style={{
-                  color: labelColor,
-                  fontFamily: "'Press Start 2P', monospace",
-                  fontSize: '7px',
-                  letterSpacing: '0.08em',
-                  lineHeight: 1,
-                }}
-              >
+              <span style={{ color: rmLabel, fontFamily: "'Press Start 2P', monospace", fontSize: '7px', letterSpacing: '0.08em', lineHeight: 1 }}>
                 TRILHAS
               </span>
-
-              {/* Texto animado + cursor */}
-              <span
-                style={{
-                  color: textColor,
-                  fontFamily: "'Press Start 2P', monospace",
-                  fontSize: '8px',
-                  lineHeight: 1,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  minWidth: '68px',  /* evita layout shift */
-                }}
-              >
+              <span style={{
+                color: rmText,
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: '8px',
+                lineHeight: 1,
+                display: 'inline-flex',
+                alignItems: 'center',
+                minWidth: '68px',
+              }}>
                 {displayed}
-                <span
-                  style={{
-                    display: 'inline-block',
-                    width: '2px',
-                    height: '10px',
-                    marginLeft: '2px',
-                    background: textColor,
-                    opacity: cursor ? 1 : 0,
-                    transition: 'none',
-                    verticalAlign: 'middle',
-                  }}
-                />
+                <span style={{
+                  display: 'inline-block',
+                  width: '2px',
+                  height: '10px',
+                  marginLeft: '2px',
+                  background: rmText,
+                  opacity: cursor ? 1 : 0,
+                  verticalAlign: 'middle',
+                }} />
               </span>
             </div>
           </button>
@@ -226,6 +238,7 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps }
               </span>
             </div>
           </a>
+
         </div>
       </div>
     </header>
