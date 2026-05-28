@@ -146,9 +146,9 @@ const RoadmapDetail: React.FC<RoadmapDetailProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <a href="https://ctrlplay.com.br" target="_blank" rel="noopener noreferrer">
-            <img src="https://ctrlplay.com.br/wp-content/uploads/2024/11/logo-colorido.svg"
-              alt="Ctrl+Play" style={{ height: '30px' }} />
+          <a href="https://doneres.dev" target="_blank" rel="noopener noreferrer"
+            style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '9px', color: T.textSecondary, textDecoration: 'none', letterSpacing: '0.05em' }}>
+            DONERES.DEV
           </a>
 
           <button onClick={onToggleTheme}

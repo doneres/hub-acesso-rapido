@@ -7,30 +7,23 @@ const Footer: React.FC = () => {
         <p className="text-gray-400 dark:text-slate-500 text-sm mb-3">
           © 2026{" "}
           <a
-            href="http://doneres.dev"
+            href="https://doneres.dev"
             target="_blank"
             rel="noopener noreferrer"
+            className="hover:text-ctrl-blue dark:hover:text-blue-400 transition-colors font-medium"
           >
             Douglas
           </a>
-          . Todos os direitos reservados. Feito com 💜 para nossos alunos.
+          . Feito com 💜 para os alunos.
         </p>
         <div className="flex justify-center gap-6">
           <a
-            href="https://instagram.com/ctrlplaygoiania"
+            href="https://doneres.dev"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-400 dark:text-slate-500 hover:text-ctrl-blue dark:hover:text-blue-400 text-sm font-medium transition-colors"
           >
-            Instagram
-          </a>
-          <a
-            href="https://ctrlplay.com.br"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 dark:text-slate-500 hover:text-ctrl-blue dark:hover:text-blue-400 text-sm font-medium transition-colors"
-          >
-            Site Oficial
+            doneres.dev
           </a>
         </div>
       </div>

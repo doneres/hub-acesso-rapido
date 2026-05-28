@@ -192,7 +192,12 @@ const SuportePage: React.FC<SuportePageProps> = ({ onBackToHub }) => {
       {/* ── Footer simples ────────────────────────────────────────── */}
       <footer className="w-full bg-white dark:bg-slate-950 border-t border-gray-100 dark:border-slate-800 mt-auto py-6 transition-colors duration-300">
         <p className="text-center text-gray-400 dark:text-slate-500 text-sm">
-          © 2026 Ctrl+Play. Feito com 💜 para nossos alunos.
+          © 2026{' '}
+          <a href="https://doneres.dev" target="_blank" rel="noopener noreferrer"
+            className="hover:text-ctrl-blue dark:hover:text-blue-400 transition-colors font-medium">
+            Douglas
+          </a>
+          . Feito com 💜 para os alunos.
         </p>
       </footer>
     </div>

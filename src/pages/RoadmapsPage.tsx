@@ -338,7 +338,7 @@ const RoadmapsPage: React.FC<RoadmapsPageProps> = ({ onBackToHub }) => {
         borderTop: `2px solid ${T.footerBorder}`,
       }}>
         <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '8px', color: T.footerText }}>
-          © 2026 CTRL+PLAY · FEITO COM ♥ PARA NOSSOS ALUNOS
+          © 2026 DOUGLAS · DONERES.DEV
         </p>
       </div>
     </div>
