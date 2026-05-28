@@ -24,6 +24,7 @@ import SuportePage from './pages/SuportePage';
 import ProfessorPage from './pages/ProfessorPage';
 import MakerPage from './pages/MakerPage';
 import NoticiasPage from './pages/NoticiasPage';
+import DesafiosPage from './pages/DesafiosPage';
 import PasswordModal from './components/PasswordModal';
 import FloatingNav from './components/FloatingNav';
 
@@ -63,11 +64,12 @@ const App: React.FC = () => {
   const { mode: viewMode, toggleMode: toggleViewMode } = useViewMode();
 
   /* ── Página atual ────────────────────────────────────────────────────── */
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias'>(() => {
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios'>(() => {
     if (window.location.hash === '#roadmaps') return 'roadmaps';
     if (window.location.hash === '#suporte')  return 'suporte';
     if (window.location.hash === '#maker')    return 'maker';
     if (window.location.hash === '#noticias') return 'noticias';
+    if (window.location.hash === '#desafios') return 'desafios';
     // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
   });
@@ -90,6 +92,8 @@ const App: React.FC = () => {
       window.location.hash = 'maker';
     } else if (currentPage === 'noticias') {
       window.location.hash = 'noticias';
+    } else if (currentPage === 'desafios') {
+      window.location.hash = 'desafios';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -103,6 +107,7 @@ const App: React.FC = () => {
       else if (hash === '#suporte')   setCurrentPage('suporte');
       else if (hash === '#maker')     setCurrentPage('maker');
       else if (hash === '#noticias')  setCurrentPage('noticias');
+      else if (hash === '#desafios')  setCurrentPage('desafios');
       else setCurrentPage('hub');
     };
     window.addEventListener('popstate', handlePopstate);
@@ -329,6 +334,11 @@ const App: React.FC = () => {
     );
   }
 
+  /* Desafios page */
+  if (currentPage === 'desafios') {
+    return <DesafiosPage onBackToHub={() => setCurrentPage('hub')} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#eef2f6] dark:bg-[#0f172a] bg-dot-pattern transition-colors duration-300">
       <Header
@@ -537,6 +547,7 @@ const App: React.FC = () => {
         isDark={isDark}
         onOpenMaker={() => setCurrentPage('maker')}
         onOpenNoticias={() => setCurrentPage('noticias')}
+        onOpenDesafios={() => setCurrentPage('desafios')}
       />
 
       {/* Modal mobile */}

@@ -1,13 +1,14 @@
 import React from 'react';
-import { Settings, Newspaper } from 'lucide-react';
+import { Settings, Newspaper, Search } from 'lucide-react';
 
 interface FloatingNavProps {
   isDark: boolean;
   onOpenMaker: () => void;
   onOpenNoticias: () => void;
+  onOpenDesafios: () => void;
 }
 
-const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNoticias }) => {
+const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNoticias, onOpenDesafios }) => {
   return (
     <>
       <style>{`
@@ -83,6 +84,12 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNo
           25%          { box-shadow: -6px 0 28px rgba(96,165,250,0.65), 0 0 10px rgba(96,165,250,0.25); }
         }
 
+        /* Brilho âmbar (Desafios) */
+        @keyframes fnav-glow-amber {
+          0%,50%,100% { box-shadow: -2px 0 6px rgba(251,191,36,0.05); }
+          25%          { box-shadow: -6px 0 28px rgba(251,191,36,0.65), 0 0 10px rgba(251,191,36,0.25); }
+        }
+
         /* Engrenagem girando */
         @keyframes fnav-spin {
           from { transform: rotate(0deg);   }
@@ -99,6 +106,11 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNo
           animation:
             fnav-knock      10s ease-in-out 6.5s   infinite,
             fnav-glow-blue   4s ease-in-out 2s     infinite;
+        }
+        .fnav-desafios {
+          animation:
+            fnav-knock       10s ease-in-out 3.5s   infinite,
+            fnav-glow-amber   4s ease-in-out 1s     infinite;
         }
 
         .fnav-gear { animation: fnav-spin 9s linear infinite; }
@@ -162,6 +174,32 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNo
             />
           </div>
         </button>
+
+        {/* Desafios */}
+        <button
+          onClick={onOpenDesafios}
+          aria-label="Detetive de Código"
+          className="fnav-btn fnav-desafios focus:outline-none"
+          style={{
+            background: isDark
+              ? 'linear-gradient(135deg, #1a1200 0%, #2a1e00 100%)'
+              : 'linear-gradient(135deg, #ffffff 0%, #fffbeb 100%)',
+            border: `1.5px solid ${isDark ? 'rgba(251,191,36,0.40)' : 'rgba(217,119,6,0.40)'}`,
+          }}
+        >
+          <span
+            className="fnav-label"
+            style={{ color: isDark ? '#fbbf24' : '#92400e' }}
+          >
+            Desafios
+          </span>
+          <div className="fnav-icon">
+            <Search
+              className="w-5 h-5"
+              style={{ color: isDark ? '#fbbf24' : '#d97706' }}
+            />
+          </div>
+        </button>
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════
@@ -196,6 +234,21 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNo
           }}
         >
           <Newspaper className="w-4 h-4" style={{ color: isDark ? '#60a5fa' : '#2563eb' }} />
+        </button>
+
+        <button
+          aria-label="Detetive de Código"
+          onClick={onOpenDesafios}
+          className="w-11 h-11 rounded-full flex items-center justify-center active:scale-95 transition-transform"
+          style={{
+            background: isDark
+              ? 'linear-gradient(135deg, #1a1200, #2a1e00)'
+              : 'linear-gradient(135deg, #ffffff, #fffbeb)',
+            border: `1.5px solid ${isDark ? 'rgba(251,191,36,0.55)' : 'rgba(217,119,6,0.55)'}`,
+            boxShadow: '0 4px 14px rgba(251,191,36,0.30)',
+          }}
+        >
+          <Search className="w-4 h-4" style={{ color: isDark ? '#fbbf24' : '#d97706' }} />
         </button>
       </div>
     </>
