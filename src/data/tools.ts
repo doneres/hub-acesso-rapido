@@ -117,18 +117,6 @@ export const CATEGORIES: CategoryConfig[] = [
     emoji: "⚡",
     activeColor: "bg-pink-600",
   },
-  {
-    id: "noticias",
-    label: "Notícias Tech",
-    emoji: "📰",
-    activeColor: "bg-teal-600",
-  },
-  {
-    id: "robotica",
-    label: "Robótica & Maker",
-    emoji: "🤖",
-    activeColor: "bg-lime-700",
-  },
 ];
 
 export const TOOLS: Tool[] = [

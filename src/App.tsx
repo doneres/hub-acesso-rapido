@@ -25,6 +25,7 @@ import ProfessorPage from './pages/ProfessorPage';
 import MakerPage from './pages/MakerPage';
 import NoticiasPage from './pages/NoticiasPage';
 import PasswordModal from './components/PasswordModal';
+import FloatingNav from './components/FloatingNav';
 
 /* ── Constantes ──────────────────────────────────────────────────────────── */
 
@@ -532,6 +533,10 @@ const App: React.FC = () => {
       <Footer />
       <BackToTop />
       <Tooltip state={tooltipState} />
+      <FloatingNav
+        onOpenMaker={() => setCurrentPage('maker')}
+        onOpenNoticias={() => setCurrentPage('noticias')}
+      />
 
       {/* Modal mobile */}
       <MobileToolModal
