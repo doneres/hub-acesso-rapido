@@ -534,6 +534,7 @@ const App: React.FC = () => {
       <BackToTop />
       <Tooltip state={tooltipState} />
       <FloatingNav
+        isDark={isDark}
         onOpenMaker={() => setCurrentPage('maker')}
         onOpenNoticias={() => setCurrentPage('noticias')}
       />
