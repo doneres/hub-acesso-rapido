@@ -17,7 +17,11 @@ export type Category =
   | 'design-prototipacao'
   | 'bancos-dados'
   | 'testes'
-  | 'seguranca';
+  | 'seguranca'
+  | 'competicao-codigo'
+  | 'hackathons'
+  | 'noticias'
+  | 'robotica';
 
 export type DifficultyLevel = 'Iniciante' | 'Intermediário' | 'Avançado';
 
