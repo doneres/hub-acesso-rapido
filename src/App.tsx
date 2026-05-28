@@ -22,6 +22,8 @@ import { SkeletonGrid, SkeletonList } from './components/SkeletonCard';
 import RoadmapsPage from './pages/RoadmapsPage';
 import SuportePage from './pages/SuportePage';
 import ProfessorPage from './pages/ProfessorPage';
+import MakerPage from './pages/MakerPage';
+import NoticiasPage from './pages/NoticiasPage';
 import PasswordModal from './components/PasswordModal';
 
 /* ── Constantes ──────────────────────────────────────────────────────────── */
@@ -60,9 +62,11 @@ const App: React.FC = () => {
   const { mode: viewMode, toggleMode: toggleViewMode } = useViewMode();
 
   /* ── Página atual ────────────────────────────────────────────────────── */
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor'>(() => {
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias'>(() => {
     if (window.location.hash === '#roadmaps') return 'roadmaps';
     if (window.location.hash === '#suporte')  return 'suporte';
+    if (window.location.hash === '#maker')    return 'maker';
+    if (window.location.hash === '#noticias') return 'noticias';
     // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
   });
@@ -81,6 +85,10 @@ const App: React.FC = () => {
       window.location.hash = 'roadmaps';
     } else if (currentPage === 'suporte') {
       window.location.hash = 'suporte';
+    } else if (currentPage === 'maker') {
+      window.location.hash = 'maker';
+    } else if (currentPage === 'noticias') {
+      window.location.hash = 'noticias';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -90,8 +98,10 @@ const App: React.FC = () => {
   useEffect(() => {
     const handlePopstate = () => {
       const hash = window.location.hash;
-      if (hash === '#roadmaps') setCurrentPage('roadmaps');
-      else if (hash === '#suporte') setCurrentPage('suporte');
+      if (hash === '#roadmaps')       setCurrentPage('roadmaps');
+      else if (hash === '#suporte')   setCurrentPage('suporte');
+      else if (hash === '#maker')     setCurrentPage('maker');
+      else if (hash === '#noticias')  setCurrentPage('noticias');
       else setCurrentPage('hub');
     };
     window.addEventListener('popstate', handlePopstate);
@@ -208,6 +218,8 @@ const App: React.FC = () => {
   /* ── Handlers ─────────────────────────────────────────────────────────── */
 
   const handleCategoryChange = (category: Category) => {
+    if (category === 'noticias') { setCurrentPage('noticias'); return; }
+    if (category === 'robotica') { setCurrentPage('maker');    return; }
     setIsTransitioning(true);
     setActiveCategory(category);
     setSearchQuery('');
@@ -290,6 +302,26 @@ const App: React.FC = () => {
   if (currentPage === 'professor') {
     return (
       <ProfessorPage
+        onBackToHub={() => setCurrentPage('hub')}
+        onOpenRoadmaps={() => setCurrentPage('roadmaps')}
+      />
+    );
+  }
+
+  /* Maker/Robótica page */
+  if (currentPage === 'maker') {
+    return (
+      <MakerPage
+        onBackToHub={() => setCurrentPage('hub')}
+        onOpenRoadmaps={() => setCurrentPage('roadmaps')}
+      />
+    );
+  }
+
+  /* Notícias page */
+  if (currentPage === 'noticias') {
+    return (
+      <NoticiasPage
         onBackToHub={() => setCurrentPage('hub')}
         onOpenRoadmaps={() => setCurrentPage('roadmaps')}
       />
