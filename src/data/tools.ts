@@ -4665,51 +4665,6 @@ export const TOOLS: Tool[] = [
 
   /* ── Competição de Código ────────────────────────────────────────────── */
   {
-    id: "leetcode",
-    name: "LeetCode",
-    url: "https://leetcode.com/",
-    category: "competicao-codigo",
-    iconUrl: "https://www.google.com/s2/favicons?domain=leetcode.com&sz=128",
-    iconBg: "bg-yellow-50",
-    isNew: true,
-    tooltip: {
-      desc: "Plataforma líder em desafios de algoritmos e estruturas de dados.",
-      usage: "Resolver problemas de arrays, grafos, DP e muito mais.",
-      when: "Preparar para entrevistas técnicas em grandes empresas de tecnologia.",
-      level: "Intermediário",
-    },
-  },
-  {
-    id: "hackerrank",
-    name: "HackerRank",
-    url: "https://www.hackerrank.com/",
-    category: "competicao-codigo",
-    iconUrl: "https://www.google.com/s2/favicons?domain=hackerrank.com&sz=128",
-    iconBg: "bg-green-50",
-    isNew: true,
-    tooltip: {
-      desc: "Desafios de programação com certificações reconhecidas pelo mercado.",
-      usage: "Praticar algoritmos, SQL, matemática e resolver desafios por domínio.",
-      when: "Querer certificação oficial ou praticar para processos seletivos.",
-      level: "Iniciante",
-    },
-  },
-  {
-    id: "codewars",
-    name: "Codewars",
-    url: "https://www.codewars.com/",
-    category: "competicao-codigo",
-    iconUrl: "https://www.google.com/s2/favicons?domain=codewars.com&sz=128",
-    iconBg: "bg-red-50",
-    isNew: true,
-    tooltip: {
-      desc: "Plataforma gamificada com 'katas' de programação em vários idiomas.",
-      usage: "Subir de rank resolvendo desafios progressivos em sua linguagem favorita.",
-      when: "Aprender padrões de programação de forma divertida e competitiva.",
-      level: "Iniciante",
-    },
-  },
-  {
     id: "codeforces",
     name: "Codeforces",
     url: "https://codeforces.com/",
