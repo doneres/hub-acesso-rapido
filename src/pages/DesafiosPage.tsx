@@ -131,7 +131,7 @@ const LEVELS = [
 function isLevelUnlocked(levelIdx: number, solvedPuzzles: string[]): boolean {
   if (levelIdx === 0) return true;
   const prev = LEVELS[levelIdx - 1];
-  const prevSolved = prev.puzzleIds.filter(id => solvedPuzzles.includes(id)).length;
+  const prevSolved = (prev.puzzleIds as readonly string[]).filter(id => solvedPuzzles.includes(id)).length;
   return prevSolved >= (prev.neededToUnlockNext ?? 0);
 }
 
@@ -615,13 +615,13 @@ function LevelCard({ level, levelIdx, unlocked, expanded, solvedCount, T, isDark
   onPuzzleClick: (p: Puzzle) => void;
   isSolved: (id: string) => boolean;
 }) {
-  const puzzles   = PUZZLES.filter(p => level.puzzleIds.includes(p.id));
+  const puzzles   = PUZZLES.filter(p => (level.puzzleIds as readonly string[]).includes(p.id));
   const total     = puzzles.length;
   const pct       = total > 0 ? (solvedCount / total) * 100 : 0;
   const prevLevel = levelIdx > 0 ? LEVELS[levelIdx - 1] : null;
   const prevSolvedNeeded = prevLevel?.neededToUnlockNext ?? 0;
   const prevSolvedActual = prevLevel
-    ? prevLevel.puzzleIds.filter(id => isSolved(id)).length
+    ? (prevLevel.puzzleIds as readonly string[]).filter(id => isSolved(id)).length
     : 0;
 
   return (
@@ -907,7 +907,7 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const isHintUsed = (id: string) => currentUser?.hintsUsed.includes(id) ?? false;
 
   const solvedCountForLevel = (levelIdx: number) =>
-    LEVELS[levelIdx].puzzleIds.filter(id => isSolved(id)).length;
+    (LEVELS[levelIdx].puzzleIds as readonly string[]).filter(id => isSolved(id)).length;
 
   const handleSolve = (puzzle: Puzzle, correct: boolean) => {
     const bonus = recordAnswer(puzzle.id, correct, puzzle.points);
