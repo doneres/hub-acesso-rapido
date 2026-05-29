@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Shuffle, LayoutGrid, LayoutList, ArrowUpDown } from 'lucide-react';
+import { Shuffle, LayoutGrid, LayoutList, ArrowUpDown, Share2, X as XIcon } from 'lucide-react';
+import ShareModal from './components/ShareModal';
 import { Category, DifficultyLevel, SortOption, Tool } from './types';
 import { TOOLS, CATEGORIES } from './data/tools';
 import { useTheme } from './hooks/useTheme';
@@ -130,6 +131,18 @@ const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isTouchDevice = useMemo(detectTouchDevice, []);
 
+  /* Compartilhamento de coleção */
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [sharedCollectionIds, setSharedCollectionIds] = useState<string[] | null>(() => {
+    try {
+      const col = new URLSearchParams(window.location.search).get('col');
+      if (!col) return null;
+      const ids = atob(col).split(',').filter(Boolean);
+      const valid = ids.filter(id => TOOLS.some(t => t.id === id));
+      return valid.length > 0 ? valid : null;
+    } catch { return null; }
+  });
+
   /* Toast (cópia de link) */
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastMsg] = useState('Link copiado! ✓');
@@ -189,9 +202,16 @@ const App: React.FC = () => {
     });
   }, [searchQuery, activeCategory, levelFilter, favorites, recentIds, popularIds]);
 
+  /* ── Se em modo coleção, restringe ao subset compartilhado ─────────────── */
+  const collectionFiltered = useMemo(() => {
+    if (!sharedCollectionIds) return null;
+    const idSet = new Set(sharedCollectionIds);
+    return TOOLS.filter(t => idSet.has(t.id));
+  }, [sharedCollectionIds]);
+
   /* ── Ordenação ────────────────────────────────────────────────────────── */
   const sortedTools = useMemo(() => {
-    const tools = [...filteredTools];
+    const tools = [...(collectionFiltered ?? filteredTools)];
     switch (sortOption) {
       case 'az':         return tools.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
       case 'za':         return tools.sort((a, b) => b.name.localeCompare(a.name, 'pt-BR'));
@@ -439,8 +459,41 @@ const App: React.FC = () => {
               <Shuffle className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden sm:inline">Me surpreenda</span>
             </button>
+
+            {/* Compartilhar coleção */}
+            <button
+              onClick={() => setShareModalOpen(true)}
+              title="Compartilhar uma coleção de ferramentas"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 hover:border-ctrl-blue/40 hover:text-ctrl-blue hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200"
+            >
+              <Share2 className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Compartilhar</span>
+            </button>
           </div>
         </div>
+
+        {/* Banner de coleção compartilhada */}
+        {sharedCollectionIds && (
+          <div className="flex items-center justify-between gap-3 mb-4 px-4 py-3 rounded-xl bg-ctrl-blue/5 border-2 border-ctrl-blue/20 dark:bg-blue-900/10 dark:border-blue-800/30 animate-fadeIn">
+            <div className="flex items-center gap-2 min-w-0">
+              <Share2 className="w-4 h-4 text-ctrl-blue shrink-0" />
+              <span className="text-sm font-bold text-ctrl-blue">Coleção compartilhada</span>
+              <span className="text-xs text-gray-500 dark:text-slate-400 truncate">
+                · {sharedCollectionIds.length} ferramenta{sharedCollectionIds.length !== 1 ? 's' : ''} selecionada{sharedCollectionIds.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                setSharedCollectionIds(null);
+                window.history.replaceState(null, '', window.location.pathname);
+              }}
+              className="flex items-center gap-1 text-xs font-bold text-gray-400 dark:text-slate-500 hover:text-ctrl-blue dark:hover:text-blue-400 transition-colors shrink-0"
+            >
+              <XIcon className="w-3.5 h-3.5" />
+              Sair
+            </button>
+          </div>
+        )}
 
         {/* Conteúdo principal */}
         {isTransitioning ? (
@@ -572,6 +625,14 @@ const App: React.FC = () => {
         <PasswordModal
           onSuccess={handleProfessorSuccess}
           onClose={handleCloseProfessorModal}
+        />
+      )}
+
+      {/* Modal de compartilhamento de coleção */}
+      {shareModalOpen && (
+        <ShareModal
+          isDark={isDark}
+          onClose={() => setShareModalOpen(false)}
         />
       )}
     </div>
