@@ -4,10 +4,10 @@ import {
   Search, Eye, Star, Crown, BookOpen, Lightbulb,
   CheckCircle2, XCircle, Zap, ChevronDown, ChevronUp,
   LogIn, UserPlus, LogOut, Shield, Lock, User,
-  Medal, X, Info, ArrowRight,
+  Medal, X, Info, ArrowRight, ShoppingBag, AlertTriangle,
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
-import { useGameState, GameUser } from '../hooks/useGameState';
+import { useGameState, GameUser, Powerups, computeEarned } from '../hooks/useGameState';
 import { PUZZLES, CATEGORY_CONFIG, getRank, Puzzle } from '../data/puzzles';
 
 /* ── Keyframes injetados como <style> ──────────────────────────────────── */
@@ -749,18 +749,35 @@ function LevelCard({ level, levelIdx, unlocked, expanded, solvedCount, T, isDark
 /* ════════════════════════════════════════════════════════════════════════
    PUZZLE MODAL
 ════════════════════════════════════════════════════════════════════════ */
-function PuzzleModal({ puzzle, T, solved, hintUsed: initHintUsed, onSolve, onUseHint, onClose }: {
+function PuzzleModal({ puzzle, T, solved, hintUsed: initHintUsed, wrongCount, hasEliminate, onSolve, onUseHint, onUseEliminate, onClose }: {
   puzzle: Puzzle; T: ReturnType<typeof getTheme>;
-  solved: boolean; hintUsed: boolean;
-  onSolve: (correct: boolean) => void; onUseHint: () => void; onClose: () => void;
+  solved: boolean; hintUsed: boolean; wrongCount: number;
+  hasEliminate: boolean;
+  onSolve: (correct: boolean) => void; onUseHint: () => void;
+  onUseEliminate: () => void; onClose: () => void;
 }) {
-  const [selected, setSelected]   = useState<number | null>(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [hintShown, setHintShown] = useState(initHintUsed);
+  const [selected, setSelected]       = useState<number | null>(null);
+  const [submitted, setSubmitted]     = useState(false);
+  const [hintShown, setHintShown]     = useState(initHintUsed);
+  const [eliminatedIdx, setEliminated] = useState<number | null>(null);
+
   const cfg       = CATEGORY_CONFIG[puzzle.category];
   const correct   = submitted && selected === puzzle.answer;
-  const wrong     = submitted && selected !== puzzle.answer;
   const optLabels = ['A', 'B', 'C', 'D'];
+
+  // Pré-visualização de pontos que o aluno ganharia SE acertar agora
+  const previewPoints = computeEarned(puzzle.points, hintShown, wrongCount);
+
+  const handleEliminate = () => {
+    // Escolhe aleatoriamente uma opção errada que ainda não foi eliminada
+    const wrong = puzzle.options
+      .map((_, i) => i)
+      .filter(i => i !== puzzle.answer && i !== eliminatedIdx);
+    if (wrong.length === 0) return;
+    const pick = wrong[Math.floor(Math.random() * wrong.length)];
+    setEliminated(pick);
+    onUseEliminate();
+  };
 
   React.useEffect(() => {
     const fn = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -773,11 +790,16 @@ function PuzzleModal({ puzzle, T, solved, hintUsed: initHintUsed, onSolve, onUse
       <div style={{ width: '100%', maxWidth: 640, background: T.modalBg, border: `2px solid ${cfg.color}`, borderTop: `4px solid ${cfg.color}`, boxShadow: `6px 6px 0 ${cfg.color}40`, margin: 'auto' }}>
         {/* Header */}
         <div style={{ padding: '14px 18px', borderBottom: `2px solid ${T.topBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: cfg.bg }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
               <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: cfg.color }}>{puzzle.caseNumber}</span>
               <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', background: `${DIFF_COLOR[puzzle.difficulty]}20`, color: DIFF_COLOR[puzzle.difficulty] }}>{puzzle.difficulty.toUpperCase()}</span>
-              <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: cfg.color }}>+{puzzle.points} PTS</span>
+              {/* Preview de pontos atual */}
+              {!solved && (
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', background: previewPoints === puzzle.points ? `${cfg.color}20` : '#f59e0b20', color: previewPoints === puzzle.points ? cfg.color : '#d97706', border: `1px solid ${previewPoints === puzzle.points ? cfg.color : '#f59e0b'}40` }}>
+                  {previewPoints === puzzle.points ? `+${puzzle.points} PTS` : `+${previewPoints} PTS${wrongCount === 1 ? ' (50%)' : ' (mín)'}`}
+                </span>
+              )}
             </div>
             <div style={{ fontSize: 18, fontWeight: 900, color: T.text }}>{puzzle.title}</div>
           </div>
@@ -824,25 +846,43 @@ function PuzzleModal({ puzzle, T, solved, hintUsed: initHintUsed, onSolve, onUse
             </div>
           )}
 
+          {/* Aviso de penalidade por tentativas */}
+          {wrongCount > 0 && !solved && !submitted && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f59e0b10', border: '2px solid #f59e0b40' }}>
+              <AlertTriangle size={14} color="#d97706" style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: 12, color: '#d97706' }}>
+                {wrongCount === 1
+                  ? `Tentativa ${wrongCount + 1} — pontos reduzidos para 50% se acertar agora`
+                  : `Tentativa ${wrongCount + 1} — apenas 1 pt simbólico se acertar agora`}
+              </span>
+            </div>
+          )}
+
           {/* Question + options */}
           <div>
             <p style={{ fontSize: 15, fontWeight: 900, color: T.text, marginBottom: 12 }}>{puzzle.question}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {puzzle.options.map((opt, i) => {
+                const isElim  = eliminatedIdx === i;
                 const isSel   = selected === i;
                 const isCorr  = submitted && i === puzzle.answer;
                 const isWrong = submitted && isSel && i !== puzzle.answer;
+                const disabled = submitted || solved || isElim;
+
                 let borderColor = T.cardBorder, bg = T.cardBg, textColor = T.textSec;
-                if (!submitted && isSel) { borderColor = cfg.color; bg = cfg.bg; textColor = T.text; }
+                if (isElim)  { bg = T.cardBg; borderColor = T.textMut + '30'; textColor = T.textMut + '50'; }
+                else if (!submitted && isSel) { borderColor = cfg.color; bg = cfg.bg; textColor = T.text; }
                 if (isCorr)  { borderColor = '#22c55e'; bg = '#22c55e15'; textColor = '#22c55e'; }
                 if (isWrong) { borderColor = '#ef4444'; bg = '#ef444415'; textColor = '#ef4444'; }
+
                 return (
-                  <button key={i} disabled={submitted || solved} onClick={() => setSelected(i)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: bg, border: `2px solid ${borderColor}`, boxShadow: !submitted && isSel ? `3px 3px 0 ${cfg.color}40` : 'none', cursor: submitted || solved ? 'default' : 'pointer', textAlign: 'left', transition: 'all .1s', color: textColor, fontSize: 14 }}>
-                    <span style={{ flexShrink: 0, width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', background: (!submitted && isSel) || isCorr || isWrong ? (isCorr ? '#22c55e' : isWrong ? '#ef4444' : cfg.color) : T.accentDim, fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: (isSel && !submitted) || isCorr || isWrong ? '#fff' : T.textMut }}>
+                  <button key={i} disabled={disabled} onClick={() => !isElim && setSelected(i)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: bg, border: `2px solid ${borderColor}`, boxShadow: !submitted && isSel ? `3px 3px 0 ${cfg.color}40` : 'none', cursor: disabled ? 'default' : 'pointer', textAlign: 'left', transition: 'all .1s', color: textColor, fontSize: 14, opacity: isElim ? 0.4 : 1 }}>
+                    <span style={{ flexShrink: 0, width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', background: isElim ? T.textMut + '20' : (!submitted && isSel) || isCorr || isWrong ? (isCorr ? '#22c55e' : isWrong ? '#ef4444' : cfg.color) : T.accentDim, fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: isElim ? T.textMut : (isSel && !submitted) || isCorr || isWrong ? '#fff' : T.textMut }}>
                       {optLabels[i]}
                     </span>
-                    <span style={{ flex: 1, lineHeight: 1.5 }}>{opt}</span>
+                    <span style={{ flex: 1, lineHeight: 1.5, textDecoration: isElim ? 'line-through' : 'none' }}>{opt}</span>
+                    {isElim  && <XCircle size={14} color={T.textMut} style={{ flexShrink: 0, opacity: 0.5 }} />}
                     {isCorr  && <CheckCircle2 size={16} color="#22c55e" style={{ flexShrink: 0 }} />}
                     {isWrong && <XCircle      size={16} color="#ef4444" style={{ flexShrink: 0 }} />}
                   </button>
@@ -857,7 +897,9 @@ function PuzzleModal({ puzzle, T, solved, hintUsed: initHintUsed, onSolve, onUse
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 {correct ? <CheckCircle2 size={16} color="#22c55e" /> : <XCircle size={16} color="#ef4444" />}
                 <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: correct ? '#22c55e' : '#ef4444' }}>
-                  {correct ? `CASO RESOLVIDO! +${puzzle.points - (initHintUsed ? 5 : 0)} PTS` : 'INVESTIGAÇÃO CONTINUA...'}
+                  {correct
+                    ? `CASO RESOLVIDO! +${previewPoints} PTS${previewPoints < puzzle.points ? ' (penalidade aplicada)' : ''}`
+                    : 'INVESTIGAÇÃO CONTINUA...'}
                 </span>
               </div>
               <p style={{ fontSize: 13, color: T.textSec, lineHeight: 1.7, margin: 0 }}>{puzzle.explanation}</p>
@@ -872,11 +914,19 @@ function PuzzleModal({ puzzle, T, solved, hintUsed: initHintUsed, onSolve, onUse
           )}
 
           {/* Ações */}
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {/* Dica — agora só desconta ao acertar, não imediatamente */}
             {!hintShown && !submitted && !solved && (
               <button onClick={() => { onUseHint(); setHintShown(true); }}
                 style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: 'none', border: '2px solid #fbbf24', color: '#fbbf24', fontFamily: "'Press Start 2P', monospace", fontSize: 8, cursor: 'pointer' }}>
-                <Lightbulb size={13} /> DICA <span style={{ opacity: 0.7 }}>(-5)</span>
+                <Lightbulb size={13} /> DICA <span style={{ opacity: 0.7 }}>(-5 se acertar)</span>
+              </button>
+            )}
+            {/* Eliminar Errada — power-up */}
+            {!submitted && !solved && eliminatedIdx === null && hasEliminate && (
+              <button onClick={handleEliminate}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: 'none', border: '2px solid #a855f7', color: '#a855f7', fontFamily: "'Press Start 2P', monospace", fontSize: 8, cursor: 'pointer' }}>
+                <XCircle size={13} /> ELIMINAR ERRADA
               </button>
             )}
             {!submitted && !solved ? (
@@ -899,6 +949,89 @@ function PuzzleModal({ puzzle, T, solved, hintUsed: initHintUsed, onSolve, onUse
 }
 
 /* ════════════════════════════════════════════════════════════════════════
+   POWERUP SHOP
+════════════════════════════════════════════════════════════════════════ */
+const SHOP_ITEMS: Array<{
+  key: keyof Powerups; name: string; desc: string; cost: number; color: string; emoji: string;
+}> = [
+  {
+    key: 'shield', name: 'ESCUDO DE STREAK', cost: 20, color: '#3b82f6', emoji: '🛡',
+    desc: 'Se errar enquanto o escudo estiver ativo, seu streak NÃO será zerado. Consumido automaticamente.',
+  },
+  {
+    key: 'eliminate', name: 'ELIMINAR ERRADA', cost: 10, color: '#a855f7', emoji: '🔍',
+    desc: 'Risca uma opção incorreta durante a questão, reduzindo as chances de erro.',
+  },
+];
+
+function PowerupShop({ T, isDark, currentUser, onBuy }: {
+  T: ReturnType<typeof getTheme>; isDark: boolean;
+  currentUser: GameUser; onBuy: (key: keyof Powerups, cost: number) => boolean;
+}) {
+  const [feedback, setFeedback] = useState<{ msg: string; ok: boolean } | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const handleBuy = (key: keyof Powerups, cost: number) => {
+    const ok = onBuy(key, cost);
+    setFeedback({ msg: ok ? `${SHOP_ITEMS.find(i=>i.key===key)?.emoji} Comprado!` : '❌ Pontos insuficientes', ok });
+    setTimeout(() => setFeedback(null), 2200);
+  };
+
+  return (
+    <div style={{ background: T.cardBg, border: `2px solid ${T.cardBorder}`, boxShadow: `4px 4px 0 ${T.cardShadow}`, marginBottom: 16 }}>
+      <button onClick={() => setOpen(v => !v)}
+        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', borderBottom: open ? `2px solid ${T.topBorder}` : 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <ShoppingBag size={16} color={T.accent} />
+          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: T.text }}>LOJA DE POWER-UPS</span>
+          <span style={{ fontSize: 11, color: T.textMut }}>·</span>
+          <span style={{ fontSize: 11, color: T.textSec }}>🛡 {currentUser.powerups.shield} &nbsp; 🔍 {currentUser.powerups.eliminate}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: T.accent }}>{currentUser.points} PTS</span>
+          {open ? <ChevronUp size={16} color={T.textMut} /> : <ChevronDown size={16} color={T.textMut} />}
+        </div>
+      </button>
+
+      {open && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+          {SHOP_ITEMS.map((item, i) => {
+            const owned    = currentUser.powerups[item.key];
+            const canBuy   = currentUser.points >= item.cost;
+            return (
+              <div key={item.key} style={{ padding: '18px 20px', borderLeft: i > 0 ? `2px solid ${T.topBorder}` : 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                  <div style={{ width: 36, height: 36, background: `${item.color}18`, border: `2px solid ${item.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
+                    {item.emoji}
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: item.color }}>{item.name}</div>
+                    <div style={{ fontSize: 11, color: T.textMut, marginTop: 3 }}>Em estoque: <strong style={{ color: T.text }}>{owned}</strong></div>
+                  </div>
+                </div>
+                <p style={{ fontSize: 12, color: T.textSec, lineHeight: 1.55, marginBottom: 12, margin: '0 0 12px' }}>{item.desc}</p>
+                <button onClick={() => handleBuy(item.key, item.cost)} disabled={!canBuy}
+                  style={{ width: '100%', padding: '9px 12px', background: canBuy ? item.color : (isDark ? '#1e2a3a' : '#e5e7eb'), border: 'none', color: canBuy ? '#fff' : T.textMut, fontFamily: "'Press Start 2P', monospace", fontSize: 8, cursor: canBuy ? 'pointer' : 'not-allowed', boxShadow: canBuy ? `3px 3px 0 ${item.color}60` : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all .1s' }}
+                  onMouseEnter={e => canBuy && ((e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)')}
+                  onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.transform = '')}>
+                  {item.emoji} COMPRAR — {item.cost} PTS
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {feedback && (
+        <div style={{ padding: '10px 20px', borderTop: `2px solid ${T.topBorder}`, textAlign: 'center', fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: feedback.ok ? '#22c55e' : '#ef4444' }}>
+          {feedback.msg}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════════
    MAIN PAGE
 ════════════════════════════════════════════════════════════════════════ */
 interface DesafiosPageProps { onBackToHub: () => void; }
@@ -906,7 +1039,7 @@ interface DesafiosPageProps { onBackToHub: () => void; }
 export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const { isDark, toggleTheme } = useTheme();
   const T = getTheme(isDark);
-  const { currentUser, users, leaderboard, registerUser, login, logout, useHint, recordAnswer } = useGameState();
+  const { currentUser, users, leaderboard, registerUser, login, logout, useHint, recordAnswer, buyPowerup, useEliminate } = useGameState();
 
   // Tutorial sempre mostra ao entrar na página
   const [showTutorial, setShowTutorial] = useState(true);
@@ -923,8 +1056,14 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
     (LEVELS[levelIdx].puzzleIds as readonly string[]).filter(id => isSolved(id)).length;
 
   const handleSolve = (puzzle: Puzzle, correct: boolean) => {
-    const bonus = recordAnswer(puzzle.id, correct, puzzle.points);
-    if (bonus > 0) { setStreakMsg(`SEQUÊNCIA! +${bonus} PTS BÔNUS`); setTimeout(() => setStreakMsg(''), 3000); }
+    const { bonus, shieldUsed } = recordAnswer(puzzle.id, correct, puzzle.points);
+    if (!correct && shieldUsed) {
+      setStreakMsg('🛡 STREAK PROTEGIDO!');
+      setTimeout(() => setStreakMsg(''), 2500);
+    } else if (bonus > 0) {
+      setStreakMsg(`SEQUÊNCIA! +${bonus} PTS BÔNUS`);
+      setTimeout(() => setStreakMsg(''), 3000);
+    }
   };
 
   const rank = currentUser ? getRank(currentUser.points) : null;
@@ -1152,6 +1291,13 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
                 </div>
               )}
 
+              {/* Loja de power-ups */}
+              <PowerupShop
+                T={T} isDark={isDark}
+                currentUser={currentUser}
+                onBuy={buyPowerup}
+              />
+
               {/* Nível cards com progressão */}
               {LEVELS.map((level, idx) => (
                 <LevelCard
@@ -1209,9 +1355,13 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
       {activePuzzle && currentUser && (
         <PuzzleModal
           puzzle={activePuzzle} T={T}
-          solved={isSolved(activePuzzle.id)} hintUsed={isHintUsed(activePuzzle.id)}
+          solved={isSolved(activePuzzle.id)}
+          hintUsed={isHintUsed(activePuzzle.id)}
+          wrongCount={currentUser?.wrongAttempts[activePuzzle.id] ?? 0}
+          hasEliminate={(currentUser?.powerups.eliminate ?? 0) > 0}
           onSolve={correct => handleSolve(activePuzzle, correct)}
           onUseHint={() => useHint(activePuzzle.id)}
+          onUseEliminate={useEliminate}
           onClose={() => setActivePuzzle(null)}
         />
       )}

@@ -1,5 +1,10 @@
 import { useState, useCallback } from 'react';
 
+export interface Powerups {
+  shield: number;    // "Escudo de Streak" — próximo erro não zera streak
+  eliminate: number; // "Eliminar Errada" — risca 1 opção incorreta na questão
+}
+
 export interface GameUser {
   id: string;
   name: string;
@@ -9,6 +14,8 @@ export interface GameUser {
   solvedPuzzles: string[];
   hintsUsed: string[];
   streak: number;
+  wrongAttempts: Record<string, number>; // puzzleId → nº de erros
+  powerups: Powerups;
 }
 
 interface GameState {
@@ -18,7 +25,7 @@ interface GameState {
 
 const STORAGE_KEY = 'ctrlplay_desafios_v2';
 
-/** FNV-1a 32-bit hash — simple but consistent across sessions */
+/** FNV-1a 32-bit hash */
 function hashPassword(s: string): string {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
@@ -28,16 +35,34 @@ function hashPassword(s: string): string {
   return (h >>> 0).toString(36);
 }
 
+/** Garante que usuários antigos (sem os novos campos) tenham defaults */
+function migrateUser(u: Partial<GameUser> & Pick<GameUser, 'id' | 'name'>): GameUser {
+  return {
+    id: u.id,
+    name: u.name,
+    avatar: u.avatar ?? '🕵',
+    passwordHash: u.passwordHash ?? '',
+    points: u.points ?? 0,
+    solvedPuzzles: u.solvedPuzzles ?? [],
+    hintsUsed: u.hintsUsed ?? [],
+    streak: u.streak ?? 0,
+    wrongAttempts: (u as any).wrongAttempts ?? {},
+    powerups: (u as any).powerups ?? { shield: 0, eliminate: 0 },
+  };
+}
+
 function loadState(): GameState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as GameState;
-    // Migrate v1 data if present
+    if (raw) {
+      const parsed = JSON.parse(raw) as GameState;
+      return { ...parsed, users: parsed.users.map(migrateUser) };
+    }
     const v1 = localStorage.getItem('ctrlplay_desafios_v1');
     if (v1) {
-      const old = JSON.parse(v1) as { users: Omit<GameUser, 'passwordHash'>[]; currentUserId: string | null };
+      const old = JSON.parse(v1) as { users: any[]; currentUserId: string | null };
       return {
-        users: old.users.map(u => ({ ...u, passwordHash: '' })),
+        users: old.users.map(u => migrateUser({ ...u, passwordHash: '' })),
         currentUserId: old.currentUserId,
       };
     }
@@ -51,6 +76,22 @@ function saveState(state: GameState) {
 
 export type LoginResult = 'ok' | 'wrong-password' | 'not-found';
 
+/**
+ * Calcula os pontos que serão ganhos ao acertar agora.
+ * Exportado para que o PuzzleModal possa exibir o preview.
+ */
+export function computeEarned(
+  basePoints: number,
+  hintUsed: boolean,
+  wrongCount: number,
+): number {
+  const hintPenalty = hintUsed ? 5 : 0;
+  const base = Math.max(0, basePoints - hintPenalty);
+  if (wrongCount === 0) return Math.max(1, base);
+  if (wrongCount === 1) return Math.max(1, Math.floor(base * 0.5));
+  return 1; // 3ª+ tentativa: mínimo simbólico
+}
+
 export function useGameState() {
   const [state, setState] = useState<GameState>(loadState);
 
@@ -61,12 +102,18 @@ export function useGameState() {
     saveState(next);
   }, []);
 
+  const update = useCallback((updated: GameUser) => {
+    persist({ ...state, users: state.users.map(u => u.id === updated.id ? updated : u) });
+  }, [state, persist]);
+
+  /* ── Auth ──────────────────────────────────────────────────────── */
+
   const registerUser = useCallback((name: string, avatar: string, password: string): string => {
     const id = `u_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
     const newUser: GameUser = {
-      id, name, avatar,
-      passwordHash: hashPassword(password),
-      points: 0, solvedPuzzles: [], hintsUsed: [], streak: 0,
+      id, name, avatar, passwordHash: hashPassword(password),
+      points: 0, solvedPuzzles: [], hintsUsed: [],
+      streak: 0, wrongAttempts: {}, powerups: { shield: 0, eliminate: 0 },
     };
     persist({ users: [...state.users, newUser], currentUserId: id });
     return id;
@@ -75,57 +122,111 @@ export function useGameState() {
   const login = useCallback((name: string, password: string): LoginResult => {
     const user = state.users.find(u => u.name.toLowerCase() === name.toLowerCase());
     if (!user) return 'not-found';
-    // Users migrated from v1 have no password — any password works on first login
     if (user.passwordHash && user.passwordHash !== hashPassword(password)) return 'wrong-password';
-    // If migrated (empty hash), set the password now
     if (!user.passwordHash) {
-      const updated = { ...user, passwordHash: hashPassword(password) };
-      persist({ users: state.users.map(u => u.id === user.id ? updated : u), currentUserId: user.id });
+      update(migrateUser({ ...user, passwordHash: hashPassword(password) }));
+      persist({ users: state.users.map(u => u.id === user.id ? migrateUser({ ...u, passwordHash: hashPassword(password) }) : u), currentUserId: user.id });
     } else {
       persist({ ...state, currentUserId: user.id });
     }
     return 'ok';
-  }, [state, persist]);
+  }, [state, persist, update]);
 
   const logout = useCallback(() => {
     persist({ ...state, currentUserId: null });
   }, [state, persist]);
 
+  /* ── Dica ───────────────────────────────────────────────────────── */
+
+  /**
+   * FIX Bug 1: useHint apenas REGISTRA o uso da dica.
+   * O desconto de -5 pts acontece UMA ÚNICA vez em recordAnswer.
+   * Antes estava descontando em ambos (dupla penalidade).
+   */
   const useHint = useCallback((puzzleId: string): boolean => {
     if (!currentUser) return false;
     if (currentUser.hintsUsed.includes(puzzleId)) return true;
-    const updated: GameUser = {
-      ...currentUser,
-      points: Math.max(0, currentUser.points - 5),
-      hintsUsed: [...currentUser.hintsUsed, puzzleId],
-    };
-    persist({ ...state, users: state.users.map(u => u.id === currentUser.id ? updated : u) });
+    update({ ...currentUser, hintsUsed: [...currentUser.hintsUsed, puzzleId] });
     return true;
-  }, [currentUser, state, persist]);
+  }, [currentUser, update]);
 
-  const recordAnswer = useCallback((puzzleId: string, correct: boolean, puzzlePoints: number): number => {
-    if (!currentUser) return 0;
+  /* ── Resposta ───────────────────────────────────────────────────── */
+
+  /**
+   * FIX Bug 2: penalidade progressiva por tentativas + integração com Escudo.
+   * Retorna { bonus, shieldUsed } para o caller poder mostrar feedback.
+   *
+   * Pontuação:
+   *   1ª tentativa certa:  base completo  (- 5 se usou dica)
+   *   2ª tentativa certa:  50% do base
+   *   3ª+ tentativa certa: 1 pt mínimo
+   */
+  const recordAnswer = useCallback((
+    puzzleId: string,
+    correct: boolean,
+    puzzlePoints: number,
+  ): { bonus: number; shieldUsed: boolean } => {
+    if (!currentUser) return { bonus: 0, shieldUsed: false };
+
+    const wrongCount = currentUser.wrongAttempts[puzzleId] ?? 0;
+
     if (!correct) {
-      const updated = { ...currentUser, streak: 0 };
-      persist({ ...state, users: state.users.map(u => u.id === currentUser.id ? updated : u) });
-      return 0;
+      const hasShield = currentUser.powerups.shield > 0;
+      update({
+        ...currentUser,
+        streak: hasShield ? currentUser.streak : 0,
+        wrongAttempts: { ...currentUser.wrongAttempts, [puzzleId]: wrongCount + 1 },
+        powerups: hasShield
+          ? { ...currentUser.powerups, shield: currentUser.powerups.shield - 1 }
+          : currentUser.powerups,
+      });
+      return { bonus: 0, shieldUsed: hasShield };
     }
-    if (currentUser.solvedPuzzles.includes(puzzleId)) return 0;
-    const hintPenalty = currentUser.hintsUsed.includes(puzzleId) ? 5 : 0;
-    const earned = Math.max(1, puzzlePoints - hintPenalty);
+
+    if (currentUser.solvedPuzzles.includes(puzzleId)) return { bonus: 0, shieldUsed: false };
+
+    const hintUsed = currentUser.hintsUsed.includes(puzzleId);
+    const earned = computeEarned(puzzlePoints, hintUsed, wrongCount);
     const newStreak = currentUser.streak + 1;
     const bonus = newStreak % 5 === 0 ? 10 : 0;
-    const updated: GameUser = {
+
+    update({
       ...currentUser,
       points: currentUser.points + earned + bonus,
       solvedPuzzles: [...currentUser.solvedPuzzles, puzzleId],
       streak: newStreak,
-    };
-    persist({ ...state, users: state.users.map(u => u.id === currentUser.id ? updated : u) });
-    return bonus;
-  }, [currentUser, state, persist]);
+    });
+    return { bonus, shieldUsed: false };
+  }, [currentUser, update]);
+
+  /* ── Power-up: Loja ────────────────────────────────────────────── */
+
+  const buyPowerup = useCallback((key: keyof Powerups, cost: number): boolean => {
+    if (!currentUser || currentUser.points < cost) return false;
+    update({
+      ...currentUser,
+      points: currentUser.points - cost,
+      powerups: { ...currentUser.powerups, [key]: currentUser.powerups[key] + 1 },
+    });
+    return true;
+  }, [currentUser, update]);
+
+  /* ── Power-up: Usar Eliminar Errada (consome 1 unidade) ─────────── */
+
+  const useEliminate = useCallback((): boolean => {
+    if (!currentUser || currentUser.powerups.eliminate <= 0) return false;
+    update({
+      ...currentUser,
+      powerups: { ...currentUser.powerups, eliminate: currentUser.powerups.eliminate - 1 },
+    });
+    return true;
+  }, [currentUser, update]);
 
   const leaderboard = [...state.users].sort((a, b) => b.points - a.points);
 
-  return { currentUser, users: state.users, leaderboard, registerUser, login, logout, useHint, recordAnswer };
+  return {
+    currentUser, users: state.users, leaderboard,
+    registerUser, login, logout,
+    useHint, recordAnswer, buyPowerup, useEliminate,
+  };
 }
