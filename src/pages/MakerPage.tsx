@@ -51,7 +51,7 @@ const PROJECTS: MakerProject[] = [
     materials:['Arduino UNO','Sensor DHT11','Display LCD 16x2','Módulo I2C','Protoboard'],
     skills:['Sensores','Bibliotecas','Display LCD','Protocolo I2C'],
     tutorialUrl:'https://www.instructables.com/Arduino-Weather-Station-Part-1/',
-    imageUrl:'https://images.unsplash.com/photo-1561484930-974b10b82e69?w=600&q=80&fit=crop' },
+    imageUrl:'https://images.unsplash.com/photo-1581093458791-9e5e14f0b5b2?w=600&q=80&fit=crop' },
   { id:'robo-seguidor', title:'Robô Seguidor de Linha', platform:'Arduino', difficulty:'Médio', duration:'4–6h',
     description:'Monte um robô que segue uma linha preta no chão usando sensores infravermelhos. Um clássico de robótica que ensina controle de motores e lógica de decisão.',
     materials:['Arduino UNO','2× Motor DC + chassi','Módulo L298N','Sensores IR','Bateria 9V'],
@@ -150,7 +150,28 @@ const NOISE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'
 const BLUEPRINT_GRID = (alpha = 0.13) =>
   `linear-gradient(rgba(44,95,124,${alpha}) 1px, transparent 1px), linear-gradient(90deg, rgba(44,95,124,${alpha}) 1px, transparent 1px)`;
 
+/* placeholder para imagens que falham: kraft + grid blueprint + mira */
+const IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+    <rect width="600" height="400" fill="#EDE0C4"/>
+    <defs><pattern id="g" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M30 0H0V30" fill="none" stroke="#2C5F7C" stroke-width="0.8" opacity="0.3"/>
+    </pattern></defs>
+    <rect width="600" height="400" fill="url(#g)"/>
+    <g transform="translate(300,180)" opacity="0.45">
+      <circle r="52" fill="none" stroke="#C9A66B" stroke-width="2.5"/>
+      <circle r="7" fill="#C9A66B"/>
+      <line y1="-52" y2="-18" stroke="#C9A66B" stroke-width="2.5"/>
+      <line y1="18" y2="52" stroke="#C9A66B" stroke-width="2.5"/>
+      <line x1="-52" x2="-18" stroke="#C9A66B" stroke-width="2.5"/>
+      <line x1="18" x2="52" stroke="#C9A66B" stroke-width="2.5"/>
+    </g>
+    <text x="300" y="260" text-anchor="middle" font-family="monospace" font-size="13" fill="#5C4A36" opacity="0.65">// IMAGEM INDISPONÍVEL</text>
+  </svg>`
+);
+
 const MAKER_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Fredoka:wght@600&family=Bungee&display=swap');
   @keyframes gear    { to { transform: rotate(360deg);  } }
   @keyframes gear-r  { to { transform: rotate(-360deg); } }
   @keyframes stripe-go { from { background-position: 0 0; } to { background-position: 64px 0; } }
@@ -274,7 +295,8 @@ const ProjectCard: React.FC<{ project: MakerProject; idx: number; isDark: boolea
       <div className="relative overflow-hidden shrink-0" style={{ height:160, zIndex:1 }}>
         <img src={project.imageUrl} alt={project.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          loading="lazy" />
+          loading="lazy"
+          onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = IMG_FALLBACK; }} />
         <div className="absolute inset-0" style={{ background:'linear-gradient(to top,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.08) 55%)' }} />
 
         <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-black text-white"
@@ -378,52 +400,62 @@ const ProjectCard: React.FC<{ project: MakerProject; idx: number; isDark: boolea
   );
 };
 
-/* ── Channel Card — estilo "ficha blueprint" ────────────────────────────── */
-const ChannelCard: React.FC<{ ch: Channel; isDark: boolean }> = ({ ch, isDark }) => (
-  <a href={ch.url} target="_blank" rel="noopener noreferrer"
-    className="group flex gap-4 p-4 transition-all duration-200"
-    style={{
-      background: isDark?'#0D1820':'#F5FAFD',
-      border:`1px solid ${M.blueprint}40`, borderLeft:`4px solid ${M.blueprint}`,
-      boxShadow: isDark?'3px 3px 0 rgba(0,0,0,0.4)':'3px 3px 0 rgba(44,95,124,0.15)',
-      transition:'transform .18s,box-shadow .18s',
-    }}
-    onMouseEnter={e=>{ const el=e.currentTarget as HTMLElement; el.style.transform='translate(-2px,-3px)'; el.style.boxShadow=isDark?'6px 6px 0 rgba(0,0,0,0.5)':'6px 6px 0 rgba(44,95,124,0.22)'; }}
-    onMouseLeave={e=>{ const el=e.currentTarget as HTMLElement; el.style.transform=''; el.style.boxShadow=isDark?'3px 3px 0 rgba(0,0,0,0.4)':'3px 3px 0 rgba(44,95,124,0.15)'; }}
-  >
-    {/* LED indicator */}
-    <div className="shrink-0 flex items-start pt-1">
-      <div style={{ width:10, height:10, borderRadius:'50%', background:'#ef4444',
-        boxShadow:'0 0 6px #ef4444', animation:'led 2s ease-in-out infinite' }} />
-    </div>
+/* ── Channel Card — ficha blueprint com vocabulário maker ───────────────── */
+const TAPE_BLUES = ['#2C5F7C88','#3E8E5A88','#2C5F7C70'];
+const ChannelCard: React.FC<{ ch: Channel; isDark: boolean; idx: number }> = ({ ch, isDark, idx }) => {
+  const sh    = isDark?'3px 3px 0 rgba(0,0,0,0.4)':'3px 3px 0 rgba(44,95,124,0.18)';
+  const shHov = isDark?'7px 7px 0 rgba(0,0,0,0.5)':'7px 7px 0 rgba(44,95,124,0.28)';
+  return (
+    <a href={ch.url} target="_blank" rel="noopener noreferrer"
+      className="group relative flex gap-4 p-4"
+      style={{
+        background: isDark?'#0D1820':'#F0F6FA',
+        border:`1.5px dashed ${M.blueprint}55`, borderLeft:`4px solid ${M.blueprint}`,
+        boxShadow: sh, marginTop:12, overflow:'visible',
+        transition:'transform .18s,box-shadow .18s',
+      }}
+      onMouseEnter={e=>{ const el=e.currentTarget as HTMLElement; el.style.transform='translate(-2px,-4px)'; el.style.boxShadow=shHov; }}
+      onMouseLeave={e=>{ const el=e.currentTarget as HTMLElement; el.style.transform=''; el.style.boxShadow=sh; }}
+    >
+      {/* Fita crepe blueprint */}
+      <WashiTape color={TAPE_BLUES[idx%3]} angle={idx%2===0?-1.5:1.5} w={52} />
+      {/* Parafuso canto */}
+      <div style={{ position:'absolute', top:9, right:9 }}><Screw color={isDark?'#4A7A96':'#2C5F7C'} size={11} /></div>
 
-    <div className="flex-1 min-w-0">
-      <div className="flex items-center gap-2 mb-1.5">
-        <span className="text-sm font-black truncate"
-          style={{ color:isDark?M.paper:M.ink, fontFamily:"'Courier New',monospace" }}>
-          {ch.name}
-        </span>
-        <span className={`text-[9px] font-black px-2 py-0.5 shrink-0 uppercase tracking-wider ${
-          ch.lang==='PT-BR'
-            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-            : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-        }`}>
-          {ch.lang}
-        </span>
+      {/* LED indicator */}
+      <div className="shrink-0 flex items-start pt-1">
+        <div style={{ width:10, height:10, borderRadius:'50%', background:'#ef4444',
+          boxShadow:'0 0 6px #ef4444', animation:'led 2s ease-in-out infinite' }} />
       </div>
-      <p className="text-xs leading-snug mb-2" style={{ color:isDark?'#8BAFC4':'#3A5A70' }}>
-        {ch.desc}
-      </p>
-      <p className="text-[10px] font-black uppercase tracking-[0.12em]"
-        style={{ color:M.blueprint, fontFamily:'monospace' }}>
-        {ch.focus}
-      </p>
-    </div>
 
-    <ExternalLink className="w-4 h-4 shrink-0 self-center opacity-30 group-hover:opacity-80 transition-opacity"
-      style={{ color:M.blueprint }} />
-  </a>
-);
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="text-sm font-black truncate"
+            style={{ color:isDark?M.paper:M.ink, fontFamily:"'Courier New',monospace" }}>
+            {ch.name}
+          </span>
+          <span className={`text-[9px] font-black px-2 py-0.5 shrink-0 uppercase tracking-wider ${
+            ch.lang==='PT-BR'
+              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+              : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+          }`}>
+            {ch.lang}
+          </span>
+        </div>
+        <p className="text-xs leading-snug mb-2" style={{ color:isDark?'#8BAFC4':'#3A5A70' }}>
+          {ch.desc}
+        </p>
+        <p className="text-[10px] font-black uppercase tracking-[0.12em]"
+          style={{ color:M.blueprint, fontFamily:'monospace' }}>
+          {ch.focus}
+        </p>
+      </div>
+
+      <ExternalLink className="w-4 h-4 shrink-0 self-center opacity-30 group-hover:opacity-80 transition-opacity"
+        style={{ color:M.blueprint }} />
+    </a>
+  );
+};
 
 /* ── Tool Card — estilo "gaveta de componentes" ─────────────────────────── */
 const ToolCard: React.FC<{ tool: OnlineTool }> = ({ tool }) => {
@@ -456,14 +488,20 @@ const ToolCard: React.FC<{ tool: OnlineTool }> = ({ tool }) => {
   );
 };
 
-/* ── Divider ────────────────────────────────────────────────────────────── */
-const MakerDivider = ({ isDark }: { isDark: boolean }) => (
-  <div className="flex items-center gap-3 my-2 px-4 md:px-8">
-    <div className="flex-1 h-px" style={{ background:`${M.tan}60` }} />
-    <Settings size={16} style={{ color:M.tan, animation:'gear 8s linear infinite', opacity:0.6 }} />
-    <div className="flex-1 h-px" style={{ background:`${M.tan}60` }} />
-  </div>
-);
+/* ── Divisor tipo rebite/parafuso entre seções ──────────────────────────── */
+function RivetStrip({ from, to, rivColor = '#C9A66B' }: { from: string; to: string; rivColor?: string }) {
+  return (
+    <div style={{
+      height: 26,
+      backgroundImage: [
+        `radial-gradient(circle, ${rivColor}90 4px, ${rivColor}20 4px, transparent 7px)`,
+        `linear-gradient(to bottom, ${from}, ${to})`,
+      ].join(', '),
+      backgroundSize: '36px 26px, 100% 100%',
+      backgroundPosition: '18px center, 0 0',
+    }} />
+  );
+}
 
 /* ── Cabeçalho de seção ─────────────────────────────────────────────────── */
 function SectionHead({ icon: Icon, label, sub, color, light = false }: {
@@ -541,50 +579,147 @@ const MakerPage: React.FC<MakerPageProps> = ({ onBackToHub, onOpenRoadmaps }) =>
 
           {/* Voltar */}
           <button onClick={onBackToHub}
-            className="flex items-center gap-2 mb-10 text-sm font-bold text-white/40 hover:text-yellow-400 transition-colors group">
+            className="flex items-center gap-2 mb-10 text-sm font-bold text-white/60 hover:text-yellow-400 transition-colors group">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Voltar ao Hub
           </button>
 
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2.5 mb-6 px-4 py-2"
-            style={{ border:'1px solid rgba(255,215,0,0.3)', background:'rgba(255,215,0,0.06)' }}>
-            <div style={{ width:8, height:8, borderRadius:'50%', background:'#FFD600',
-              animation:'pulse-dot 1.8s ease-in-out infinite' }} />
-            <span className="text-xs font-black uppercase tracking-[0.3em] text-yellow-400"
-              style={{ fontFamily:'monospace' }}>
-              Cultura Maker
-            </span>
-          </div>
+          {/* Flex: conteúdo + ilustração */}
+          <div className="flex items-center gap-8 lg:gap-16">
 
-          {/* Título com estética de carimbo/estêncil */}
-          <h1 className="font-black text-white mb-5 leading-none"
-            style={{ fontSize:'clamp(2.5rem,6vw,5rem)', fontFamily:"'Courier New',monospace",
-              letterSpacing:'-0.01em', textTransform:'uppercase' }}>
-            Construa.{' '}
-            <span style={{ color:'#00979D' }}>Crie.</span>{' '}
-            <br />
-            <span style={{ color:'#FFD600', textShadow:'0 0 40px rgba(255,214,0,0.25)' }}>Inove.</span>
-          </h1>
+            {/* Coluna de texto */}
+            <div className="flex-1 min-w-0">
 
-          <p className="text-sm md:text-base text-white/45 max-w-lg mb-10 leading-relaxed">
-            Projetos reais com Arduino, Raspberry Pi, micro:bit, ESP32 e impressão 3D.
-            Aprenda construindo — tutoriais, materiais e tudo que você precisa.
-          </p>
-
-          {/* Stats */}
-          <div className="flex flex-wrap gap-6">
-            {[
-              { n:PROJECTS.length,     l:'Projetos'    },
-              { n:5,                   l:'Plataformas' },
-              { n:CHANNELS.length,     l:'Canais'      },
-              { n:ONLINE_TOOLS.length, l:'Ferramentas' },
-            ].map(s=>(
-              <div key={s.l} style={{ borderLeft:`2px solid rgba(255,214,0,0.3)`, paddingLeft:14 }}>
-                <div className="text-3xl font-black leading-none" style={{ color:'#FFD600', fontFamily:'monospace' }}>{s.n}</div>
-                <div className="text-[10px] font-black uppercase tracking-[0.22em] text-white/30 mt-1" style={{ fontFamily:'monospace' }}>{s.l}</div>
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2.5 mb-6 px-4 py-2"
+                style={{ border:'1px solid rgba(255,215,0,0.3)', background:'rgba(255,215,0,0.06)' }}>
+                <div style={{ width:8, height:8, borderRadius:'50%', background:'#FFD600',
+                  animation:'pulse-dot 1.8s ease-in-out infinite' }} />
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-yellow-400"
+                  style={{ fontFamily:'monospace' }}>
+                  Cultura Maker
+                </span>
               </div>
-            ))}
+
+              {/* Título multi-fonte — cada palavra tem material diferente */}
+              <h1 aria-label="Construa. Crie. Inove." className="mb-5" style={{ lineHeight:1.05 }}>
+                {/* CONSTRUA — estêncil metálico */}
+                <span aria-hidden="true" style={{
+                  display:'inline-block',
+                  fontFamily:"'Black Ops One', Impact, monospace",
+                  fontSize:'clamp(2rem,5.5vw,4.4rem)',
+                  color:'#A8B8C8',
+                  transform:'rotate(-1.5deg)',
+                  textShadow:'2px 2px 0 rgba(0,0,0,0.45)',
+                  letterSpacing:'0.01em',
+                  marginRight:'0.2em',
+                }}>CONSTRUA.</span>
+                {' '}
+                {/* CRIE — massinha arredondada */}
+                <span aria-hidden="true" style={{
+                  display:'inline-block',
+                  fontFamily:"'Fredoka', Verdana, sans-serif",
+                  fontWeight:600,
+                  fontSize:'clamp(2rem,5.5vw,4.4rem)',
+                  color:'#00979D',
+                  transform:'rotate(2.5deg)',
+                  letterSpacing:'0.01em',
+                }}>CRIE.</span>
+                <br />
+                {/* INOVE — blocado tipo Lego com marca-texto fita crepe */}
+                <span aria-hidden="true" style={{
+                  display:'inline-block',
+                  fontFamily:"'Bungee', Impact, monospace",
+                  fontSize:'clamp(2rem,5.5vw,4.4rem)',
+                  color:'#FFD600',
+                  transform:'rotate(-0.8deg)',
+                  position:'relative',
+                  letterSpacing:'0.02em',
+                }}>
+                  <span aria-hidden="true" style={{
+                    position:'absolute', bottom:'10%', left:'-2%', right:'-2%', height:'38%',
+                    background:'rgba(210,105,30,0.42)', transform:'rotate(-1.2deg) skewX(-3deg)', zIndex:0,
+                  }} />
+                  <span style={{ position:'relative', zIndex:1 }}>INOVE.</span>
+                </span>
+              </h1>
+
+              <p className="text-sm md:text-base max-w-lg mb-10 leading-relaxed"
+                style={{ color:'rgba(255,255,255,0.72)' }}>
+                Projetos reais com Arduino, Raspberry Pi, micro:bit, ESP32 e impressão 3D.
+                Aprenda construindo — tutoriais, materiais e tudo que você precisa.
+              </p>
+
+              {/* Stats — contraste melhorado */}
+              <div className="flex flex-wrap gap-6">
+                {[
+                  { n:PROJECTS.length,     l:'Projetos'    },
+                  { n:5,                   l:'Plataformas' },
+                  { n:CHANNELS.length,     l:'Canais'      },
+                  { n:ONLINE_TOOLS.length, l:'Ferramentas' },
+                ].map(s=>(
+                  <div key={s.l} style={{ borderLeft:`2px solid rgba(255,214,0,0.35)`, paddingLeft:14 }}>
+                    <div className="text-3xl font-black leading-none" style={{ color:'#FFD600', fontFamily:'monospace' }}>{s.n}</div>
+                    <div className="text-[11px] font-bold uppercase tracking-[0.2em] mt-1"
+                      style={{ color:'rgba(255,255,255,0.58)', fontFamily:'monospace' }}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Ilustração blueprint — oculta no mobile */}
+            <div className="hidden lg:block shrink-0 w-[380px]" aria-hidden="true"
+              style={{ opacity:0.22 }}>
+              <svg viewBox="0 0 380 280" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%' }}>
+                {/* Grid blueprint */}
+                <defs>
+                  <pattern id="bpg" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M20 0H0V20" stroke="#2C5F7C" strokeWidth="0.5"/>
+                  </pattern>
+                </defs>
+                <rect width="380" height="280" fill="url(#bpg)" opacity="0.7"/>
+                {/* Placa principal */}
+                <rect x="70" y="30" width="220" height="180" rx="4" stroke="#2C5F7C" strokeWidth="2"/>
+                {/* Pinos esquerdos */}
+                {[0,1,2,3,4,5].map(i=>(
+                  <rect key={`lp${i}`} x="55" y={50+i*20} width="15" height="10" rx="1" stroke="#2C5F7C" strokeWidth="1.5"/>
+                ))}
+                {/* Pinos direitos */}
+                {[0,1,2,3,4,5,6,7].map(i=>(
+                  <rect key={`rp${i}`} x="290" y={46+i*18} width="15" height="10" rx="1" stroke="#2C5F7C" strokeWidth="1.5"/>
+                ))}
+                {/* Chip principal */}
+                <rect x="135" y="75" width="100" height="90" rx="3" stroke="#3E8E5A" strokeWidth="2"/>
+                {[0,1,2,3].map(i=>(
+                  <line key={`ct${i}`} x1={145+i*22} y1="75" x2={145+i*22} y2="60" stroke="#3E8E5A" strokeWidth="1.5"/>
+                ))}
+                {[0,1,2,3].map(i=>(
+                  <line key={`cb${i}`} x1={145+i*22} y1="165" x2={145+i*22} y2="180" stroke="#3E8E5A" strokeWidth="1.5"/>
+                ))}
+                <text x="185" y="124" textAnchor="middle" fontFamily="monospace" fontSize="10" fill="#3E8E5A">ATmega</text>
+                <text x="185" y="138" textAnchor="middle" fontFamily="monospace" fontSize="10" fill="#3E8E5A">328P</text>
+                {/* Cristal */}
+                <rect x="83" y="90" width="34" height="14" rx="2" stroke="#C9A66B" strokeWidth="1.5"/>
+                <text x="100" y="101" textAnchor="middle" fontFamily="monospace" fontSize="8" fill="#C9A66B">16MHz</text>
+                {/* USB */}
+                <rect x="70" y="172" width="36" height="22" rx="2" stroke="#C9A66B" strokeWidth="2"/>
+                <text x="88" y="186" textAnchor="middle" fontFamily="monospace" fontSize="8" fill="#C9A66B">USB</text>
+                {/* LEDs */}
+                <circle cx="265" cy="52" r="6" stroke="#FFD600" strokeWidth="1.5"/>
+                <circle cx="284" cy="52" r="6" stroke="#22c55e" strokeWidth="1.5"/>
+                {/* Traços */}
+                <path d="M70 95H55" stroke="#2C5F7C" strokeWidth="1" strokeDasharray="4 2"/>
+                <path d="M290 64H305" stroke="#2C5F7C" strokeWidth="1" strokeDasharray="4 2"/>
+                <path d="M145 60V44H240V60" stroke="#3E8E5A" strokeWidth="1" strokeDasharray="3 2"/>
+                {/* Linha de cota */}
+                <line x1="70" y1="228" x2="290" y2="228" stroke="#2C5F7C" strokeWidth="0.8" strokeDasharray="5 3" opacity="0.7"/>
+                <line x1="70" y1="222" x2="70" y2="234" stroke="#2C5F7C" strokeWidth="1" opacity="0.7"/>
+                <line x1="290" y1="222" x2="290" y2="234" stroke="#2C5F7C" strokeWidth="1" opacity="0.7"/>
+                <text x="180" y="246" textAnchor="middle" fontFamily="monospace" fontSize="9" fill="#2C5F7C" opacity="0.8">68.6mm × 53.3mm</text>
+                <text x="180" y="264" textAnchor="middle" fontFamily="monospace" fontSize="8" fill="#2C5F7C" opacity="0.6">ARDUINO UNO R3 — v1.0</text>
+              </svg>
+            </div>
+
           </div>
         </div>
       </div>
@@ -632,7 +767,7 @@ const MakerPage: React.FC<MakerPageProps> = ({ onBackToHub, onOpenRoadmaps }) =>
       <main className="flex-1">
 
         {/* ── PROJETOS — fundo kraft ──────────────────────────────────── */}
-        <section style={{ background:pageBg, backgroundImage:pageBgImage, padding:'40px 0 48px' }}>
+        <section style={{ background:pageBg, backgroundImage:pageBgImage, padding:'40px 0 48px', scrollMarginTop:'80px' }}>
           <div className="max-w-[1200px] mx-auto px-4 md:px-8">
             <SectionHead icon={Hammer} label={platform==='Todos'?'Todos os Projetos':`Projetos: ${platform}`}
               sub={`${filtered.length} projeto${filtered.length!==1?'s':''} · construa, aprenda, repita`}
@@ -643,7 +778,12 @@ const MakerPage: React.FC<MakerPageProps> = ({ onBackToHub, onOpenRoadmaps }) =>
           </div>
         </section>
 
-        <MakerDivider isDark={isDark} />
+        {/* Emenda kraft → blueprint */}
+        <RivetStrip
+          from={isDark?'#1A1208':M.kraft}
+          to={isDark?'#0A1520':'#D8EBF5'}
+          rivColor={M.tan}
+        />
 
         {/* ── CANAIS — fundo blueprint ────────────────────────────────── */}
         <section style={{
@@ -653,23 +793,27 @@ const MakerPage: React.FC<MakerPageProps> = ({ onBackToHub, onOpenRoadmaps }) =>
             : `${BLUEPRINT_GRID(0.14)}, none`,
           backgroundSize:'28px 28px',
           padding:'40px 0 48px',
-          borderTop:`2px solid ${M.blueprint}30`,
-          borderBottom:`2px solid ${M.blueprint}30`,
+          scrollMarginTop:'80px',
         }}>
           <div className="max-w-[1200px] mx-auto px-4 md:px-8">
             <SectionHead icon={PlayCircle} label="Canais para Assistir"
               sub="aprenda com quem já faz · pt-br e english"
               color={M.blueprint} light={isDark} />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {CHANNELS.map(ch=><ChannelCard key={ch.url} ch={ch} isDark={isDark} />)}
+              {CHANNELS.map((ch,i)=><ChannelCard key={ch.url} ch={ch} isDark={isDark} idx={i} />)}
             </div>
           </div>
         </section>
 
-        <MakerDivider isDark={isDark} />
+        {/* Emenda blueprint → circuito escuro */}
+        <RivetStrip
+          from={isDark?'#0A1520':'#D8EBF5'}
+          to='#0F1A0F'
+          rivColor={M.blueprint}
+        />
 
         {/* ── FERRAMENTAS — fundo escuro tipo placa de circuito ───────── */}
-        <section style={{ background:'#0F1A0F', padding:'40px 0 56px', position:'relative', overflow:'hidden' }}>
+        <section style={{ background:'#0F1A0F', padding:'40px 0 56px', position:'relative', overflow:'hidden', scrollMarginTop:'80px' }}>
           {/* Circuito de fundo */}
           <svg aria-hidden="true" viewBox="0 0 600 300"
             style={{ position:'absolute', top:0, right:0, width:400, height:200, opacity:.05, pointerEvents:'none' }}>

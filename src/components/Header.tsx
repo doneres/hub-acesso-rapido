@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Map, HelpCircle, ChevronDown, GraduationCap, Users, Lock } from 'lucide-react';
+import { Map, HelpCircle, ChevronDown, GraduationCap, Users, Lock, Rocket } from 'lucide-react';
 
 interface HeaderProps {
   isDark: boolean;
@@ -109,7 +109,8 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme, onOpenRoadmaps, 
               </span>
             </h1>
             <p className="hidden md:block text-[10px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">
-              Tudo para criar, aprender e se divertir! 🚀
+              Tudo para criar, aprender e se divertir!{' '}
+              <Rocket className="inline w-3 h-3 align-middle" aria-hidden="true" />
             </p>
           </div>
         </div>
