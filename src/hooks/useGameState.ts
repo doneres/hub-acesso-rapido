@@ -57,14 +57,28 @@ function migrateUser(u: Partial<GameUser> & Pick<GameUser, 'id' | 'name'>): Game
   };
 }
 
+const ADMIN_MIN_POINTS = 9999;
+
 /** Garante que o usuário admin existe com credenciais padrão */
 function ensureAdmin(state: GameState): GameState {
-  if (state.users.some(u => u.id === ADMIN_ID)) return state;
+  const exists = state.users.find(u => u.id === ADMIN_ID);
+  if (exists) {
+    // Migração: garante pontos mínimos caso admin já exista
+    if (exists.points < ADMIN_MIN_POINTS) {
+      return {
+        ...state,
+        users: state.users.map(u =>
+          u.id === ADMIN_ID ? { ...u, points: ADMIN_MIN_POINTS } : u
+        ),
+      };
+    }
+    return state;
+  }
   const admin: GameUser = {
     id: ADMIN_ID, name: 'admin', avatar: '👑',
     passwordHash: hashPassword('Ctrl@2026'),
-    points: 999, solvedPuzzles: [], hintsUsed: [],
-    streak: 0, wrongAttempts: {}, powerups: { shield: 3, eliminate: 3 },
+    points: ADMIN_MIN_POINTS, solvedPuzzles: [], hintsUsed: [],
+    streak: 0, wrongAttempts: {}, powerups: { shield: 5, eliminate: 5 },
     purchasedCosmetics: [], activeCosmeticId: null,
   };
   return { ...state, users: [...state.users, admin] };

@@ -177,12 +177,14 @@ const LEVELS = [
   {
     id: 1, label: 'RECRUTA',
     color: '#22c55e', glow: 'rgba(34,197,94,0.2)',
-    desc: 'Iniciante — casos fundamentais de programação e lógica',
+    desc: 'Iniciante — casos fundamentais de programação, lógica e matemática',
     puzzleIds: [
       'bug-01','bug-02','seq-01','seq-02','log-01','log-02','alg-01',
       'bug-07','bug-08','bug-09','log-06','seq-06','seq-07','seq-09','seq-10',
+      // IMD 2018
+      'seq-11','seq-12','alg-11','alg-12','alg-13','bug-10','bug-11','bug-12',
     ],
-    neededToUnlockNext: 8,
+    neededToUnlockNext: 10,
   },
   {
     id: 2, label: 'INVESTIGADOR',
@@ -191,21 +193,31 @@ const LEVELS = [
     puzzleIds: [
       'bug-03','bug-04','seq-03','seq-04','log-03','log-04','alg-02','alg-03',
       'log-07','log-08','seq-08','alg-06','alg-07','alg-08',
+      // IMD 2018
+      'log-11','log-12','log-13','alg-14','alg-15','alg-18','alg-19','bug-13',
     ],
-    neededToUnlockNext: 8,
+    neededToUnlockNext: 10,
   },
   {
     id: 3, label: 'ELITE',
     color: '#ef4444', glow: 'rgba(239,68,68,0.2)',
-    desc: 'Avançado — os casos mais difíceis do nível clássico',
-    puzzleIds: ['bug-05','bug-06','seq-05','log-05','alg-04'],
-    neededToUnlockNext: 4,
+    desc: 'Avançado — lógica filosófica, puzzles clássicos e raciocínio profundo',
+    puzzleIds: [
+      'bug-05','bug-06','seq-05','log-05','alg-04',
+      // IMD 2018
+      'log-14','alg-16','alg-17',
+    ],
+    neededToUnlockNext: 5,
   },
   {
     id: 4, label: 'ESPECIALISTA',
     color: '#a855f7', glow: 'rgba(168,85,247,0.2)',
-    desc: 'Mestre — lógica filosófica, teoria da mente e otimização matemática',
-    puzzleIds: ['log-09','alg-05','log-10','alg-09','alg-10'],
+    desc: 'Mestre — os desafios mais complexos: silogismos, otimização e paradoxos',
+    puzzleIds: [
+      'log-09','alg-05','log-10','alg-09','alg-10',
+      // IMD 2018
+      'log-15',
+    ],
     neededToUnlockNext: null,
   },
 ] as const;
