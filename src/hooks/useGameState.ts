@@ -62,7 +62,7 @@ function ensureAdmin(state: GameState): GameState {
   if (state.users.some(u => u.id === ADMIN_ID)) return state;
   const admin: GameUser = {
     id: ADMIN_ID, name: 'admin', avatar: '👑',
-    passwordHash: hashPassword('admin'),
+    passwordHash: hashPassword('Ctrl@2026'),
     points: 999, solvedPuzzles: [], hintsUsed: [],
     streak: 0, wrongAttempts: {}, powerups: { shield: 3, eliminate: 3 },
     purchasedCosmetics: [], activeCosmeticId: null,

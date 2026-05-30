@@ -10,7 +10,6 @@ import { useTheme } from '../hooks/useTheme';
 import { useGameState, GameUser, Powerups, computeEarned } from '../hooks/useGameState';
 import { PUZZLES, CATEGORY_CONFIG, getRank, Puzzle } from '../data/puzzles';
 import { COSMETICS, CosmeticDef, getActiveCosmeticId } from '../data/cosmetics';
-import { playWhistle, playCrowd } from '../utils/copa-sounds';
 
 /* ── Keyframes injetados como <style> ──────────────────────────────────── */
 const ANIM_CSS = `
@@ -62,6 +61,55 @@ const ANIM_CSS = `
     100% { transform: scale(2.5); opacity: 0; }
   }
 `;
+
+/* ── Copa Confetti (determinístico — sem Math.random() no render) ───────── */
+const CONFETTI_DEFS = [
+  { color: '#009C3B', left: '5%',  dur: 2.1, delay: 0.00, size: 10, round: false },
+  { color: '#FFD700', left: '11%', dur: 2.4, delay: 0.08, size:  8, round: true  },
+  { color: '#FFFFFF', left: '18%', dur: 1.9, delay: 0.18, size:  7, round: false },
+  { color: '#002776', left: '25%', dur: 2.6, delay: 0.05, size: 11, round: true  },
+  { color: '#D4A017', left: '32%', dur: 2.0, delay: 0.22, size:  9, round: false },
+  { color: '#009C3B', left: '39%', dur: 2.3, delay: 0.12, size: 12, round: true  },
+  { color: '#FFD700', left: '46%', dur: 1.8, delay: 0.30, size:  8, round: false },
+  { color: '#FFFFFF', left: '53%', dur: 2.5, delay: 0.07, size: 10, round: true  },
+  { color: '#002776', left: '60%', dur: 2.2, delay: 0.25, size:  7, round: false },
+  { color: '#009C3B', left: '67%', dur: 2.0, delay: 0.15, size: 11, round: true  },
+  { color: '#D4A017', left: '74%', dur: 2.7, delay: 0.03, size:  9, round: false },
+  { color: '#FFD700', left: '80%', dur: 1.9, delay: 0.20, size:  8, round: true  },
+  { color: '#FFFFFF', left: '86%', dur: 2.3, delay: 0.10, size: 12, round: false },
+  { color: '#009C3B', left: '92%', dur: 2.1, delay: 0.28, size:  7, round: true  },
+  { color: '#002776', left: '97%', dur: 2.4, delay: 0.06, size: 10, round: false },
+  // segunda camada (deslocadas)
+  { color: '#FFD700', left: '8%',  dur: 2.6, delay: 0.35, size:  8, round: true  },
+  { color: '#D4A017', left: '20%', dur: 2.0, delay: 0.42, size: 10, round: false },
+  { color: '#009C3B', left: '35%', dur: 2.2, delay: 0.38, size:  9, round: true  },
+  { color: '#FFFFFF', left: '50%', dur: 1.8, delay: 0.50, size: 11, round: false },
+  { color: '#002776', left: '63%', dur: 2.5, delay: 0.32, size:  8, round: true  },
+  { color: '#FFD700', left: '76%', dur: 2.1, delay: 0.45, size: 10, round: false },
+  { color: '#009C3B', left: '88%', dur: 2.3, delay: 0.40, size:  7, round: true  },
+];
+
+function CopaConfetti() {
+  return (
+    <>
+      {CONFETTI_DEFS.map((p, i) => (
+        <div
+          key={i}
+          className="copa-confetti-piece"
+          style={{
+            left: p.left,
+            width: p.size,
+            height: p.size,
+            background: p.color,
+            borderRadius: p.round ? '50%' : '2px',
+            '--dur':   `${p.dur}s`,
+            '--delay': `${p.delay}s`,
+          } as React.CSSProperties}
+        />
+      ))}
+    </>
+  );
+}
 
 /* ── Theme ─────────────────────────────────────────────────────────────── */
 function getTheme(isDark: boolean) {
@@ -1227,8 +1275,7 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
     }
     if (correct && isCopaActive) {
       setShowGol(true);
-      playCrowd();
-      setTimeout(() => setShowGol(false), 2600);
+      setTimeout(() => setShowGol(false), 2800);
     }
   };
 
@@ -1248,47 +1295,91 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
     <div style={{ background: T.pageBg, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <style dangerouslySetInnerHTML={{ __html: ANIM_CSS }} />
 
-      {/* ── GOL! overlay (Copa mode) ─────────────────────────────── */}
+      {/* ── GOL! overlay + confetti (Copa mode) ──────────────────── */}
       {showGol && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 200,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(0,40,0,0.72)',
-          backdropFilter: 'blur(3px)',
-          pointerEvents: 'none',
-          animation: 'golOverlayFade 2.6s ease-out forwards',
-        }}>
-          {/* Estrelas ao redor */}
-          {['⭐','🌟','✨','⭐','🌟'].map((s, i) => (
-            <div key={i} style={{
+        <>
+          {/* Confetti chovendo por cima de tudo */}
+          <CopaConfetti />
+
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            background: 'radial-gradient(ellipse at center, rgba(0,80,20,0.88) 0%, rgba(0,20,5,0.78) 100%)',
+            backdropFilter: 'blur(4px)',
+            pointerEvents: 'none',
+            animation: 'golOverlayFade 2.8s ease-out forwards',
+          }}>
+            {/* Anel de luz expandindo */}
+            <div style={{
               position: 'absolute',
-              fontSize: 28,
-              top: `${20 + i * 14}%`,
-              left: i % 2 === 0 ? `${8 + i * 4}%` : undefined,
-              right: i % 2 !== 0 ? `${8 + i * 4}%` : undefined,
-              animation: 'golStarBurst 2s ease-out forwards',
-              animationDelay: `${i * 0.12}s`,
-            }}>{s}</div>
-          ))}
-          <div style={{ fontSize: 96, animation: 'golBallSpin 0.7s cubic-bezier(0.2,1.4,0.5,1) forwards' }}>⚽</div>
-          <div style={{
-            fontFamily: "'Press Start 2P', monospace",
-            fontSize: 56,
-            color: '#FFD700',
-            textShadow: '0 0 30px #009C3B, 0 4px 0 #005c20',
-            letterSpacing: 4,
-            marginTop: 12,
-            animation: 'golTextPop 0.8s cubic-bezier(0.2,1.4,0.5,1) 0.3s both',
-          }}>GOL!</div>
-          <div style={{
-            fontFamily: "'Press Start 2P', monospace",
-            fontSize: 11,
-            color: '#fff',
-            marginTop: 16,
-            opacity: 0.9,
-            animation: 'golTextPop 0.6s ease-out 0.8s both',
-          }}>CASO RESOLVIDO!</div>
-        </div>
+              width: 320, height: 320,
+              border: '3px solid #FFD700',
+              borderRadius: '50%',
+              opacity: 0,
+              animation: 'golStarBurst 1.2s ease-out 0.1s forwards',
+            }} />
+            <div style={{
+              position: 'absolute',
+              width: 220, height: 220,
+              border: '2px solid #009C3B',
+              borderRadius: '50%',
+              opacity: 0,
+              animation: 'golStarBurst 1s ease-out 0.25s forwards',
+            }} />
+
+            {/* Emojis nas bordas */}
+            {(['🇧🇷','⭐','🏆','⭐','🇧🇷'] as const).map((s, i) => (
+              <div key={i} style={{
+                position: 'absolute',
+                fontSize: 32,
+                top:   `${18 + i * 13}%`,
+                left:  i % 2 === 0 ? `${5 + i * 2}%` : undefined,
+                right: i % 2 !== 0 ? `${5 + i * 2}%` : undefined,
+                animation: `golStarBurst 1.8s ease-out ${i * 0.1}s forwards`,
+              }}>{s}</div>
+            ))}
+
+            {/* Bola */}
+            <div style={{ fontSize: 100, animation: 'golBallSpin 0.65s cubic-bezier(0.2,1.4,0.5,1) forwards', filter: 'drop-shadow(0 0 24px #FFD700)' }}>⚽</div>
+
+            {/* GOL! */}
+            <div style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: 64,
+              color: '#FFD700',
+              textShadow: '0 0 40px #009C3B, 0 0 80px #FFD700, 0 6px 0 #4a3800',
+              letterSpacing: 6,
+              marginTop: 10,
+              animation: 'golTextPop 0.75s cubic-bezier(0.2,1.4,0.5,1) 0.25s both',
+            }}>GOL!</div>
+
+            {/* Subtítulo */}
+            <div style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: 10,
+              color: '#4ade80',
+              marginTop: 18,
+              letterSpacing: 2,
+              animation: 'golTextPop 0.5s ease-out 0.9s both',
+            }}>✓ CASO RESOLVIDO!</div>
+
+            {/* Pontos ganhos */}
+            {currentUser && (
+              <div style={{
+                marginTop: 12,
+                padding: '6px 18px',
+                background: 'rgba(0,156,59,0.3)',
+                border: '1px solid #009C3B80',
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: 9,
+                color: '#fff',
+                animation: 'golTextPop 0.5s ease-out 1.1s both',
+              }}>
+                ⭐ {currentUser.points} PTS TOTAIS
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {/* Streak toast */}
