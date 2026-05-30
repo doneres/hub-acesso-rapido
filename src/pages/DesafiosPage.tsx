@@ -60,6 +60,33 @@ const ANIM_CSS = `
     0%   { transform: scale(0); opacity: 1; }
     100% { transform: scale(2.5); opacity: 0; }
   }
+  @keyframes critHitFlash {
+    0%   { background: #020c01; }
+    8%   { background: #0a2a09; }
+    80%  { background: #020c01; opacity: 1; }
+    100% { background: #020c01; opacity: 0; }
+  }
+  @keyframes critHitEnter {
+    from { opacity: 0; transform: translateY(18px) scale(0.94); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes terminalBlink {
+    0%,49% { opacity: 1; }
+    50%,100%{ opacity: 0; }
+  }
+  @keyframes headshotFlash {
+    0%   { background: #2a0000; }
+    6%   { background: #6a0000; }
+    14%  { background: #120808; opacity: 1; }
+    80%  { background: #080808; opacity: 1; }
+    100% { background: #080808; opacity: 0; }
+  }
+  @keyframes headshotText {
+    0%   { transform: scale(0.1) rotate(-6deg); opacity: 0; filter: blur(6px); }
+    35%  { transform: scale(1.18) rotate(2deg); opacity: 1; filter: blur(0); }
+    55%  { transform: scale(0.96) rotate(-1deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
 `;
 
 /* ── Diamantes jacquard caindo — confetti inspirado na camisa ─────────── */
@@ -1266,6 +1293,8 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const [activePuzzle, setActivePuzzle] = useState<Puzzle | null>(null);
   const [streakMsg, setStreakMsg]       = useState('');
   const [showGol, setShowGol]           = useState(false);
+  const [showCritHit, setShowCritHit]   = useState(false);
+  const [showHeadshot, setShowHeadshot] = useState(false);
 
   const isSolved   = (id: string) => currentUser?.solvedPuzzles.includes(id) ?? false;
   const isHintUsed = (id: string) => currentUser?.hintsUsed.includes(id) ?? false;
@@ -1273,7 +1302,9 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const solvedCountForLevel = (levelIdx: number) =>
     (LEVELS[levelIdx].puzzleIds as readonly string[]).filter(id => isSolved(id)).length;
 
-  const isCopaActive = currentUser?.activeCosmeticId === 'copa-2026';
+  const isCopaActive    = currentUser?.activeCosmeticId === 'copa-2026';
+  const isFalloutActive = currentUser?.activeCosmeticId === 'fallout-nv';
+  const isCSActive      = currentUser?.activeCosmeticId === 'csgo-16';
 
   const handleSolve = (puzzle: Puzzle, correct: boolean) => {
     const { bonus, shieldUsed } = recordAnswer(puzzle.id, correct, puzzle.points);
@@ -1287,6 +1318,12 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
     if (correct && isCopaActive) {
       setShowGol(true);
       setTimeout(() => setShowGol(false), 2800);
+    } else if (correct && isFalloutActive) {
+      setShowCritHit(true);
+      setTimeout(() => setShowCritHit(false), 2800);
+    } else if (correct && isCSActive) {
+      setShowHeadshot(true);
+      setTimeout(() => setShowHeadshot(false), 2600);
     }
   };
 
@@ -1395,6 +1432,105 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
             }} />
           </div>
         </>
+      )}
+
+      {/* ── CRITICAL HIT! — Fallout: New Vegas ──────────────────────── */}
+      {showCritHit && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none', overflow: 'hidden',
+          animation: 'critHitFlash 2.9s ease-out forwards',
+        }}>
+          {/* CRT scanlines */}
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,214,50,0.05) 3px,rgba(0,214,50,0.05) 4px)' }} />
+          {/* Glow radial */}
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 65% 55% at 50% 50%, rgba(0,214,50,0.18) 0%, transparent 70%)' }} />
+          {/* Moldura terminal */}
+          <div style={{ position: 'absolute', inset: 14, border: '1px solid rgba(0,214,50,0.35)', boxShadow: '0 0 24px rgba(0,214,50,0.18), inset 0 0 24px rgba(0,214,50,0.04)' }} />
+
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            animation: 'critHitEnter 0.4s cubic-bezier(0.22,1,0.36,1) 0.1s both',
+            position: 'relative', zIndex: 2, gap: 10,
+          }}>
+            <div style={{ fontSize: 28, filter: 'drop-shadow(0 0 10px #00d632)', lineHeight: 1 }}>☢</div>
+            <div style={{ fontFamily: 'monospace', fontSize: 9, letterSpacing: '0.28em', color: 'rgba(0,214,50,0.65)' }}>
+              [ RESPOSTA CORRETA ]
+            </div>
+            <div style={{
+              fontFamily: 'monospace',
+              fontSize: 'clamp(34px, 8vw, 62px)',
+              fontWeight: 900, letterSpacing: '0.05em', lineHeight: 1,
+              color: '#00d632',
+              textShadow: '0 0 20px rgba(0,214,50,0.9), 0 0 50px rgba(0,214,50,0.35)',
+            }}>CRITICAL HIT!</div>
+            <div style={{ fontFamily: 'monospace', fontSize: 9, letterSpacing: '0.18em', color: 'rgba(0,214,50,0.55)' }}>
+              ENEMY WEAKNESSES EXPLOITED
+            </div>
+            {currentUser && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8, marginTop: 8,
+                animation: 'critHitEnter 0.4s ease-out 0.5s both',
+              }}>
+                <span style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 700, color: '#00d632', letterSpacing: '0.1em' }}>
+                  {currentUser.points} XP
+                </span>
+                <span style={{ fontFamily: 'monospace', fontSize: 10, color: 'rgba(0,214,50,0.7)', animation: 'terminalBlink 1s step-end infinite' }}>█</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── HEADSHOT! — Counter-Strike 1.6 ─────────────────────────── */}
+      {showHeadshot && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none', overflow: 'hidden',
+          animation: 'headshotFlash 2.7s ease-out forwards',
+        }}>
+          {/* Grade tática */}
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,102,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,102,0,0.05) 1px, transparent 1px)', backgroundSize: '44px 44px' }} />
+          {/* Crosshair de fundo */}
+          <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.07 }} viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+            <line x1="50" y1="30" x2="50" y2="70" stroke="#FF6600" strokeWidth="0.6"/>
+            <line x1="30" y1="50" x2="70" y2="50" stroke="#FF6600" strokeWidth="0.6"/>
+            <circle cx="50" cy="50" r="14" stroke="#FF6600" strokeWidth="0.6" fill="none"/>
+            <circle cx="50" cy="50" r="2"  fill="rgba(255,102,0,0.4)"/>
+          </svg>
+
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            position: 'relative', zIndex: 2, gap: 10,
+          }}>
+            <div style={{
+              fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.3em',
+              color: 'rgba(255,102,0,0.85)',
+              border: '1px solid rgba(255,102,0,0.3)', padding: '2px 14px',
+            }}>ENEMY ELIMINATED</div>
+            <div style={{
+              fontFamily: "'Arial Black', 'Impact', monospace",
+              fontSize: 'clamp(42px, 10vw, 78px)',
+              fontWeight: 900, letterSpacing: '0.02em', lineHeight: 1,
+              color: '#fff',
+              textShadow: '0 0 30px rgba(255,102,0,0.7), 3px 3px 0 rgba(255,80,0,0.5)',
+              animation: 'headshotText 0.45s cubic-bezier(0.22,1,0.36,1) 0.05s both',
+            }}>HEADSHOT!</div>
+            <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgba(58,123,213,0.8)', letterSpacing: '0.12em' }}>
+              ▸ CT WINS THE ROUND
+            </div>
+            {currentUser && (
+              <div style={{
+                fontFamily: 'monospace', fontSize: 11, fontWeight: 700,
+                color: '#fff', letterSpacing: '0.1em', marginTop: 6,
+              }}>
+                {currentUser.points} PTS
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Streak toast */}

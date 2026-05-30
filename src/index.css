@@ -181,6 +181,25 @@
   75%  { transform: translateY(-120px) rotate(25deg) scale(1.05); opacity: 0.7; }
   100% { transform: translateY(-165px) rotate(22deg) scale(0.85); opacity: 0; }
 }
+/* Explosão ao chutar a bola */
+@keyframes kickSpark {
+  from { transform: scale(0.3); opacity: 1; }
+  to   { transform: scale(2.8); opacity: 0; }
+}
+/* Símbolo de radiação sobe (Fallout hub) */
+@keyframes radBubble {
+  0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+  10%  { opacity: 0.95; }
+  65%  { transform: translateY(-85px) scale(1.2); opacity: 0.85; }
+  100% { transform: translateY(-135px) scale(0.65); opacity: 0; }
+}
+/* Notificação CS eliminou (desliza da direita) */
+@keyframes csElim {
+  0%   { transform: translateX(100%); opacity: 0; }
+  10%  { transform: translateX(0); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(0); }
+}
 
 /* Confetti — diamantes caindo */
 @keyframes diamondFall {

@@ -170,61 +170,118 @@ function PitchBackground() {
   );
 }
 
-/* ── Efeitos Copa: bola rolando + vuvuzelas ───────────────────────────────── */
+/* ── Efeitos Copa: bola rolando (clicável) + vuvuzelas ───────────────────── */
 function CopaSideEffects() {
-  const [ball, setBall] = React.useState<{ dir:1|-1; bottom:number } | null>(null);
-  const [vuvu, setVuvu]   = React.useState<number | null>(null);
+  const [ballVisible, setBallVisible] = React.useState(false);
+  const [kickPos, setKickPos]         = React.useState<{x:number;y:number}|null>(null);
+  const ballRef  = React.useRef<HTMLDivElement>(null);
+  const animRef  = React.useRef<number>(0);
+  const ballData = React.useRef<{ x:number; dir:1|-1; bottom:number; rotation:number } | null>(null);
+  const [vuvu, setVuvu] = React.useState<number | null>(null);
 
-  /* bola */
-  React.useEffect(() => {
-    let next: ReturnType<typeof setTimeout>;
-    const schedule = (first: boolean) => {
-      const delay = first ? 12000 : 22000 + Math.random() * 20000;
-      next = setTimeout(() => {
-        setBall({ dir: Math.random()>0.5 ? 1 : -1, bottom: 10 + Math.floor(Math.random()*22) });
-        schedule(false);
-      }, delay);
+  const launchBall = React.useCallback((dir: 1|-1, bottom: number) => {
+    cancelAnimationFrame(animRef.current);
+    const startX    = dir === 1 ? -60 : window.innerWidth + 60;
+    ballData.current = { x: startX, dir, bottom, rotation: 0 };
+    setBallVisible(true);
+
+    const speed    = (window.innerWidth + 176) / 5500; // px/ms
+    const rotSpeed = 900 / 5500;                       // deg/ms
+    let last = performance.now();
+
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 50);
+      last = now;
+      const bd = ballData.current;
+      if (!bd) return;
+
+      bd.x        += bd.dir * speed    * dt;
+      bd.rotation += bd.dir * rotSpeed * dt;
+
+      const el = ballRef.current;
+      if (el) {
+        el.style.setProperty('--ball-x', `${bd.x}px`);
+        el.style.transform = `rotate(${bd.rotation}deg)`;
+      }
+
+      const offscreen = bd.dir === 1 ? bd.x > window.innerWidth + 61 : bd.x < -61;
+      if (offscreen) {
+        setBallVisible(false);
+        ballData.current = null;
+        return;
+      }
+      animRef.current = requestAnimationFrame(tick);
     };
-    schedule(true);
-    return () => clearTimeout(next);
+    animRef.current = requestAnimationFrame(tick);
   }, []);
 
-  /* vuvuzela */
+  /* schedule bola */
   React.useEffect(() => {
-    let next: ReturnType<typeof setTimeout>;
+    let timer: ReturnType<typeof setTimeout>;
     const schedule = (first: boolean) => {
-      const delay = first ? 20000 : 18000 + Math.random() * 18000;
-      next = setTimeout(() => {
-        setVuvu(5 + Math.floor(Math.random()*88));
+      timer = setTimeout(() => {
+        launchBall((Math.random() > 0.5 ? 1 : -1) as 1|-1, 10 + Math.floor(Math.random() * 22));
         schedule(false);
-      }, delay);
+      }, first ? 12000 : 22000 + Math.random() * 20000);
     };
     schedule(true);
-    return () => clearTimeout(next);
+    return () => { clearTimeout(timer); cancelAnimationFrame(animRef.current); };
+  }, [launchBall]);
+
+  /* chute — inverte direção */
+  const handleKick = (e: React.MouseEvent) => {
+    const bd = ballData.current;
+    if (!bd) return;
+    bd.dir = (bd.dir === 1 ? -1 : 1) as 1|-1;
+    setKickPos({ x: e.clientX, y: e.clientY });
+    setTimeout(() => setKickPos(null), 600);
+  };
+
+  /* schedule vuvuzela */
+  React.useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = (first: boolean) => {
+      timer = setTimeout(() => {
+        setVuvu(5 + Math.floor(Math.random() * 88));
+        schedule(false);
+      }, first ? 20000 : 18000 + Math.random() * 18000);
+    };
+    schedule(true);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <>
-      {ball && (
+      {ballVisible && (
         <div
+          ref={ballRef}
+          onClick={handleKick}
           style={{
-            position:'fixed', zIndex:15, pointerEvents:'none',
-            bottom:`${ball.bottom}%`,
-            ...(ball.dir===1 ? { left:'-56px' } : { right:'-56px' }),
-            fontSize:44,
-            animation: ball.dir===1
-              ? 'ballRollLR 5.5s linear forwards'
-              : 'ballRollRL 5.5s linear forwards',
-          }}
-          onAnimationEnd={() => setBall(null)}
+            position: 'fixed', zIndex: 15,
+            bottom: `${ballData.current?.bottom ?? 10}%`,
+            left: 'var(--ball-x, -60px)',
+            '--ball-x': `${ballData.current?.x ?? -60}px`,
+            fontSize: 44,
+            cursor: 'pointer',
+            userSelect: 'none',
+            willChange: 'transform',
+          } as React.CSSProperties}
         >⚽</div>
+      )}
+      {kickPos && (
+        <div style={{
+          position: 'fixed', zIndex: 20, pointerEvents: 'none',
+          left: kickPos.x - 20, top: kickPos.y - 20,
+          fontSize: 28,
+          animation: 'kickSpark 0.5s ease-out forwards',
+        }}>💥</div>
       )}
       {vuvu !== null && (
         <div
           style={{
-            position:'fixed', bottom:'-8px', left:`${vuvu}%`,
-            zIndex:15, pointerEvents:'none', fontSize:30,
-            animation:'vuvuzelaBlast 2.4s ease-out forwards',
+            position: 'fixed', bottom: '-8px', left: `${vuvu}%`,
+            zIndex: 15, pointerEvents: 'none', fontSize: 30,
+            animation: 'vuvuzelaBlast 2.4s ease-out forwards',
           }}
           onAnimationEnd={() => setVuvu(null)}
         >🎺</div>
@@ -258,6 +315,8 @@ function FalloutBackground() {
 
 function FalloutEffects() {
   const [showScan, setShowScan] = React.useState(false);
+  const [rads, setRads] = React.useState<{ id:number; left:number }[]>([]);
+
   React.useEffect(() => {
     const iv = setInterval(() => {
       setShowScan(true);
@@ -265,9 +324,38 @@ function FalloutEffects() {
     }, 14000);
     return () => clearInterval(iv);
   }, []);
-  return showScan ? (
-    <div style={{ position:'fixed', left:0, right:0, zIndex:14, height:2, background:'linear-gradient(90deg,transparent,rgba(0,214,50,0.7) 20%,rgba(0,255,65,0.9) 50%,rgba(0,214,50,0.7) 80%,transparent)', boxShadow:'0 0 12px rgba(0,214,50,0.5)', pointerEvents:'none', animation:'pipboyScan 2s linear forwards' }} />
-  ) : null;
+
+  React.useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    let uid = 0;
+    const schedule = () => {
+      timer = setTimeout(() => {
+        const id = uid++;
+        setRads(r => [...r, { id, left: 5 + Math.floor(Math.random() * 90) }]);
+        setTimeout(() => setRads(r => r.filter(x => x.id !== id)), 3200);
+        schedule();
+      }, 7000 + Math.random() * 10000);
+    };
+    schedule();
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      {showScan && (
+        <div style={{ position:'fixed', left:0, right:0, zIndex:14, height:2, background:'linear-gradient(90deg,transparent,rgba(0,214,50,0.7) 20%,rgba(0,255,65,0.9) 50%,rgba(0,214,50,0.7) 80%,transparent)', boxShadow:'0 0 12px rgba(0,214,50,0.5)', pointerEvents:'none', animation:'pipboyScan 2s linear forwards' }} />
+      )}
+      {rads.map(r => (
+        <div key={r.id} style={{
+          position: 'fixed', bottom: 0, left: `${r.left}%`,
+          zIndex: 14, pointerEvents: 'none',
+          fontSize: 22, color: '#00d632',
+          textShadow: '0 0 8px #00d632, 0 0 16px rgba(0,214,50,0.5)',
+          animation: 'radBubble 3.0s ease-out forwards',
+        }}>☢</div>
+      ))}
+    </>
+  );
 }
 
 /* ── Counter-Strike 1.6 — fundo tático ───────────────────────────────────── */
@@ -299,33 +387,71 @@ function CSGOBackground() {
 }
 
 function CSGOEffects() {
-  const [show, setShow] = React.useState(false);
+  const [showBomb, setShowBomb]   = React.useState(false);
+  const [elims, setElims] = React.useState<{ id:number; name:string }[]>([]);
+
   React.useEffect(() => {
     let next: ReturnType<typeof setTimeout>;
     const schedule = (first: boolean) => {
       next = setTimeout(() => {
-        setShow(true);
-        setTimeout(() => setShow(false), 4500);
+        setShowBomb(true);
+        setTimeout(() => setShowBomb(false), 4500);
         schedule(false);
       }, first ? 20000 : 32000 + Math.random() * 25000);
     };
     schedule(true);
     return () => clearTimeout(next);
   }, []);
-  return show ? (
-    <div style={{
-      position:'fixed', top:18, left:'50%', zIndex:20, pointerEvents:'none',
-      background:'#cc0000', border:'2px solid #ff2020',
-      padding:'7px 22px',
-      display:'flex', alignItems:'center', gap:10,
-      animation:'bombEnter 4.5s ease-out forwards',
-      boxShadow:'0 0 0 2px rgba(255,0,0,0.15)',
-    }}>
-      <span style={{ fontSize:16, animation:'bombBlink 0.8s ease-in-out infinite' }}>💣</span>
-      <span style={{ fontFamily:'monospace', fontSize:12, fontWeight:900, color:'#fff', letterSpacing:'0.12em' }}>BOMB PLANTED</span>
-      <div style={{ width:8, height:8, borderRadius:'50%', background:'#ff4444', animation:'bombBlink 0.5s ease-in-out infinite' }} />
-    </div>
-  ) : null;
+
+  React.useEffect(() => {
+    const NAMES = ['BOT Kevin', 'BOT Alex', 'BOT Nick', 'BOT Mike'];
+    let next: ReturnType<typeof setTimeout>;
+    let uid = 0;
+    const schedule = (first: boolean) => {
+      next = setTimeout(() => {
+        const id = uid++;
+        const name = NAMES[Math.floor(Math.random() * NAMES.length)];
+        setElims(e => [...e, { id, name }]);
+        setTimeout(() => setElims(e => e.filter(x => x.id !== id)), 3200);
+        schedule(false);
+      }, first ? 8000 : 18000 + Math.random() * 18000);
+    };
+    schedule(true);
+    return () => clearTimeout(next);
+  }, []);
+
+  return (
+    <>
+      {showBomb && (
+        <div style={{
+          position:'fixed', top:18, left:'50%', zIndex:20, pointerEvents:'none',
+          background:'#cc0000', border:'2px solid #ff2020',
+          padding:'7px 22px',
+          display:'flex', alignItems:'center', gap:10,
+          animation:'bombEnter 4.5s ease-out forwards',
+          boxShadow:'0 0 0 2px rgba(255,0,0,0.15)',
+        }}>
+          <span style={{ fontSize:16, animation:'bombBlink 0.8s ease-in-out infinite' }}>💣</span>
+          <span style={{ fontFamily:'monospace', fontSize:12, fontWeight:900, color:'#fff', letterSpacing:'0.12em' }}>BOMB PLANTED</span>
+          <div style={{ width:8, height:8, borderRadius:'50%', background:'#ff4444', animation:'bombBlink 0.5s ease-in-out infinite' }} />
+        </div>
+      )}
+      {elims.map(el => (
+        <div key={el.id} style={{
+          position: 'fixed', bottom: 80, right: 20, zIndex: 20, pointerEvents: 'none',
+          background: 'rgba(10,11,12,0.92)', border: '1px solid rgba(255,102,0,0.35)',
+          padding: '5px 14px',
+          display: 'flex', alignItems: 'center', gap: 8,
+          animation: 'csElim 3.2s ease-out forwards',
+        }}>
+          <span style={{ fontFamily:'monospace', fontSize:9, fontWeight:900, color:'rgba(255,102,0,0.9)', letterSpacing:'0.08em' }}>
+            💀 {el.name} eliminated
+          </span>
+          <span style={{ fontFamily:'monospace', fontSize:8, color:'rgba(255,255,255,0.4)' }}>+$300</span>
+        </div>
+      ))}
+    </>
+  );
 }
 
 /* ── App ─────────────────────────────────────────────────────────────────── */
