@@ -41,7 +41,7 @@ export const COSMETICS: CosmeticDef[] = [
     id: 'copa-2026',
     name: 'Copa do Mundo 2026',
     desc: 'Vista o hub com o espírito da maior competição do planeta. Fundo de campo, cores verde e dourado, banner oficial e destaque Copa em todo o hub.',
-    cost: 150,
+    cost: 300,
     emoji: '⚽',
     tag: 'COPA 2026',
     tagColor: '#FFD700',

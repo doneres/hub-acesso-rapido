@@ -116,6 +116,7 @@ export function useGameState() {
       id, name, avatar, passwordHash: hashPassword(password),
       points: 0, solvedPuzzles: [], hintsUsed: [],
       streak: 0, wrongAttempts: {}, powerups: { shield: 0, eliminate: 0 },
+      purchasedCosmetics: [],
     };
     persist({ users: [...state.users, newUser], currentUserId: id });
     return id;
