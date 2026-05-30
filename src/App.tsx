@@ -55,6 +55,36 @@ function detectTouchDevice() {
   catch { return false; }
 }
 
+/* ── Bolas flutuantes Copa ───────────────────────────────────────────────── */
+const COPA_BALLS = [
+  { size: 28, left: '6%',  delay: '0s',   dur: '14s' },
+  { size: 20, left: '19%', delay: '3.5s', dur: '17s' },
+  { size: 36, left: '36%', delay: '7s',   dur: '12s' },
+  { size: 22, left: '54%', delay: '1.8s', dur: '15s' },
+  { size: 30, left: '71%', delay: '5s',   dur: '11s' },
+  { size: 18, left: '87%', delay: '9s',   dur: '16s' },
+];
+
+function CopaBalls() {
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
+      {COPA_BALLS.map((b, i) => (
+        <span
+          key={i}
+          style={{
+            position: 'absolute',
+            left: b.left,
+            bottom: '-60px',
+            fontSize: b.size,
+            animation: `copaBallFloat ${b.dur} ${b.delay} linear infinite`,
+            willChange: 'transform',
+          }}
+        >⚽</span>
+      ))}
+    </div>
+  );
+}
+
 /* ── App ─────────────────────────────────────────────────────────────────── */
 
 const App: React.FC = () => {
@@ -88,6 +118,17 @@ const App: React.FC = () => {
     const id = getActiveCosmeticId();
     setActiveCosmetic(id ? (COSMETICS.find(c => c.id === id) ?? null) : null);
   }, [currentPage]);
+
+  /* Aplica/remove classe theme-copa no <html> para CSS global dos cards */
+  useEffect(() => {
+    const root = document.documentElement;
+    if (activeCosmetic?.id === 'copa-2026') {
+      root.classList.add('theme-copa');
+    } else {
+      root.classList.remove('theme-copa');
+    }
+    return () => root.classList.remove('theme-copa');
+  }, [activeCosmetic]);
 
   const handleCloseProfessorModal = useCallback(() => setShowProfessorModal(false), []);
   const handleProfessorSuccess    = useCallback(() => {
@@ -379,6 +420,7 @@ const App: React.FC = () => {
         backgroundImage: isDark ? activeCosmetic.patternDark : activeCosmetic.patternLight,
       } : undefined}
     >
+      {activeCosmetic?.id === 'copa-2026' && <CopaBalls />}
       <Header
         isDark={isDark}
         onToggleTheme={toggleTheme}
@@ -387,7 +429,7 @@ const App: React.FC = () => {
         onOpenProfessorLogin={() => setShowProfessorModal(true)}
       />
 
-      <main className="flex-1 max-w-[1440px] w-full px-4 md:px-8 py-8 mx-auto">
+      <main className="flex-1 max-w-[1440px] w-full px-4 md:px-8 py-8 mx-auto relative z-10">
 
         {/* Banner cosmético ativo */}
         {activeCosmetic && (

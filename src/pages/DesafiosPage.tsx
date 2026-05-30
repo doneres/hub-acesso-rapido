@@ -10,6 +10,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useGameState, GameUser, Powerups, computeEarned } from '../hooks/useGameState';
 import { PUZZLES, CATEGORY_CONFIG, getRank, Puzzle } from '../data/puzzles';
 import { COSMETICS, CosmeticDef, getActiveCosmeticId, setActiveCosmeticId } from '../data/cosmetics';
+import { playWhistle, playCrowd } from '../utils/copa-sounds';
 
 /* ── Keyframes injetados como <style> ──────────────────────────────────── */
 const ANIM_CSS = `
@@ -39,6 +40,26 @@ const ANIM_CSS = `
     0%  { transform: scale(1); }
     50% { transform: scale(1.015); }
     100%{ transform: scale(1); }
+  }
+  @keyframes golOverlayFade {
+    0%   { opacity: 0; }
+    12%  { opacity: 1; }
+    75%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes golBallSpin {
+    from { transform: scale(0.1) rotate(0deg); }
+    to   { transform: scale(1) rotate(720deg); }
+  }
+  @keyframes golTextPop {
+    0%   { transform: scale(0) rotate(-8deg); opacity: 0; }
+    40%  { transform: scale(1.3) rotate(4deg); opacity: 1; }
+    60%  { transform: scale(1.08) rotate(-2deg); }
+    100% { transform: scale(1.12) rotate(0deg); opacity: 1; }
+  }
+  @keyframes golStarBurst {
+    0%   { transform: scale(0); opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
   }
 `;
 
@@ -807,7 +828,11 @@ function PuzzleModal({ puzzle, T, solved, hintUsed: initHintUsed, wrongCount, ha
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.textMut, marginLeft: 16, flexShrink: 0 }}><X size={18} /></button>
         </div>
 
-        <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div
+          style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 18, userSelect: 'none' }}
+          onCopy={e => e.preventDefault()}
+          onContextMenu={e => e.preventDefault()}
+        >
           {/* Narrative */}
           <div style={{ display: 'flex', gap: 12, padding: '14px 16px', background: T.accentDim, border: `2px solid ${T.accent}30` }}>
             <Search size={16} color={T.accent} style={{ flexShrink: 0, marginTop: 2 }} />
@@ -1184,12 +1209,15 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const [expandedLevel, setExpandedLevel] = useState<number>(0); // índice do nível expandido
   const [activePuzzle, setActivePuzzle] = useState<Puzzle | null>(null);
   const [streakMsg, setStreakMsg]       = useState('');
+  const [showGol, setShowGol]           = useState(false);
 
   const isSolved   = (id: string) => currentUser?.solvedPuzzles.includes(id) ?? false;
   const isHintUsed = (id: string) => currentUser?.hintsUsed.includes(id) ?? false;
 
   const solvedCountForLevel = (levelIdx: number) =>
     (LEVELS[levelIdx].puzzleIds as readonly string[]).filter(id => isSolved(id)).length;
+
+  const isCopaActive = getActiveCosmeticId() === 'copa-2026';
 
   const handleSolve = (puzzle: Puzzle, correct: boolean) => {
     const { bonus, shieldUsed } = recordAnswer(puzzle.id, correct, puzzle.points);
@@ -1199,6 +1227,11 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
     } else if (bonus > 0) {
       setStreakMsg(`SEQUÊNCIA! +${bonus} PTS BÔNUS`);
       setTimeout(() => setStreakMsg(''), 3000);
+    }
+    if (correct && isCopaActive) {
+      setShowGol(true);
+      playCrowd();
+      setTimeout(() => setShowGol(false), 2600);
     }
   };
 
@@ -1218,6 +1251,49 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
     <div style={{ background: T.pageBg, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <style dangerouslySetInnerHTML={{ __html: ANIM_CSS }} />
 
+      {/* ── GOL! overlay (Copa mode) ─────────────────────────────── */}
+      {showGol && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          background: 'rgba(0,40,0,0.72)',
+          backdropFilter: 'blur(3px)',
+          pointerEvents: 'none',
+          animation: 'golOverlayFade 2.6s ease-out forwards',
+        }}>
+          {/* Estrelas ao redor */}
+          {['⭐','🌟','✨','⭐','🌟'].map((s, i) => (
+            <div key={i} style={{
+              position: 'absolute',
+              fontSize: 28,
+              top: `${20 + i * 14}%`,
+              left: i % 2 === 0 ? `${8 + i * 4}%` : undefined,
+              right: i % 2 !== 0 ? `${8 + i * 4}%` : undefined,
+              animation: 'golStarBurst 2s ease-out forwards',
+              animationDelay: `${i * 0.12}s`,
+            }}>{s}</div>
+          ))}
+          <div style={{ fontSize: 96, animation: 'golBallSpin 0.7s cubic-bezier(0.2,1.4,0.5,1) forwards' }}>⚽</div>
+          <div style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: 56,
+            color: '#FFD700',
+            textShadow: '0 0 30px #009C3B, 0 4px 0 #005c20',
+            letterSpacing: 4,
+            marginTop: 12,
+            animation: 'golTextPop 0.8s cubic-bezier(0.2,1.4,0.5,1) 0.3s both',
+          }}>GOL!</div>
+          <div style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: 11,
+            color: '#fff',
+            marginTop: 16,
+            opacity: 0.9,
+            animation: 'golTextPop 0.6s ease-out 0.8s both',
+          }}>CASO RESOLVIDO!</div>
+        </div>
+      )}
+
       {/* Streak toast */}
       {streakMsg && (
         <div style={{ position: 'fixed', top: 80, left: '50%', zIndex: 70, display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: T.accent, color: '#fff', fontFamily: "'Press Start 2P', monospace", fontSize: 9, boxShadow: `4px 4px 0 ${T.accent}60`, animation: 'fadeUp .3s ease' }}>
@@ -1236,6 +1312,18 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
             <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: T.textMut }}>DETETIVE DE</div>
             <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: T.accent }}>CÓDIGO</div>
           </div>
+          {isCopaActive && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '4px 10px',
+              background: 'linear-gradient(90deg,#003d1a,#009C3B)',
+              border: '1px solid #D4A01740',
+              fontSize: 10,
+            }}>
+              <span style={{ fontSize: 14 }}>⚽</span>
+              <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: '#FFD700', whiteSpace: 'nowrap' }}>COPA 2026</span>
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

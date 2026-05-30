@@ -59,6 +59,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
           rel="noopener noreferrer"
           onClick={handleCardClick}
           className={`
+            tool-card tool-card-pinned
             relative group flex flex-col items-center justify-center
             bg-gradient-to-br ${gradientFrom} to-white dark:from-slate-800 dark:to-slate-900
             rounded-3xl p-5 overflow-hidden
@@ -131,6 +132,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
         rel="noopener noreferrer"
         onClick={handleCardClick}
         className="
+          tool-card
           relative group flex flex-col items-center justify-center
           bg-white dark:bg-slate-800
           rounded-2xl p-5 overflow-hidden
@@ -186,7 +188,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
         </div>
 
         {/* Nome com highlight */}
-        <span className="text-sm font-bold text-ctrl-blue dark:text-blue-300 uppercase text-center leading-tight line-clamp-2 px-1">
+        <span className="tool-name text-sm font-bold text-ctrl-blue dark:text-blue-300 uppercase text-center leading-tight line-clamp-2 px-1">
           <HighlightText text={tool.name} query={searchQuery} />
         </span>
 
