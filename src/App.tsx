@@ -104,6 +104,76 @@ function CosmeticBanner({ cosmetic, isDark }: { cosmetic: CosmeticDef; isDark: b
     </div>
   );
 
+  /* Minecraft */
+  if (cosmetic.id === 'minecraft') return (
+    <div className="animate-fadeIn mb-6" style={{ background:'#1a1a1a', border:'2px solid #3a3a3a', borderTop:'4px solid #5D9E40', padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'3px 3px 0 #111' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <span style={{ fontSize:20 }}>⛏️</span>
+        <div>
+          <div style={{ fontFamily:'monospace', fontSize:11, fontWeight:900, color:'#5D9E40', letterSpacing:'0.12em', textShadow:'2px 2px 0 #111' }}>MINECRAFT</div>
+          <div style={{ fontFamily:'monospace', fontSize:8, color:'rgba(93,158,64,0.5)', marginTop:3 }}>TEMA ATIVO · GERENCIE EM DESAFIOS</div>
+        </div>
+      </div>
+      <div style={{ fontFamily:'monospace', fontSize:9, fontWeight:900, color:'#e8e8e8', padding:'4px 12px', background:'#333', border:'2px solid #5D9E40', boxShadow:'2px 2px 0 #111', letterSpacing:'0.1em' }}>[ ATIVO ]</div>
+    </div>
+  );
+
+  /* Dark Souls */
+  if (cosmetic.id === 'dark-souls') return (
+    <div className="animate-fadeIn mb-6" style={{ background:'#0a0703', border:'1px solid rgba(199,131,42,0.2)', borderBottom:'2px solid rgba(199,131,42,0.4)', padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 0 20px rgba(199,131,42,0.08)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <span style={{ fontSize:20, filter:'drop-shadow(0 0 6px rgba(199,131,42,0.7))' }}>🔥</span>
+        <div>
+          <div style={{ fontFamily:'monospace', fontSize:11, fontWeight:900, color:'#c7832a', letterSpacing:'0.12em', textShadow:'0 0 8px rgba(199,131,42,0.4)' }}>DARK SOULS</div>
+          <div style={{ fontFamily:'monospace', fontSize:8, color:'rgba(199,131,42,0.45)', marginTop:3 }}>KINDLE THE BONFIRE · TEMA ATIVO</div>
+        </div>
+      </div>
+      <div style={{ fontFamily:'monospace', fontSize:9, color:'#c7832a', padding:'4px 14px', border:'1px solid rgba(199,131,42,0.4)', letterSpacing:'0.1em' }}>† ATIVO</div>
+    </div>
+  );
+
+  /* Matrix */
+  if (cosmetic.id === 'matrix') return (
+    <div className="animate-fadeIn mb-6" style={{ background:'#000', border:'1px solid rgba(0,255,65,0.2)', borderLeft:'3px solid #00ff41', padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 0 20px rgba(0,255,65,0.06)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <span style={{ fontSize:20, filter:'drop-shadow(0 0 8px #00ff41)' }}>💊</span>
+        <div>
+          <div style={{ fontFamily:'monospace', fontSize:11, color:'#00ff41', letterSpacing:'0.18em', textShadow:'0 0 8px rgba(0,255,65,0.6)' }}>{'> THE MATRIX'}</div>
+          <div style={{ fontFamily:'monospace', fontSize:8, color:'rgba(0,255,65,0.4)', marginTop:3 }}>{'> SYSTEM OVERRIDE ACTIVE'}</div>
+        </div>
+      </div>
+      <div style={{ fontFamily:'monospace', fontSize:9, color:'#00ff41', padding:'4px 14px', border:'1px solid rgba(0,255,65,0.4)', borderRadius:2, letterSpacing:'0.1em' }}>[ CONNECTED ]</div>
+    </div>
+  );
+
+  /* Among Us */
+  if (cosmetic.id === 'among-us') return (
+    <div className="animate-fadeIn mb-6" style={{ background:'#0d0d28', border:'1px solid rgba(19,46,209,0.3)', borderTop:'3px solid #132ed1', borderRadius:8, padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 4px 16px rgba(0,0,0,0.5)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <span style={{ fontSize:20 }}>🚀</span>
+        <div>
+          <div style={{ fontSize:11, fontWeight:900, color:'#b8c8ff', letterSpacing:'0.1em' }}>AMONG US</div>
+          <div style={{ fontSize:8, color:'rgba(184,200,255,0.45)', marginTop:3 }}>CREWMATE MODE · GERENCIE EM DESAFIOS</div>
+        </div>
+      </div>
+      <div style={{ fontSize:9, fontWeight:900, color:'#b8c8ff', padding:'4px 14px', background:'rgba(19,46,209,0.2)', border:'1px solid rgba(19,46,209,0.4)', borderRadius:999, letterSpacing:'0.1em' }}>ATIVO</div>
+    </div>
+  );
+
+  /* Pokémon */
+  if (cosmetic.id === 'pokemon') return (
+    <div className="animate-fadeIn mb-6" style={{ background:'#102060', border:'2px solid rgba(238,21,21,0.35)', borderTop:'4px solid #EE1515', borderRadius:6, padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 4px 0 rgba(0,0,0,0.4)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <span style={{ fontSize:20 }}>⚡</span>
+        <div>
+          <div style={{ fontSize:11, fontWeight:900, color:'#FFDE00', letterSpacing:'0.1em', textShadow:'1px 1px 0 rgba(0,0,0,0.5)' }}>POKÉMON</div>
+          <div style={{ fontSize:8, color:'rgba(255,222,0,0.5)', marginTop:3 }}>TREINADOR ATIVO · GERENCIE EM DESAFIOS</div>
+        </div>
+      </div>
+      <div style={{ fontSize:9, fontWeight:900, color:'#fff', padding:'4px 14px', background:'#EE1515', borderRadius:999, letterSpacing:'0.1em', boxShadow:'2px 2px 0 rgba(0,0,0,0.3)' }}>ATIVO</div>
+    </div>
+  );
+
   /* Fallback */
   return (
     <div className="animate-fadeIn mb-6 flex items-center justify-between px-5 py-3"
@@ -454,6 +524,478 @@ function CSGOEffects() {
   );
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   MINECRAFT
+════════════════════════════════════════════════════════════════════════ */
+function MinecraftBackground() {
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#1a1a1a' }}>
+      {/* Stone texture pattern */}
+      <svg width="100%" height="100%" style={{ position:'absolute', inset:0, opacity:0.12 }}>
+        <defs>
+          <pattern id="stoneBlock" width="32" height="32" patternUnits="userSpaceOnUse">
+            <rect width="32" height="32" fill="#2a2a2a"/>
+            <rect x="0" y="0" width="16" height="16" fill="#252525"/>
+            <rect x="16" y="16" width="16" height="16" fill="#252525"/>
+            <rect width="32" height="32" fill="none" stroke="#111" strokeWidth="1"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#stoneBlock)"/>
+      </svg>
+      {/* Dirt strip at bottom */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'18%', background:'linear-gradient(180deg, #3a2a1a 0%, #2a1a0a 100%)', borderTop:'4px solid #5D9E40' }} />
+      {/* Random floating pixels */}
+      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0, opacity:0.08 }}>
+        {([[5,20],[15,55],[25,35],[40,70],[55,25],[65,80],[75,45],[85,15],[92,60],[10,85],[50,10],[78,75]] as [number,number][]).map(([x,y],i) => (
+          <rect key={i} x={x} y={y} width={i%3===0?3:2} height={i%3===0?3:2} fill={i%2===0?'#5D9E40':'#8B5E3C'}/>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function MinecraftEffects() {
+  /* Creeper atravessa a tela */
+  const [creeperVisible, setCreeperVisible] = React.useState(false);
+  const [achieve, setAchieve]               = React.useState<string|null>(null);
+  const creeperRef  = React.useRef<HTMLDivElement>(null);
+  const animRef     = React.useRef<number>(0);
+  const creeperData = React.useRef<{ x:number; dir:1|-1; bottom:number } | null>(null);
+
+  const ACHIEVEMENTS = ['Getting an Upgrade','Hot Topic','Diamonds!','Monster Hunter','Into The Nether','Taking Inventory'];
+
+  const launchCreeper = React.useCallback((dir: 1|-1) => {
+    cancelAnimationFrame(animRef.current);
+    const startX = dir === 1 ? -50 : window.innerWidth + 50;
+    creeperData.current = { x: startX, dir, bottom: 8 + Math.floor(Math.random() * 18) };
+    setCreeperVisible(true);
+    const speed = (window.innerWidth + 160) / 6000;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 50); last = now;
+      const cd = creeperData.current; if (!cd) return;
+      cd.x += cd.dir * speed * dt;
+      const el = creeperRef.current;
+      if (el) el.style.setProperty('--cx', `${cd.x}px`);
+      const off = cd.dir === 1 ? cd.x > window.innerWidth + 51 : cd.x < -51;
+      if (off) { setCreeperVisible(false); creeperData.current = null; return; }
+      animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => { launchCreeper(Math.random()>.5?1:-1); s(false); }, first ? 15000 : 25000 + Math.random() * 20000);
+    };
+    s(true);
+    return () => { clearTimeout(t); cancelAnimationFrame(animRef.current); };
+  }, [launchCreeper]);
+
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => {
+        setAchieve(ACHIEVEMENTS[Math.floor(Math.random() * ACHIEVEMENTS.length)]);
+        setTimeout(() => setAchieve(null), 4000);
+        s(false);
+      }, first ? 10000 : 20000 + Math.random() * 20000);
+    };
+    s(true);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <>
+      {creeperVisible && (
+        <div ref={creeperRef} style={{
+          position:'fixed', zIndex:15, bottom:`${creeperData.current?.bottom ?? 10}%`,
+          left:'var(--cx,-50px)', '--cx':`${creeperData.current?.x ?? -50}px`,
+          pointerEvents:'none',
+        } as React.CSSProperties}>
+          {/* Creeper face SVG pixelado */}
+          <svg width="40" height="48" viewBox="0 0 8 10">
+            <rect width="8" height="8" fill="#3d8533"/>
+            <rect x="1" y="2" width="2" height="2" fill="#000"/>
+            <rect x="5" y="2" width="2" height="2" fill="#000"/>
+            <rect x="3" y="4" width="2" height="1" fill="#000"/>
+            <rect x="2" y="5" width="1" height="2" fill="#000"/>
+            <rect x="3" y="6" width="2" height="1" fill="#000"/>
+            <rect x="5" y="5" width="1" height="2" fill="#000"/>
+            {/* Pernas */}
+            <rect x="1" y="8" width="2" height="2" fill="#3d8533"/>
+            <rect x="5" y="8" width="2" height="2" fill="#3d8533"/>
+          </svg>
+        </div>
+      )}
+      {achieve && (
+        <div style={{
+          position:'fixed', bottom:80, right:16, zIndex:20, pointerEvents:'none',
+          background:'#1a1a1a', border:'2px solid #5D9E40', boxShadow:'3px 3px 0 #111',
+          display:'flex', alignItems:'center', gap:10, padding:'8px 14px',
+          animation:'mcAchieve 4s ease-out forwards',
+        }}>
+          <svg width="28" height="28" viewBox="0 0 8 8">
+            <rect width="8" height="8" fill="#FFD700"/>
+            <rect x="2" y="2" width="4" height="4" fill="#FFA500"/>
+            <rect x="3" y="1" width="2" height="1" fill="#FFD700"/>
+          </svg>
+          <div>
+            <div style={{ fontFamily:'monospace', fontSize:8, color:'#aaa', letterSpacing:'0.05em' }}>ACHIEVEMENT UNLOCKED!</div>
+            <div style={{ fontFamily:'monospace', fontSize:10, fontWeight:900, color:'#e8e8e8', textShadow:'1px 1px 0 #111' }}>{achieve}</div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   DARK SOULS
+════════════════════════════════════════════════════════════════════════ */
+function DarkSoulsBackground() {
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#070402' }}>
+      {/* Subtle ember-glow radial */}
+      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 45% 35% at 50% 88%, rgba(199,131,42,0.12) 0%, transparent 65%)' }} />
+      {/* Bonfire SVG (centro-base) */}
+      <svg width="120" height="140" viewBox="0 0 120 140" style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', opacity:0.35 }}>
+        {/* Base / pedra */}
+        <ellipse cx="60" cy="128" rx="28" ry="5" fill="#1a0e06"/>
+        {/* Espada fincada */}
+        <line x1="60" y1="35" x2="60" y2="120" stroke="#6b4a1e" strokeWidth="4"/>
+        <line x1="44" y1="85" x2="76" y2="85" stroke="#6b4a1e" strokeWidth="3.5"/>
+        {/* Empunhadura */}
+        <rect x="56" y="32" width="8" height="6" rx="2" fill="#8a6030"/>
+        {/* Chama externa */}
+        <path d="M60,38 C50,28 44,20 48,10 C51,3 56,1 60,0 C64,1 69,3 72,10 C76,20 70,28 60,38Z" fill="#c7832a" opacity="0.7"/>
+        {/* Chama interna */}
+        <path d="M60,36 C54,28 52,22 54,15 C56,10 59,8 60,5 C61,8 64,10 66,15 C68,22 66,28 60,36Z" fill="#e8c97a" opacity="0.55"/>
+        {/* Brasas */}
+        <circle cx="48" cy="90" r="2" fill="#c7832a" opacity="0.4"/>
+        <circle cx="72" cy="95" r="1.5" fill="#e8c97a" opacity="0.3"/>
+        <circle cx="55" cy="100" r="1.5" fill="#c7832a" opacity="0.35"/>
+      </svg>
+      {/* Vignette */}
+      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 90% 80% at 50% 50%, transparent 30%, rgba(0,0,0,0.75) 100%)' }} />
+    </div>
+  );
+}
+
+function DarkSoulsEffects() {
+  const [embers, setEmbers] = React.useState<{ id:number; left:number; size:number }[]>([]);
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>; let uid = 0;
+    const s = () => {
+      t = setTimeout(() => {
+        const id = uid++;
+        setEmbers(e => [...e, { id, left: 30 + Math.random() * 40, size: 8 + Math.random() * 8 }]);
+        setTimeout(() => setEmbers(e => e.filter(x => x.id !== id)), 3500);
+        s();
+      }, 1200 + Math.random() * 1800);
+    };
+    s();
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <>
+      {embers.map(em => (
+        <div key={em.id} style={{
+          position:'fixed', bottom: '18%', left:`${em.left}%`,
+          zIndex:14, pointerEvents:'none',
+          width: em.size, height: em.size, borderRadius:'50%',
+          background:'radial-gradient(circle, #e8c97a 0%, #c7832a 60%, transparent 100%)',
+          boxShadow:`0 0 ${em.size}px rgba(199,131,42,0.6)`,
+          animation:'soulEmber 3.2s ease-out forwards',
+        }}/>
+      ))}
+    </>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   THE MATRIX
+════════════════════════════════════════════════════════════════════════ */
+const _MC = '01ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾃｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝアイウエオカキクケコ';
+const MATRIX_COLS = [
+  { x:'3%', s:11, dur:9.2, dl:0   }, { x:'9%', s:9,  dur:7.0, dl:1.4 },
+  { x:'15%',s:12, dur:11.5,dl:0.7 }, { x:'22%',s:10, dur:8.3, dl:2.2 },
+  { x:'29%',s:11, dur:6.8, dl:1.0 }, { x:'36%',s:9,  dur:10.1,dl:0.4 },
+  { x:'44%',s:12, dur:7.7, dl:1.8 }, { x:'52%',s:10, dur:8.9, dl:0.2 },
+  { x:'60%',s:11, dur:9.5, dl:2.5 }, { x:'68%',s:9,  dur:6.3, dl:1.2 },
+  { x:'75%',s:12, dur:8.1, dl:0.9 }, { x:'82%',s:10, dur:7.4, dl:1.6 },
+  { x:'89%',s:11, dur:9.8, dl:0.5 }, { x:'95%',s:9,  dur:6.7, dl:2.0 },
+].map(c => ({ ...c, text: Array.from({length:90},()=>_MC[Math.floor(Math.random()*_MC.length)]).join('\n') }));
+
+function MatrixBackground() {
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#000' }}>
+      {MATRIX_COLS.map((c, i) => (
+        <div key={i} style={{
+          position:'absolute', left:c.x, top:0,
+          fontFamily:'monospace', fontSize:c.s, lineHeight:1.35,
+          color:'rgba(0,255,65,0.65)', textShadow:'0 0 4px rgba(0,255,65,0.4)',
+          whiteSpace:'pre', userSelect:'none', pointerEvents:'none',
+          animation:`matrixColScroll ${c.dur}s ${c.dl}s linear infinite`,
+        }}>{c.text}</div>
+      ))}
+      {/* Glow central */}
+      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,255,65,0.04) 0%, transparent 70%)' }} />
+    </div>
+  );
+}
+
+function MatrixEffects() {
+  const [msg, setMsg] = React.useState<string|null>(null);
+  const MSGS = ['FOLLOW THE WHITE RABBIT','THE MATRIX HAS YOU','WAKE UP, NEO.','SEARCHING...','HACK THE SYSTEM','THERE IS NO SPOON'];
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => {
+        setMsg(MSGS[Math.floor(Math.random() * MSGS.length)]);
+        setTimeout(() => setMsg(null), 4200);
+        s(false);
+      }, first ? 12000 : 22000 + Math.random() * 20000);
+    };
+    s(true);
+    return () => clearTimeout(t);
+  }, []);
+  return msg ? (
+    <div style={{
+      position:'fixed', top:22, left:'50%', zIndex:20, pointerEvents:'none',
+      fontFamily:'monospace', fontSize:13, fontWeight:900, letterSpacing:'0.2em',
+      color:'#00ff41', textShadow:'0 0 16px rgba(0,255,65,0.9)',
+      animation:'matrixMsg 4.2s ease-out forwards',
+    }}>{`> ${msg}`}</div>
+  ) : null;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   AMONG US
+════════════════════════════════════════════════════════════════════════ */
+const CREW_COLORS = ['#c51111','#132ed1','#117f2d','#ed54ba','#ef7d0e','#f5f557','#6b2fbb','#71491e'];
+
+function AmongUsBackground() {
+  const stars = React.useMemo(() => Array.from({length:55},(_,i) => ({
+    x: (i*7.3+3.2)%100, y: (i*11.7+5.1)%100,
+    r: i%5===0?1.2:0.55, op:0.25+(i%7)*0.08,
+  })), []);
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'linear-gradient(180deg,#06060f 0%,#0a0a1e 100%)' }}>
+      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0 }}>
+        {stars.map((s,i) => <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#fff" opacity={s.op}/>)}
+        <ellipse cx="78" cy="22" rx="18" ry="12" fill="rgba(19,46,209,0.05)"/>
+        <ellipse cx="18" cy="72" rx="14" ry="10" fill="rgba(197,17,17,0.04)"/>
+      </svg>
+      {/* Vent shape subtle */}
+      <svg width="60" height="30" viewBox="0 0 60 30" style={{ position:'absolute', bottom:12, right:80, opacity:0.07 }}>
+        <path d="M5,25 Q30,5 55,25" stroke="#132ed1" strokeWidth="2" fill="none"/>
+        <line x1="30" y1="5" x2="30" y2="25" stroke="#132ed1" strokeWidth="1.5"/>
+      </svg>
+    </div>
+  );
+}
+
+function AmongUsEffects() {
+  const [crewVisible, setCrewVisible] = React.useState(false);
+  const [impostor, setImpostor]       = React.useState(false);
+  const crewRef  = React.useRef<HTMLDivElement>(null);
+  const animRef  = React.useRef<number>(0);
+  const crewData = React.useRef<{ x:number; dir:1|-1; bottom:number; color:string } | null>(null);
+
+  const launchCrew = React.useCallback((dir: 1|-1) => {
+    cancelAnimationFrame(animRef.current);
+    const color = CREW_COLORS[Math.floor(Math.random() * CREW_COLORS.length)];
+    const startX = dir === 1 ? -45 : window.innerWidth + 45;
+    crewData.current = { x: startX, dir, bottom: 8 + Math.floor(Math.random() * 20), color };
+    setCrewVisible(true);
+    const speed = (window.innerWidth + 150) / 5500;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 50); last = now;
+      const cd = crewData.current; if (!cd) return;
+      cd.x += cd.dir * speed * dt;
+      const el = crewRef.current;
+      if (el) el.style.setProperty('--crx', `${cd.x}px`);
+      const off = cd.dir === 1 ? cd.x > window.innerWidth + 46 : cd.x < -46;
+      if (off) { setCrewVisible(false); crewData.current = null; return; }
+      animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => { launchCrew(Math.random()>.5?1:-1); s(false); }, first ? 14000 : 22000 + Math.random() * 20000);
+    };
+    s(true);
+    return () => { clearTimeout(t); cancelAnimationFrame(animRef.current); };
+  }, [launchCrew]);
+
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => {
+        setImpostor(true); setTimeout(() => setImpostor(false), 4000); s(false);
+      }, first ? 25000 : 35000 + Math.random() * 25000);
+    };
+    s(true);
+    return () => clearTimeout(t);
+  }, []);
+
+  const color = crewData.current?.color ?? '#132ed1';
+  return (
+    <>
+      {crewVisible && (
+        <div ref={crewRef} style={{
+          position:'fixed', zIndex:15, bottom:`${crewData.current?.bottom ?? 10}%`,
+          left:'var(--crx,-45px)', '--crx':`${crewData.current?.x ?? -45}px`,
+          pointerEvents:'none', animation:'crewmateWalk 0.4s ease-in-out infinite',
+        } as React.CSSProperties}>
+          <svg width="34" height="44" viewBox="0 0 34 44">
+            <ellipse cx="17" cy="30" rx="13" ry="12" fill={color} stroke="#111" strokeWidth="1.2"/>
+            <circle cx="17" cy="13" r="11" fill={color} stroke="#111" strokeWidth="1.2"/>
+            <path d="M9,10 Q17,4 25,10 Q25,17 17,18 Q9,17 9,10Z" fill="#8cb4e0" opacity="0.92"/>
+            <rect x="26" y="22" width="6" height="9" rx="2" fill={color} stroke="#111" strokeWidth="1"/>
+            <rect x="9"  y="40" width="6" height="4" rx="2" fill={color} stroke="#111" strokeWidth="1"/>
+            <rect x="19" y="40" width="6" height="4" rx="2" fill={color} stroke="#111" strokeWidth="1"/>
+          </svg>
+        </div>
+      )}
+      {impostor && (
+        <div style={{
+          position:'fixed', top:16, left:'50%', zIndex:20, pointerEvents:'none',
+          background:'#8b0000', border:'2px solid #ff3030',
+          padding:'8px 24px', letterSpacing:'0.18em',
+          fontWeight:900, fontSize:13, color:'#fff',
+          textShadow:'0 0 10px rgba(255,80,80,0.8)',
+          boxShadow:'0 0 20px rgba(255,0,0,0.3)',
+          animation:'impostorAlert 4s ease-out forwards',
+        }}>🔴 IMPOSTOR AMONG US 🔴</div>
+      )}
+    </>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   POKÉMON
+════════════════════════════════════════════════════════════════════════ */
+const WILD_POKEMON = ['⭐ Pikachu','🌿 Bulbasaur','🔥 Charmander','💧 Squirtle','🌙 Eevee','🌀 Gengar','💎 Clefairy','🐉 Dratini'];
+
+function PokemonBackground() {
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'linear-gradient(180deg,#08112a 0%,#0d1e3e 60%,#0a1428 100%)' }}>
+      {/* Stars */}
+      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0, opacity:0.7 }}>
+        {Array.from({length:40},(_,i) => ({
+          x:(i*6.1+2.3)%100, y:(i*9.7+4.5)%100, r:i%6===0?0.9:0.45,
+        })).map((s,i) => <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#fff" opacity={0.2+(i%5)*0.1}/>)}
+      </svg>
+      {/* Pokéball silhouette no canto */}
+      <svg width="120" height="120" viewBox="0 0 36 36" style={{ position:'absolute', bottom:-20, right:-20, opacity:0.06 }}>
+        <circle cx="18" cy="18" r="17" fill="#EE1515" stroke="#fff" strokeWidth="1"/>
+        <path d="M1,18 A17,17 0 0,0 35,18 Z" fill="#fff"/>
+        <line x1="1" y1="18" x2="35" y2="18" stroke="#111" strokeWidth="1.5"/>
+        <circle cx="18" cy="18" r="5" fill="#fff" stroke="#111" strokeWidth="1.5"/>
+      </svg>
+      {/* Silhueta de grama */}
+      <svg width="100%" height="60" viewBox="0 0 100 20" preserveAspectRatio="none" style={{ position:'absolute', bottom:0, opacity:0.15 }}>
+        {Array.from({length:30},(_,i) => (
+          <line key={i} x1={i*3.5} y1={20} x2={i*3.5+(i%3-1)*1.2} y2={20-(8+i%5*2)} stroke="#2a7a30" strokeWidth="0.8"/>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function PokemonEffects() {
+  const [pokeVisible, setPokeVisible] = React.useState(false);
+  const [wild, setWild]               = React.useState<string|null>(null);
+  const pokeRef  = React.useRef<HTMLDivElement>(null);
+  const animRef  = React.useRef<number>(0);
+  const pokeData = React.useRef<{ x:number; dir:1|-1; bottom:number; rotation:number } | null>(null);
+
+  const launchPoke = React.useCallback((dir: 1|-1) => {
+    cancelAnimationFrame(animRef.current);
+    const startX = dir === 1 ? -44 : window.innerWidth + 44;
+    pokeData.current = { x: startX, dir, bottom: 8 + Math.floor(Math.random() * 20), rotation: 0 };
+    setPokeVisible(true);
+    const speed = (window.innerWidth + 160) / 6500;
+    const rotSpeed = 720 / 6500;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 50); last = now;
+      const pd = pokeData.current; if (!pd) return;
+      pd.x += pd.dir * speed * dt;
+      pd.rotation += pd.dir * rotSpeed * dt;
+      const el = pokeRef.current;
+      if (el) {
+        el.style.setProperty('--pkx', `${pd.x}px`);
+        el.style.transform = `rotate(${pd.rotation}deg)`;
+      }
+      const off = pd.dir === 1 ? pd.x > window.innerWidth + 45 : pd.x < -45;
+      if (off) { setPokeVisible(false); pokeData.current = null; return; }
+      animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => { launchPoke(Math.random()>.5?1:-1); s(false); }, first ? 12000 : 20000 + Math.random() * 18000);
+    };
+    s(true);
+    return () => { clearTimeout(t); cancelAnimationFrame(animRef.current); };
+  }, [launchPoke]);
+
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => {
+        setWild(WILD_POKEMON[Math.floor(Math.random() * WILD_POKEMON.length)]);
+        setTimeout(() => setWild(null), 4000);
+        s(false);
+      }, first ? 20000 : 28000 + Math.random() * 22000);
+    };
+    s(true);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <>
+      {pokeVisible && (
+        <div ref={pokeRef} style={{
+          position:'fixed', zIndex:15, bottom:`${pokeData.current?.bottom ?? 10}%`,
+          left:'var(--pkx,-44px)', '--pkx':`${pokeData.current?.x ?? -44}px`,
+          pointerEvents:'none', willChange:'transform',
+        } as React.CSSProperties}>
+          <svg width="38" height="38" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="17" fill="#EE1515" stroke="#222" strokeWidth="1.5"/>
+            <path d="M1,18 A17,17 0 0,0 35,18 Z" fill="#fff" stroke="#222" strokeWidth="1"/>
+            <line x1="1" y1="18" x2="35" y2="18" stroke="#222" strokeWidth="1.5"/>
+            <circle cx="18" cy="18" r="5.5" fill="#fff" stroke="#222" strokeWidth="1.5"/>
+            <circle cx="18" cy="18" r="2.5" fill="#f0f0f0" stroke="#888" strokeWidth="1"/>
+          </svg>
+        </div>
+      )}
+      {wild && (
+        <div style={{
+          position:'fixed', top:22, left:'50%', zIndex:20, pointerEvents:'none',
+          background:'#0d1e3e', border:'3px solid #EE1515', borderRadius:4,
+          padding:'8px 20px', letterSpacing:'0.1em',
+          fontWeight:900, fontSize:12, color:'#FFDE00',
+          boxShadow:'0 0 0 1px rgba(238,21,21,0.3), 3px 3px 0 rgba(0,0,0,0.5)',
+          animation:'wildPokemonAnim 4s ease-out forwards',
+        }}>A wild {wild} appeared!</div>
+      )}
+    </>
+  );
+}
+
 /* ── App ─────────────────────────────────────────────────────────────────── */
 
 const App: React.FC = () => {
@@ -491,11 +1033,17 @@ const App: React.FC = () => {
   /* Aplica/remove classes de tema no <html> */
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove('theme-copa', 'theme-fallout-nv', 'theme-csgo-16');
+    const ALL = ['theme-copa','theme-fallout-nv','theme-csgo-16','theme-minecraft','theme-dark-souls','theme-matrix','theme-among-us','theme-pokemon'];
+    root.classList.remove(...ALL);
     if (activeCosmetic?.id === 'copa-2026')   root.classList.add('theme-copa');
-    if (activeCosmetic?.id === 'fallout-nv') root.classList.add('theme-fallout-nv');
-    if (activeCosmetic?.id === 'csgo-16')    root.classList.add('theme-csgo-16');
-    return () => root.classList.remove('theme-copa', 'theme-fallout-nv', 'theme-csgo-16');
+    if (activeCosmetic?.id === 'fallout-nv')  root.classList.add('theme-fallout-nv');
+    if (activeCosmetic?.id === 'csgo-16')     root.classList.add('theme-csgo-16');
+    if (activeCosmetic?.id === 'minecraft')   root.classList.add('theme-minecraft');
+    if (activeCosmetic?.id === 'dark-souls')  root.classList.add('theme-dark-souls');
+    if (activeCosmetic?.id === 'matrix')      root.classList.add('theme-matrix');
+    if (activeCosmetic?.id === 'among-us')    root.classList.add('theme-among-us');
+    if (activeCosmetic?.id === 'pokemon')     root.classList.add('theme-pokemon');
+    return () => root.classList.remove(...ALL);
   }, [activeCosmetic]);
 
   const handleCloseProfessorModal = useCallback(() => setShowProfessorModal(false), []);
@@ -786,14 +1334,24 @@ const App: React.FC = () => {
       style={activeCosmetic ? { backgroundColor: isDark ? activeCosmetic.darkBg : activeCosmetic.lightBg } : undefined}
     >
       {/* Backgrounds temáticos */}
-      {activeCosmetic?.id === 'copa-2026'   && <PitchBackground />}
+      {activeCosmetic?.id === 'copa-2026'  && <PitchBackground />}
       {activeCosmetic?.id === 'fallout-nv' && <FalloutBackground />}
       {activeCosmetic?.id === 'csgo-16'    && <CSGOBackground />}
+      {activeCosmetic?.id === 'minecraft'  && <MinecraftBackground />}
+      {activeCosmetic?.id === 'dark-souls' && <DarkSoulsBackground />}
+      {activeCosmetic?.id === 'matrix'     && <MatrixBackground />}
+      {activeCosmetic?.id === 'among-us'   && <AmongUsBackground />}
+      {activeCosmetic?.id === 'pokemon'    && <PokemonBackground />}
 
       {/* Efeitos ocasionais */}
-      {activeCosmetic?.id === 'copa-2026'   && <CopaSideEffects />}
+      {activeCosmetic?.id === 'copa-2026'  && <CopaSideEffects />}
       {activeCosmetic?.id === 'fallout-nv' && <FalloutEffects />}
       {activeCosmetic?.id === 'csgo-16'    && <CSGOEffects />}
+      {activeCosmetic?.id === 'minecraft'  && <MinecraftEffects />}
+      {activeCosmetic?.id === 'dark-souls' && <DarkSoulsEffects />}
+      {activeCosmetic?.id === 'matrix'     && <MatrixEffects />}
+      {activeCosmetic?.id === 'among-us'   && <AmongUsEffects />}
+      {activeCosmetic?.id === 'pokemon'    && <PokemonEffects />}
 
       {/* Faixa topo Copa — tricolor */}
       {activeCosmetic?.id === 'copa-2026' && (

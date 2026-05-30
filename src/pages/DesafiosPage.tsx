@@ -87,6 +87,65 @@ const ANIM_CSS = `
     55%  { transform: scale(0.96) rotate(-1deg); }
     100% { transform: scale(1) rotate(0deg); opacity: 1; }
   }
+  @keyframes mcAchieveOverlay {
+    0%   { background: #1a1a1a; }
+    8%   { background: #242424; opacity: 1; }
+    75%  { background: #1c1c1c; opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes mcBlockPop {
+    0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
+    40%  { transform: scale(1.2) rotate(4deg); opacity: 1; }
+    60%  { transform: scale(0.96) rotate(-2deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @keyframes youDiedAnim {
+    0%   { background: #000; }
+    12%  { background: #1a0202; }
+    30%  { background: #320404; opacity: 1; }
+    72%  { background: #0d0101; opacity: 1; }
+    100% { background: #000; opacity: 0; }
+  }
+  @keyframes youDiedText {
+    0%   { opacity: 0; letter-spacing: 0.55em; transform: scale(0.88); }
+    25%  { opacity: 1; letter-spacing: 0.12em; transform: scale(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes enemyFelledAnim {
+    0%   { background: #070402; }
+    10%  { background: #100b04; opacity: 1; }
+    75%  { background: #060301; opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes accessGrantedAnim {
+    0%   { background: #000; }
+    8%   { background: #001800; opacity: 1; }
+    75%  { background: #000c00; opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes accessText {
+    from { opacity: 0; letter-spacing: 0.4em; }
+    to   { opacity: 1; letter-spacing: 0.12em; }
+  }
+  @keyframes taskCompleteAnim {
+    0%   { background: #0a0a1e; }
+    8%   { background: #0d1540; opacity: 1; }
+    75%  { background: #080e28; opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes superEfetivoAnim {
+    0%   { background: #0d1e3e; }
+    8%   { background: #102560; opacity: 1; }
+    75%  { background: #0a1830; opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes pokeTextPop {
+    0%   { transform: scale(0) rotate(-6deg); opacity: 0; }
+    38%  { transform: scale(1.25) rotate(3deg); opacity: 1; }
+    58%  { transform: scale(0.97) rotate(-1deg); }
+    100% { transform: scale(1.04) rotate(0deg); opacity: 1; }
+  }
 `;
 
 /* ── Diamantes jacquard caindo — confetti inspirado na camisa ─────────── */
@@ -1293,8 +1352,14 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const [activePuzzle, setActivePuzzle] = useState<Puzzle | null>(null);
   const [streakMsg, setStreakMsg]       = useState('');
   const [showGol, setShowGol]           = useState(false);
-  const [showCritHit, setShowCritHit]   = useState(false);
-  const [showHeadshot, setShowHeadshot] = useState(false);
+  const [showCritHit, setShowCritHit]       = useState(false);
+  const [showHeadshot, setShowHeadshot]     = useState(false);
+  const [showAchieve, setShowAchieve]       = useState(false);
+  const [showEnemyFelled, setShowEnemyFelled] = useState(false);
+  const [showYouDied, setShowYouDied]       = useState(false);
+  const [showAccessGranted, setShowAccessGranted] = useState(false);
+  const [showTaskComplete, setShowTaskComplete]   = useState(false);
+  const [showSuperEfetivo, setShowSuperEfetivo]   = useState(false);
 
   const isSolved   = (id: string) => currentUser?.solvedPuzzles.includes(id) ?? false;
   const isHintUsed = (id: string) => currentUser?.hintsUsed.includes(id) ?? false;
@@ -1305,6 +1370,11 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const isCopaActive    = currentUser?.activeCosmeticId === 'copa-2026';
   const isFalloutActive = currentUser?.activeCosmeticId === 'fallout-nv';
   const isCSActive      = currentUser?.activeCosmeticId === 'csgo-16';
+  const isMCActive      = currentUser?.activeCosmeticId === 'minecraft';
+  const isDSActive      = currentUser?.activeCosmeticId === 'dark-souls';
+  const isMatrixActive  = currentUser?.activeCosmeticId === 'matrix';
+  const isAUActive      = currentUser?.activeCosmeticId === 'among-us';
+  const isPKActive      = currentUser?.activeCosmeticId === 'pokemon';
 
   const handleSolve = (puzzle: Puzzle, correct: boolean) => {
     const { bonus, shieldUsed } = recordAnswer(puzzle.id, correct, puzzle.points);
@@ -1316,14 +1386,23 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
       setTimeout(() => setStreakMsg(''), 3000);
     }
     if (correct && isCopaActive) {
-      setShowGol(true);
-      setTimeout(() => setShowGol(false), 2800);
+      setShowGol(true);       setTimeout(() => setShowGol(false), 2800);
     } else if (correct && isFalloutActive) {
-      setShowCritHit(true);
-      setTimeout(() => setShowCritHit(false), 2800);
+      setShowCritHit(true);   setTimeout(() => setShowCritHit(false), 2800);
     } else if (correct && isCSActive) {
-      setShowHeadshot(true);
-      setTimeout(() => setShowHeadshot(false), 2600);
+      setShowHeadshot(true);  setTimeout(() => setShowHeadshot(false), 2600);
+    } else if (correct && isMCActive) {
+      setShowAchieve(true);   setTimeout(() => setShowAchieve(false), 3000);
+    } else if (correct && isDSActive) {
+      setShowEnemyFelled(true); setTimeout(() => setShowEnemyFelled(false), 3000);
+    } else if (!correct && isDSActive) {
+      setShowYouDied(true);   setTimeout(() => setShowYouDied(false), 3200);
+    } else if (correct && isMatrixActive) {
+      setShowAccessGranted(true); setTimeout(() => setShowAccessGranted(false), 2800);
+    } else if (correct && isAUActive) {
+      setShowTaskComplete(true);  setTimeout(() => setShowTaskComplete(false), 2800);
+    } else if (correct && isPKActive) {
+      setShowSuperEfetivo(true);  setTimeout(() => setShowSuperEfetivo(false), 2800);
     }
   };
 
@@ -1525,6 +1604,229 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
               <div style={{
                 fontFamily: 'monospace', fontSize: 11, fontWeight: 700,
                 color: '#fff', letterSpacing: '0.1em', marginTop: 6,
+              }}>
+                {currentUser.points} PTS
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── ACHIEVEMENT UNLOCKED! — Minecraft ──────────────────────── */}
+      {showAchieve && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none', overflow: 'hidden',
+          animation: 'mcAchieveOverlay 3.1s ease-out forwards',
+        }}>
+          {/* Stone block background pattern */}
+          <div style={{ position:'absolute', inset:0, backgroundImage:"repeating-linear-gradient(0deg,transparent,transparent 31px,rgba(255,255,255,0.03) 31px,rgba(255,255,255,0.03) 32px), repeating-linear-gradient(90deg,transparent,transparent 31px,rgba(255,255,255,0.03) 31px,rgba(255,255,255,0.03) 32px)" }} />
+          <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 55% 45% at 50% 50%, rgba(93,158,64,0.15) 0%, transparent 70%)' }} />
+
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            animation: 'mcBlockPop 0.5s cubic-bezier(0.22,1,0.36,1) 0.08s both',
+            position: 'relative', zIndex: 2, gap: 12,
+          }}>
+            {/* Bloco de ouro */}
+            <svg width="64" height="64" viewBox="0 0 16 16">
+              <rect width="16" height="16" fill="#FFD700"/>
+              <rect x="0" y="0" width="8" height="8" fill="#FFC400"/>
+              <rect x="8" y="8" width="8" height="8" fill="#FFC400"/>
+              <rect width="16" height="16" fill="none" stroke="#B8860B" strokeWidth="1"/>
+              <rect x="4" y="4" width="8" height="8" fill="#FFE55C"/>
+              <text x="8" y="11.5" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="#B8860B" fontWeight="900">G</text>
+            </svg>
+            <div style={{ fontFamily:'monospace', fontSize:10, fontWeight:900, color:'#aaa', letterSpacing:'0.2em', textShadow:'2px 2px 0 #111' }}>
+              ACHIEVEMENT UNLOCKED!
+            </div>
+            <div style={{
+              fontFamily:'monospace',
+              fontSize:'clamp(28px,7vw,56px)',
+              fontWeight:900, color:'#e8e8e8', lineHeight:1,
+              textShadow:'3px 3px 0 #111, 0 0 20px rgba(93,158,64,0.4)',
+            }}>CASO RESOLVIDO!</div>
+            <div style={{ fontFamily:'monospace', fontSize:9, color:'rgba(93,158,64,0.8)', letterSpacing:'0.12em' }}>
+              Respond correctly for the first time
+            </div>
+            {currentUser && (
+              <div style={{ fontFamily:'monospace', fontSize:12, fontWeight:900, color:'#FFD700', marginTop:6, textShadow:'2px 2px 0 #111' }}>
+                {currentUser.points} PTS
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── ENEMY FELLED — Dark Souls ────────────────────────────── */}
+      {showEnemyFelled && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none', overflow: 'hidden',
+          animation: 'enemyFelledAnim 3.1s ease-out forwards',
+        }}>
+          <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 50% 40% at 50% 50%, rgba(199,131,42,0.14) 0%, transparent 70%)' }} />
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            position: 'relative', zIndex: 2, gap: 14,
+          }}>
+            <div style={{ fontSize:28, filter:'drop-shadow(0 0 10px rgba(199,131,42,0.8))', lineHeight:1 }}>🔥</div>
+            <div style={{
+              fontFamily:'monospace',
+              fontSize:'clamp(36px,9vw,70px)',
+              fontWeight:900, letterSpacing:'0.06em', lineHeight:1,
+              color:'#c7832a',
+              textShadow:'0 0 30px rgba(199,131,42,0.7), 0 0 60px rgba(199,131,42,0.3), 3px 3px 0 rgba(0,0,0,0.6)',
+            }}>ENEMY FELLED</div>
+            <div style={{ width:60, height:1, background:'rgba(199,131,42,0.4)' }} />
+            <div style={{ fontFamily:'monospace', fontSize:9, color:'rgba(199,131,42,0.5)', letterSpacing:'0.2em' }}>
+              SOULS ABSORBED
+            </div>
+            {currentUser && (
+              <div style={{ fontFamily:'monospace', fontSize:12, color:'#e8c97a', letterSpacing:'0.1em', textShadow:'0 0 8px rgba(232,201,122,0.5)' }}>
+                {currentUser.points} SOULS
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── YOU DIED — Dark Souls (erro) ─────────────────────────── */}
+      {showYouDied && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none', overflow: 'hidden',
+          animation: 'youDiedAnim 3.3s ease-out forwards',
+        }}>
+          <div style={{
+            fontFamily:'monospace',
+            fontSize:'clamp(52px,12vw,96px)',
+            fontWeight:900, lineHeight:1,
+            color:'#8b0000',
+            animation:'youDiedText 3.1s ease-out 0.1s both',
+            textShadow:'0 0 40px rgba(139,0,0,0.6), 0 0 80px rgba(139,0,0,0.2)',
+          }}>YOU DIED</div>
+        </div>
+      )}
+
+      {/* ── ACCESS GRANTED — Matrix ──────────────────────────────── */}
+      {showAccessGranted && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none', overflow: 'hidden',
+          animation: 'accessGrantedAnim 2.9s ease-out forwards',
+        }}>
+          <div style={{ position:'absolute', inset:0, backgroundImage:'repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.04) 3px,rgba(0,255,65,0.04) 4px)' }} />
+          <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,255,65,0.12) 0%, transparent 70%)' }} />
+          <div style={{ position:'absolute', inset:12, border:'1px solid rgba(0,255,65,0.25)', boxShadow:'0 0 24px rgba(0,255,65,0.1), inset 0 0 20px rgba(0,255,65,0.04)' }} />
+
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            position: 'relative', zIndex: 2, gap: 10,
+          }}>
+            <div style={{ fontFamily:'monospace', fontSize:10, color:'rgba(0,255,65,0.6)', letterSpacing:'0.2em' }}>{'> SYSTEM OVERRIDE'}</div>
+            <div style={{
+              fontFamily:'monospace',
+              fontSize:'clamp(36px,9vw,68px)',
+              fontWeight:900, letterSpacing:'0.08em', lineHeight:1,
+              color:'#00ff41',
+              animation:'accessText 0.6s ease-out 0.1s both',
+              textShadow:'0 0 24px rgba(0,255,65,0.9), 0 0 50px rgba(0,255,65,0.4)',
+            }}>ACCESS GRANTED</div>
+            <div style={{ fontFamily:'monospace', fontSize:9, color:'rgba(0,255,65,0.5)', letterSpacing:'0.18em' }}>ENCRYPTION BYPASSED</div>
+            {currentUser && (
+              <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:8 }}>
+                <span style={{ fontFamily:'monospace', fontSize:12, fontWeight:700, color:'#00ff41', letterSpacing:'0.1em' }}>{currentUser.points} XP</span>
+                <span style={{ fontFamily:'monospace', fontSize:10, color:'rgba(0,255,65,0.7)', animation:'terminalBlink 1s step-end infinite' }}>█</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── TASK COMPLETE — Among Us ─────────────────────────────── */}
+      {showTaskComplete && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none', overflow: 'hidden',
+          animation: 'taskCompleteAnim 2.9s ease-out forwards',
+        }}>
+          <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 55% 45% at 50% 50%, rgba(19,46,209,0.2) 0%, transparent 70%)' }} />
+          {/* Crewmate SVG no centro */}
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            position: 'relative', zIndex: 2, gap: 12,
+          }}>
+            <svg width="60" height="76" viewBox="0 0 34 44" style={{ filter:'drop-shadow(0 0 16px rgba(19,46,209,0.8))' }}>
+              <ellipse cx="17" cy="30" rx="13" ry="12" fill="#132ed1" stroke="#fff" strokeWidth="1.2"/>
+              <circle cx="17" cy="13" r="11" fill="#132ed1" stroke="#fff" strokeWidth="1.2"/>
+              <path d="M9,10 Q17,4 25,10 Q25,17 17,18 Q9,17 9,10Z" fill="#8cb4e0" opacity="0.95"/>
+              <rect x="26" y="22" width="6" height="9" rx="2" fill="#132ed1" stroke="#fff" strokeWidth="1"/>
+              <rect x="9"  y="40" width="6" height="4" rx="2" fill="#132ed1" stroke="#fff" strokeWidth="1"/>
+              <rect x="19" y="40" width="6" height="4" rx="2" fill="#132ed1" stroke="#fff" strokeWidth="1"/>
+            </svg>
+            <div style={{ fontFamily:'monospace', fontSize:10, color:'rgba(184,200,255,0.7)', letterSpacing:'0.2em' }}>TASK COMPLETED</div>
+            <div style={{
+              fontSize:'clamp(36px,9vw,64px)',
+              fontWeight:900, color:'#b8c8ff', lineHeight:1,
+              textShadow:'0 0 24px rgba(19,46,209,0.8), 0 0 50px rgba(19,46,209,0.3)',
+            }}>✓ DONE!</div>
+            <div style={{ fontFamily:'monospace', fontSize:9, color:'rgba(184,200,255,0.5)', letterSpacing:'0.12em' }}>
+              CREWMATE TASKS: +1
+            </div>
+            {currentUser && (
+              <div style={{ fontFamily:'monospace', fontSize:12, fontWeight:700, color:'#b8c8ff', marginTop:6 }}>
+                {currentUser.points} PTS
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── SUPER EFETIVO! — Pokémon ─────────────────────────────── */}
+      {showSuperEfetivo && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none', overflow: 'hidden',
+          animation: 'superEfetivoAnim 2.9s ease-out forwards',
+        }}>
+          {/* Pokéball de fundo */}
+          <svg style={{ position:'absolute', left:'50%', top:'50%', transform:'translate(-50%,-50%)', opacity:0.06 }} width="500" height="500" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="17" fill="#EE1515" stroke="#fff" strokeWidth="1"/>
+            <path d="M1,18 A17,17 0 0,0 35,18 Z" fill="#fff"/>
+            <line x1="1" y1="18" x2="35" y2="18" stroke="#111" strokeWidth="1.5"/>
+            <circle cx="18" cy="18" r="5.5" fill="#fff" stroke="#111" strokeWidth="1.5"/>
+          </svg>
+          <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 55% 45% at 50% 50%, rgba(238,21,21,0.12) 0%, transparent 70%)' }} />
+
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            position: 'relative', zIndex: 2, gap: 10,
+          }}>
+            <div style={{ fontFamily:'monospace', fontSize:10, color:'rgba(255,222,0,0.7)', letterSpacing:'0.2em', border:'2px solid rgba(255,222,0,0.3)', padding:'2px 12px', borderRadius:3 }}>
+              IT'S SUPER EFFECTIVE!
+            </div>
+            <div style={{
+              fontFamily:"'Arial Black', monospace",
+              fontSize:'clamp(38px,9vw,72px)',
+              fontWeight:900, letterSpacing:'0.02em', lineHeight:1,
+              color:'#FFDE00',
+              animation:'pokeTextPop 0.5s cubic-bezier(0.22,1,0.36,1) 0.06s both',
+              textShadow:'3px 3px 0 #EE1515, 0 0 30px rgba(255,222,0,0.6)',
+            }}>SUPER EFETIVO! ⚡</div>
+            <div style={{ fontFamily:'monospace', fontSize:9, color:'rgba(255,222,0,0.5)', letterSpacing:'0.14em' }}>
+              FOE POKÉMON FAINTED
+            </div>
+            {currentUser && (
+              <div style={{
+                fontFamily:'monospace', fontSize:12, fontWeight:900, color:'#FFDE00', marginTop:8,
+                textShadow:'2px 2px 0 rgba(0,0,0,0.5)',
               }}>
                 {currentUser.points} PTS
               </div>

@@ -271,6 +271,216 @@
     diamondSway calc(var(--dur,2.3s) * 0.6) var(--delay,0s) ease-in-out infinite;
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   MINECRAFT — blocos de pedra, borda de grama
+════════════════════════════════════════════════════════════════════════ */
+@keyframes mcAchieve {
+  0%   { transform: translateX(110%); opacity: 0; }
+  10%  { transform: translateX(0); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.theme-minecraft .tool-card {
+  background: #2a2a2a !important;
+  border: 2px solid #3a3a3a !important;
+  border-top: 4px solid #5D9E40 !important;
+  border-radius: 2px !important;
+  box-shadow: 3px 3px 0 #111 !important;
+  transition: transform .15s, box-shadow .15s, border-top-color .15s !important;
+}
+.theme-minecraft .tool-card::before { display: none !important; }
+.theme-minecraft .tool-card::after  { display: none !important; }
+.theme-minecraft .tool-card:hover {
+  transform: translateY(-4px) !important;
+  border-top-color: #7acc54 !important;
+  box-shadow: 3px 7px 0 #111 !important;
+}
+.theme-minecraft .tool-name {
+  color: #e8e8e8 !important;
+  font-weight: 700 !important;
+  text-shadow: 2px 2px 0 #111 !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   DARK SOULS — forjado nas cinzas
+════════════════════════════════════════════════════════════════════════ */
+@keyframes soulEmber {
+  0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+  10%  { opacity: 1; }
+  65%  { transform: translateY(-80px) scale(1.15) rotate(20deg); opacity: 0.85; }
+  100% { transform: translateY(-140px) scale(0.55) rotate(40deg); opacity: 0; }
+}
+@keyframes youDiedAnim {
+  0%   { background: #000; }
+  12%  { background: #1a0202; }
+  30%  { background: #320404; opacity: 1; }
+  72%  { background: #0d0101; opacity: 1; }
+  100% { background: #000; opacity: 0; }
+}
+@keyframes youDiedText {
+  0%   { opacity: 0; letter-spacing: 0.55em; transform: scale(0.9); }
+  25%  { opacity: 1; letter-spacing: 0.12em; transform: scale(1); }
+  75%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes enemyFelledAnim {
+  0%   { background: #08050200; }
+  10%  { background: #100b04; opacity: 1; }
+  75%  { background: #060301; opacity: 1; }
+  100% { opacity: 0; }
+}
+.theme-dark-souls .tool-card {
+  background: #0d0a07 !important;
+  border: 1px solid rgba(199,131,42,0.18) !important;
+  border-bottom: 2px solid rgba(199,131,42,0.32) !important;
+  border-radius: 3px !important;
+  box-shadow: 0 0 12px rgba(199,131,42,0.05), inset 0 0 20px rgba(199,131,42,0.03) !important;
+  transition: box-shadow .25s, border-color .25s, transform .2s !important;
+}
+.theme-dark-souls .tool-card::before { display: none !important; }
+.theme-dark-souls .tool-card::after  { display: none !important; }
+.theme-dark-souls .tool-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(199,131,42,0.55) !important;
+  box-shadow: 0 0 22px rgba(199,131,42,0.28), 0 8px 20px rgba(0,0,0,0.6) !important;
+}
+.theme-dark-souls .tool-name {
+  color: #c7832a !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 8px rgba(199,131,42,0.25) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   THE MATRIX — terminais de sistema
+════════════════════════════════════════════════════════════════════════ */
+@keyframes matrixColScroll {
+  0%   { transform: translateY(-100%); opacity: 0.9; }
+  5%   { opacity: 1; }
+  90%  { opacity: 0.8; }
+  100% { transform: translateY(110vh); opacity: 0; }
+}
+@keyframes matrixMsg {
+  0%   { opacity: 0; transform: translate(-50%,-8px); }
+  12%  { opacity: 1; transform: translate(-50%,0); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes accessGrantedAnim {
+  0%   { background: #000; }
+  8%   { background: #001800; opacity: 1; }
+  75%  { background: #000c00; opacity: 1; }
+  100% { opacity: 0; }
+}
+.theme-matrix .tool-card {
+  background: #000800 !important;
+  border: 1px solid rgba(0,255,65,0.2) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 0 10px rgba(0,255,65,0.08), inset 0 0 15px rgba(0,255,65,0.03) !important;
+  transition: box-shadow .2s, border-color .2s !important;
+}
+.theme-matrix .tool-card::before { display: none !important; }
+.theme-matrix .tool-card::after  { display: none !important; }
+.theme-matrix .tool-card:hover {
+  border-color: rgba(0,255,65,0.65) !important;
+  box-shadow: 0 0 20px rgba(0,255,65,0.3), 0 0 4px rgba(0,255,65,0.5), inset 0 0 15px rgba(0,255,65,0.05) !important;
+}
+.theme-matrix .tool-name {
+  color: #00ff41 !important;
+  font-family: monospace !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 6px rgba(0,255,65,0.5) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   AMONG US — nave espacial
+════════════════════════════════════════════════════════════════════════ */
+@keyframes impostorAlert {
+  0%   { opacity: 0; transform: translateX(-50%) scaleY(0.6); }
+  10%  { opacity: 1; transform: translateX(-50%) scaleY(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes taskCompleteAnim {
+  0%   { background: #0a0a1e; }
+  8%   { background: #0d1540; opacity: 1; }
+  75%  { background: #080e28; opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes crewmateWalk {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-3px); }
+}
+.theme-among-us .tool-card {
+  background: #111128 !important;
+  border: 1px solid rgba(19,46,209,0.25) !important;
+  border-top: 3px solid #132ed1 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.55) !important;
+  transition: transform .2s, box-shadow .2s, border-top-color .2s !important;
+}
+.theme-among-us .tool-card::before { display: none !important; }
+.theme-among-us .tool-card::after  { display: none !important; }
+.theme-among-us .tool-card:hover {
+  transform: translateY(-5px) !important;
+  border-top-color: #3a5eeb !important;
+  box-shadow: 0 8px 24px rgba(19,46,209,0.28), 0 4px 12px rgba(0,0,0,0.45) !important;
+}
+.theme-among-us .tool-name {
+  color: #b8c8ff !important;
+  font-weight: 700 !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   POKÉMON — Pokédex + Pokébola
+════════════════════════════════════════════════════════════════════════ */
+@keyframes wildPokemonAnim {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  12%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+}
+@keyframes superEfetivoAnim {
+  0%   { background: #0d1e3e; }
+  8%   { background: #102560; opacity: 1; }
+  75%  { background: #0a1830; opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes pokeTextPop {
+  0%   { transform: scale(0) rotate(-6deg); opacity: 0; }
+  38%  { transform: scale(1.25) rotate(3deg); opacity: 1; }
+  58%  { transform: scale(0.97) rotate(-1deg); }
+  100% { transform: scale(1.04) rotate(0deg); opacity: 1; }
+}
+.theme-pokemon .tool-card {
+  background: #f8f9fa !important;
+  border: 2px solid #dde0e4 !important;
+  border-top: 4px solid #EE1515 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 3px 0 #bbb, 0 6px 12px rgba(0,0,0,0.08) !important;
+  transition: transform .2s cubic-bezier(0.34,1.4,0.64,1), box-shadow .2s !important;
+}
+.dark .theme-pokemon .tool-card {
+  background: #1a2844 !important;
+  border-color: rgba(238,21,21,0.28) !important;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.4) !important;
+}
+.theme-pokemon .tool-card::before { display: none !important; }
+.theme-pokemon .tool-card::after  { display: none !important; }
+.theme-pokemon .tool-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 10px 0 #bbb, 0 14px 24px rgba(238,21,21,0.12) !important;
+}
+.dark .theme-pokemon .tool-card:hover {
+  box-shadow: 0 10px 0 rgba(0,0,0,0.4), 0 14px 24px rgba(238,21,21,0.18) !important;
+}
+.theme-pokemon .tool-name {
+  color: #1a1a2e !important;
+  font-weight: 800 !important;
+}
+.dark .theme-pokemon .tool-name {
+  color: #FFDE00 !important;
+}
+
 @layer utilities {
   .shimmer-bg {
     background: linear-gradient(

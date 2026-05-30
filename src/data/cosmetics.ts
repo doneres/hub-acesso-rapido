@@ -86,6 +86,96 @@ export const COSMETICS: CosmeticDef[] = [
     accent1: '#FF6600',
     accent2: '#3a7bd5',
   },
+
+  /* ─── Minecraft ────────────────────────────────────────────────── */
+  {
+    id: 'minecraft',
+    name: 'Minecraft',
+    desc: 'O Hub virou um mundo novo. Cards são blocos de pedra com borda de grama, Creeper atravessa a tela, achievements aparecem no canto. É hora de construir.',
+    cost: 400,
+    emoji: '⛏️',
+    tag: 'MINECRAFT',
+    tagColor: '#5D9E40',
+    previewGradient: 'linear-gradient(135deg,#1a1a1a 0%,#3a3a3a 30%,#5D9E40 65%,#8B5E3C 100%)',
+    lightBg: '#1c2a14',
+    darkBg:  '#121c0d',
+    patternLight: '',
+    patternDark:  '',
+    accent1: '#5D9E40',
+    accent2: '#8B5E3C',
+  },
+
+  /* ─── Dark Souls ───────────────────────────────────────────────── */
+  {
+    id: 'dark-souls',
+    name: 'Dark Souls',
+    desc: 'Prepare to die. Embers flutuam, cards forjados nas cinzas, fogueira no fundo. Acertos: "ENEMY FELLED". Erros: "YOU DIED". Que a chama persista.',
+    cost: 600,
+    emoji: '🔥',
+    tag: 'DARK SOULS',
+    tagColor: '#c7832a',
+    previewGradient: 'linear-gradient(135deg,#0a0602 0%,#1a0e06 40%,#8c4a10 70%,#c7832a 100%)',
+    lightBg: '#100c08',
+    darkBg:  '#080503',
+    patternLight: '',
+    patternDark:  '',
+    accent1: '#c7832a',
+    accent2: '#e8c97a',
+  },
+
+  /* ─── The Matrix ───────────────────────────────────────────────── */
+  {
+    id: 'matrix',
+    name: 'The Matrix',
+    desc: 'Red pill ou blue pill? Chuva de código verde, cards como terminais de sistema, "ACCESS GRANTED" ao acertar. Follow the white rabbit.',
+    cost: 500,
+    emoji: '💊',
+    tag: 'THE MATRIX',
+    tagColor: '#00ff41',
+    previewGradient: 'linear-gradient(135deg,#000 0%,#001200 40%,#003300 70%,#00ff41 100%)',
+    lightBg: '#000800',
+    darkBg:  '#000500',
+    patternLight: '',
+    patternDark:  '',
+    accent1: '#00ff41',
+    accent2: '#00b32c',
+  },
+
+  /* ─── Among Us ─────────────────────────────────────────────────── */
+  {
+    id: 'among-us',
+    name: 'Among Us',
+    desc: 'Crewmates atravessam o Hub, IMPOSTOR DETECTED pisca no topo, cada tarefa concluída é celebrada. Mas cuidado — um de nós não é quem parece.',
+    cost: 450,
+    emoji: '🚀',
+    tag: 'AMONG US',
+    tagColor: '#132ed1',
+    previewGradient: 'linear-gradient(135deg,#0a0a1e 0%,#1a1a3e 35%,#c51111 65%,#132ed1 100%)',
+    lightBg: '#0e0e22',
+    darkBg:  '#080814',
+    patternLight: '',
+    patternDark:  '',
+    accent1: '#132ed1',
+    accent2: '#c51111',
+  },
+
+  /* ─── Pokémon ──────────────────────────────────────────────────── */
+  {
+    id: 'pokemon',
+    name: 'Pokémon',
+    desc: "Ser o melhor, ninguém jamais conseguiu… até agora. Pokébola rola na tela, wild Pokémon aparece no hub e cada acerto é SUPER EFETIVO! Gotta catch 'em all.",
+    cost: 550,
+    emoji: '⚡',
+    tag: 'POKÉMON',
+    tagColor: '#EE1515',
+    previewGradient: 'linear-gradient(135deg,#1a3a6e 0%,#2455a4 35%,#EE1515 65%,#FFDE00 100%)',
+    lightBg: '#0d1e3e',
+    darkBg:  '#080f22',
+    patternLight: '',
+    patternDark:  '',
+    accent1: '#EE1515',
+    accent2: '#FFDE00',
+  },
 ];
 
 /* ── Helpers localStorage ─────────────────────────────────────────────── */
