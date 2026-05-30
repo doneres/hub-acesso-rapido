@@ -55,36 +55,6 @@ function detectTouchDevice() {
   catch { return false; }
 }
 
-/* ── Bolas flutuantes Copa ───────────────────────────────────────────────── */
-const COPA_BALLS = [
-  { size: 28, left: '6%',  delay: '0s',   dur: '14s' },
-  { size: 20, left: '19%', delay: '3.5s', dur: '17s' },
-  { size: 36, left: '36%', delay: '7s',   dur: '12s' },
-  { size: 22, left: '54%', delay: '1.8s', dur: '15s' },
-  { size: 30, left: '71%', delay: '5s',   dur: '11s' },
-  { size: 18, left: '87%', delay: '9s',   dur: '16s' },
-];
-
-function CopaBalls() {
-  return (
-    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
-      {COPA_BALLS.map((b, i) => (
-        <span
-          key={i}
-          style={{
-            position: 'absolute',
-            left: b.left,
-            bottom: '-60px',
-            fontSize: b.size,
-            animation: `copaBallFloat ${b.dur} ${b.delay} linear infinite`,
-            willChange: 'transform',
-          }}
-        >⚽</span>
-      ))}
-    </div>
-  );
-}
-
 /* ── App ─────────────────────────────────────────────────────────────────── */
 
 const App: React.FC = () => {
@@ -420,7 +390,10 @@ const App: React.FC = () => {
         backgroundImage: isDark ? activeCosmetic.patternDark : activeCosmetic.patternLight,
       } : undefined}
     >
-      {activeCosmetic?.id === 'copa-2026' && <CopaBalls />}
+      {/* Faixa topo — sinal de transmissão Copa */}
+      {activeCosmetic?.id === 'copa-2026' && (
+        <div style={{ height: 3, background: 'linear-gradient(90deg,#008c35 0%,#c9a227 50%,#008c35 100%)', flexShrink: 0 }} />
+      )}
       <Header
         isDark={isDark}
         onToggleTheme={toggleTheme}
@@ -431,27 +404,55 @@ const App: React.FC = () => {
 
       <main className="flex-1 max-w-[1440px] w-full px-4 md:px-8 py-8 mx-auto relative z-10">
 
-        {/* Banner cosmético ativo */}
+        {/* Banner Copa — estilo sports broadcast */}
         {activeCosmetic && (
           <div
-            className="flex items-center gap-3 px-5 py-3 mb-6 rounded-xl animate-fadeIn"
+            className="animate-fadeIn mb-6"
             style={{
-              background: activeCosmetic.previewGradient,
-              border: `2px solid ${activeCosmetic.tagColor}40`,
-              boxShadow: `0 4px 20px ${activeCosmetic.tagColor}25`,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '10px 20px',
+              background: isDark ? 'rgba(1,20,8,0.7)' : '#ffffff',
+              borderLeft: '3px solid #008c35',
+              borderBottom: `1px solid ${isDark ? 'rgba(0,140,53,0.15)' : 'rgba(0,140,53,0.1)'}`,
+              boxShadow: isDark
+                ? '0 1px 16px rgba(0,140,53,0.1)'
+                : '0 1px 12px rgba(0,140,53,0.07)',
             }}
           >
-            <span className="text-2xl">{activeCosmetic.emoji}</span>
-            <div className="flex-1 min-w-0">
-              <div className="text-white font-black text-sm leading-tight">{activeCosmetic.name}</div>
-              <div className="text-white/70 text-xs">Cosmético ativo — mude na Loja de Cosméticos em Desafios</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {/* Indicador vivo */}
+              <div style={{
+                width: 8, height: 8, borderRadius: '50%',
+                background: '#008c35',
+                boxShadow: '0 0 0 3px rgba(0,140,53,0.18)',
+              }} />
+              <div>
+                <div style={{
+                  fontSize: 11, fontWeight: 800, letterSpacing: '0.12em',
+                  color: isDark ? '#4ade80' : '#015f2a',
+                  lineHeight: 1,
+                }}>
+                  COPA DO MUNDO 2026
+                </div>
+                <div style={{
+                  fontSize: 10,
+                  color: isDark ? 'rgba(255,255,255,0.3)' : '#94a3b8',
+                  marginTop: 3,
+                }}>
+                  Tema ativo · gerencie em Desafios
+                </div>
+              </div>
             </div>
-            <span
-              className="shrink-0 text-xs font-black px-2 py-1 rounded"
-              style={{ background: activeCosmetic.tagColor, color: '#000' }}
-            >
-              {activeCosmetic.tag}
-            </span>
+            <div style={{
+              fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
+              color: isDark ? '#c9a227' : '#7a5c0e',
+              padding: '4px 12px',
+              background: isDark ? 'rgba(201,162,39,0.1)' : 'rgba(201,162,39,0.07)',
+              border: `1px solid ${isDark ? 'rgba(201,162,39,0.28)' : 'rgba(201,162,39,0.22)'}`,
+              borderRadius: 999,
+            }}>
+              ATIVO
+            </div>
           </div>
         )}
 

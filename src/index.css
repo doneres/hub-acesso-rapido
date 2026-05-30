@@ -64,134 +64,101 @@
   animation: pixel-fade-in 0.25s ease-out forwards;
 }
 
-/* ── Copa do Mundo 2026 — bolas flutuantes no fundo ──────────────────── */
-@keyframes copaBallFloat {
-  0%   { transform: translateY(0) rotate(0deg);   opacity: 0; }
-  8%   { opacity: 0.18; }
-  92%  { opacity: 0.18; }
-  100% { transform: translateY(-110vh) rotate(540deg); opacity: 0; }
-}
+/* ════════════════════════════════════════════════════════════════════════
+   COPA DO MUNDO 2026 — Design Premium
+   Referência: campanha Nike/Adidas Copa — limpo, confiante, moderno.
+════════════════════════════════════════════════════════════════════════ */
 
-/* ── Copa — animação GOL! ────────────────────────────────────────────── */
-@keyframes golOverlayFade {
+/* ── GOL! — overlay estilo transmissão ──────────────────────────────── */
+@keyframes golFade {
   0%   { opacity: 0; }
-  15%  { opacity: 1; }
-  75%  { opacity: 1; }
+  10%  { opacity: 1; }
+  78%  { opacity: 1; }
   100% { opacity: 0; }
 }
-@keyframes golBallSpin {
-  from { transform: scale(0.2) rotate(0deg); }
-  to   { transform: scale(1) rotate(720deg); }
+@keyframes golSlideUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes golTextPop {
-  0%   { transform: scale(0) rotate(-8deg); opacity: 0; }
-  40%  { transform: scale(1.25) rotate(4deg); opacity: 1; }
-  60%  { transform: scale(1.05) rotate(-2deg); }
-  100% { transform: scale(1.1) rotate(0deg); opacity: 1; }
+@keyframes golBeamSweep {
+  0%   { transform: translateX(-110%) skewX(-18deg); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateX(110%) skewX(-18deg); opacity: 0; }
 }
-@keyframes golSubPop {
-  0%   { opacity: 0; transform: translateY(16px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Copa — shimmer dourado nos cards ────────────────────────────────── */
-@keyframes copaCardShimmer {
-  0%   { background-position: -250% center; }
-  100% { background-position: 250% center; }
-}
-@keyframes copaBadgePulse {
-  0%, 100% { opacity: 0.22; transform: scale(1); }
-  50%       { opacity: 0.55; transform: scale(1.15); }
-}
-@keyframes copaConfettiFall {
-  0%   { transform: translateY(-10px) rotate(0deg);   opacity: 1; }
-  100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
-}
-@keyframes copaConfettiWiggle {
-  0%, 100% { transform: translateX(0); }
-  25%       { transform: translateX(-6px); }
-  75%       { transform: translateX(6px); }
+@keyframes golLinePulse {
+  0%, 100% { transform: scaleX(1);    opacity: 1; }
+  50%       { transform: scaleX(1.08); opacity: 0.7; }
 }
 
-/* ── Copa — cards do Hub ─────────────────────────────────────────────── */
+/* ── Confetti — fitas finas estilo ticker-tape ───────────────────────── */
+@keyframes copaStripFall {
+  0%   { transform: translateY(-8px) rotate(var(--rot, 0deg)); opacity: 1; }
+  80%  { opacity: 0.6; }
+  100% { transform: translateY(106vh) rotate(calc(var(--rot, 0deg) + 300deg)); opacity: 0; }
+}
+@keyframes copaStripSway {
+  0%, 100% { margin-left: 0; }
+  33%       { margin-left: 8px; }
+  66%       { margin-left: -8px; }
+}
+
+/* ── Cards do Hub ────────────────────────────────────────────────────── */
 .theme-copa .tool-card {
-  border-color: #009C3B !important;
-  border-bottom-color: #D4A017 !important;
-  border-bottom-width: 3px !important;
-  overflow: hidden;
+  border-left:   3px solid #008c35 !important;
+  border-top:    1px solid transparent !important;
+  border-right:  1px solid transparent !important;
+  border-bottom: 1px solid rgba(0,140,53,0.12) !important;
+  transition:
+    transform .22s cubic-bezier(0.34,1.4,0.64,1),
+    box-shadow .22s ease,
+    background .18s ease !important;
 }
-/* Faixa de shimmer dourado que percorre o card */
-.theme-copa .tool-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 20%,
-    rgba(212,160,23,0.18) 48%,
-    rgba(255,215,0,0.22) 50%,
-    rgba(212,160,23,0.18) 52%,
-    transparent 80%
-  );
-  background-size: 250% 100%;
-  animation: copaCardShimmer 3.5s linear infinite;
-  pointer-events: none;
-  z-index: 1;
-}
+.theme-copa .tool-card::before { display: none !important; } /* remove shimmer */
 .theme-copa .tool-card:hover {
-  border-color: #D4A017 !important;
-  box-shadow: 0 18px 44px rgba(0,156,59,0.22), 0 0 0 1px #D4A01740 !important;
-  transform: translateY(-6px) scale(1.02) !important;
+  transform: translateY(-5px) !important;
+  box-shadow:
+    0 14px 32px rgba(0,140,53,0.13),
+    0 2px 6px rgba(0,0,0,0.05) !important;
+  border-left-color: #c9a227 !important;
+  border-bottom-color: rgba(201,162,39,0.2) !important;
 }
-/* Bola de futebol no canto — pulsa suavemente */
+/* ⚽ aparece APENAS no hover — sem animação constante */
 .theme-copa .tool-card::after {
   content: '⚽';
   position: absolute;
-  bottom: 5px;
-  right: 7px;
-  font-size: 13px;
-  opacity: 0.22;
+  bottom: 7px; right: 9px;
+  font-size: 11px;
+  opacity: 0;
   pointer-events: none;
   z-index: 2;
-  animation: copaBadgePulse 2.8s ease-in-out infinite;
+  transition: opacity .2s ease, transform .2s ease;
+  animation: none !important;
 }
 .theme-copa .tool-card:hover::after {
-  animation: none;
-  opacity: 0.7;
-  transform: scale(1.2);
-  transition: all .3s;
+  opacity: 0.4;
+  transform: rotate(-10deg) scale(1.1);
 }
 .theme-copa .tool-name {
-  color: #007A2F !important;
-  font-weight: 900 !important;
+  color: #015f2a !important;
+  font-weight: 800 !important;
 }
-.dark.theme-copa .tool-name,
-.theme-copa .dark .tool-name {
+.dark.theme-copa .tool-name {
   color: #4ade80 !important;
 }
+/* card destaque: sem badge extra */
+.theme-copa .tool-card-pinned::after { display: none !important; }
 
-/* ── Copa — card destaque (pinned) ─────────────────────────────────── */
-.theme-copa .tool-card-pinned::after {
-  content: '⚽';
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px;
-  opacity: 0.22;
-  pointer-events: none;
-  animation: copaBadgePulse 3s ease-in-out infinite;
-}
-
-/* ── Copa — confetti pieces ──────────────────────────────────────────── */
-.copa-confetti-piece {
+/* ── Confetti pieces ─────────────────────────────────────────────────── */
+.copa-strip {
   position: fixed;
-  top: -16px;
+  top: -20px;
   pointer-events: none;
   z-index: 210;
+  border-radius: 1px;
   animation:
-    copaConfettiFall var(--dur, 2.2s) var(--delay, 0s) ease-in forwards,
-    copaConfettiWiggle calc(var(--dur, 2.2s) / 2) var(--delay, 0s) ease-in-out infinite;
+    copaStripFall var(--dur, 2.4s) var(--delay, 0s) ease-in forwards,
+    copaStripSway calc(var(--dur, 2.4s) * 0.5) var(--delay, 0s) ease-in-out infinite;
 }
 
 @layer utilities {

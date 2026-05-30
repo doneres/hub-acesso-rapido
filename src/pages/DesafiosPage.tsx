@@ -62,48 +62,48 @@ const ANIM_CSS = `
   }
 `;
 
-/* ── Copa Confetti (determinístico — sem Math.random() no render) ───────── */
-const CONFETTI_DEFS = [
-  { color: '#009C3B', left: '5%',  dur: 2.1, delay: 0.00, size: 10, round: false },
-  { color: '#FFD700', left: '11%', dur: 2.4, delay: 0.08, size:  8, round: true  },
-  { color: '#FFFFFF', left: '18%', dur: 1.9, delay: 0.18, size:  7, round: false },
-  { color: '#002776', left: '25%', dur: 2.6, delay: 0.05, size: 11, round: true  },
-  { color: '#D4A017', left: '32%', dur: 2.0, delay: 0.22, size:  9, round: false },
-  { color: '#009C3B', left: '39%', dur: 2.3, delay: 0.12, size: 12, round: true  },
-  { color: '#FFD700', left: '46%', dur: 1.8, delay: 0.30, size:  8, round: false },
-  { color: '#FFFFFF', left: '53%', dur: 2.5, delay: 0.07, size: 10, round: true  },
-  { color: '#002776', left: '60%', dur: 2.2, delay: 0.25, size:  7, round: false },
-  { color: '#009C3B', left: '67%', dur: 2.0, delay: 0.15, size: 11, round: true  },
-  { color: '#D4A017', left: '74%', dur: 2.7, delay: 0.03, size:  9, round: false },
-  { color: '#FFD700', left: '80%', dur: 1.9, delay: 0.20, size:  8, round: true  },
-  { color: '#FFFFFF', left: '86%', dur: 2.3, delay: 0.10, size: 12, round: false },
-  { color: '#009C3B', left: '92%', dur: 2.1, delay: 0.28, size:  7, round: true  },
-  { color: '#002776', left: '97%', dur: 2.4, delay: 0.06, size: 10, round: false },
-  // segunda camada (deslocadas)
-  { color: '#FFD700', left: '8%',  dur: 2.6, delay: 0.35, size:  8, round: true  },
-  { color: '#D4A017', left: '20%', dur: 2.0, delay: 0.42, size: 10, round: false },
-  { color: '#009C3B', left: '35%', dur: 2.2, delay: 0.38, size:  9, round: true  },
-  { color: '#FFFFFF', left: '50%', dur: 1.8, delay: 0.50, size: 11, round: false },
-  { color: '#002776', left: '63%', dur: 2.5, delay: 0.32, size:  8, round: true  },
-  { color: '#FFD700', left: '76%', dur: 2.1, delay: 0.45, size: 10, round: false },
-  { color: '#009C3B', left: '88%', dur: 2.3, delay: 0.40, size:  7, round: true  },
+/* ── Ticker-tape confetti — 3 cores Brasil, fitas finas ─────────────────── */
+const COPA_STRIPS = [
+  { c:'#008c35', l:'4%',  w:3,  h:16, dur:2.2, delay:0.00, rot: 15 },
+  { c:'#c9a227', l:'10%', w:2,  h:20, dur:2.5, delay:0.10, rot:-20 },
+  { c:'#ffffff', l:'16%', w:3,  h:14, dur:2.0, delay:0.22, rot: 35 },
+  { c:'#008c35', l:'23%', w:2,  h:18, dur:2.7, delay:0.05, rot:-8  },
+  { c:'#c9a227', l:'29%', w:4,  h:12, dur:2.1, delay:0.18, rot: 45 },
+  { c:'#ffffff', l:'36%', w:2,  h:20, dur:2.4, delay:0.30, rot:-30 },
+  { c:'#008c35', l:'42%', w:3,  h:16, dur:1.9, delay:0.12, rot: 20 },
+  { c:'#c9a227', l:'49%', w:2,  h:14, dur:2.6, delay:0.08, rot:-15 },
+  { c:'#ffffff', l:'55%', w:4,  h:18, dur:2.2, delay:0.25, rot: 40 },
+  { c:'#008c35', l:'62%', w:2,  h:20, dur:2.0, delay:0.15, rot:-25 },
+  { c:'#c9a227', l:'68%', w:3,  h:12, dur:2.8, delay:0.03, rot: 10 },
+  { c:'#ffffff', l:'75%', w:2,  h:16, dur:2.3, delay:0.20, rot:-40 },
+  { c:'#008c35', l:'81%', w:4,  h:18, dur:2.1, delay:0.35, rot: 28 },
+  { c:'#c9a227', l:'87%', w:2,  h:14, dur:2.5, delay:0.42, rot:-12 },
+  { c:'#ffffff', l:'93%', w:3,  h:20, dur:2.0, delay:0.28, rot: 50 },
+  // segunda onda
+  { c:'#c9a227', l:'7%',  w:2,  h:18, dur:2.4, delay:0.45, rot:-35 },
+  { c:'#008c35', l:'20%', w:3,  h:14, dur:2.1, delay:0.50, rot: 22 },
+  { c:'#ffffff', l:'33%', w:2,  h:20, dur:2.6, delay:0.38, rot:-18 },
+  { c:'#c9a227', l:'47%', w:4,  h:12, dur:2.2, delay:0.55, rot: 42 },
+  { c:'#008c35', l:'58%', w:2,  h:16, dur:2.3, delay:0.32, rot:-28 },
+  { c:'#ffffff', l:'71%', w:3,  h:18, dur:2.0, delay:0.48, rot: 15 },
+  { c:'#c9a227', l:'84%', w:2,  h:14, dur:2.7, delay:0.40, rot:-45 },
 ];
 
 function CopaConfetti() {
   return (
     <>
-      {CONFETTI_DEFS.map((p, i) => (
+      {COPA_STRIPS.map((s, i) => (
         <div
           key={i}
-          className="copa-confetti-piece"
+          className="copa-strip"
           style={{
-            left: p.left,
-            width: p.size,
-            height: p.size,
-            background: p.color,
-            borderRadius: p.round ? '50%' : '2px',
-            '--dur':   `${p.dur}s`,
-            '--delay': `${p.delay}s`,
+            left: s.l,
+            width: s.w,
+            height: s.h,
+            background: s.c,
+            '--dur':   `${s.dur}s`,
+            '--delay': `${s.delay}s`,
+            '--rot':   `${s.rot}deg`,
           } as React.CSSProperties}
         />
       ))}
@@ -1295,89 +1295,91 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
     <div style={{ background: T.pageBg, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <style dangerouslySetInnerHTML={{ __html: ANIM_CSS }} />
 
-      {/* ── GOL! overlay + confetti (Copa mode) ──────────────────── */}
+      {/* ── GOL! — overlay estilo transmissão profissional ─────────── */}
       {showGol && (
         <>
-          {/* Confetti chovendo por cima de tudo */}
           <CopaConfetti />
-
           <div style={{
             position: 'fixed', inset: 0, zIndex: 200,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            background: 'radial-gradient(ellipse at center, rgba(0,80,20,0.88) 0%, rgba(0,20,5,0.78) 100%)',
-            backdropFilter: 'blur(4px)',
+            background: '#001309',
             pointerEvents: 'none',
-            animation: 'golOverlayFade 2.8s ease-out forwards',
+            overflow: 'hidden',
+            animation: 'golFade 2.8s ease-out forwards',
           }}>
-            {/* Anel de luz expandindo */}
+            {/* Glow central */}
             <div style={{
-              position: 'absolute',
-              width: 320, height: 320,
-              border: '3px solid #FFD700',
-              borderRadius: '50%',
-              opacity: 0,
-              animation: 'golStarBurst 1.2s ease-out 0.1s forwards',
-            }} />
-            <div style={{
-              position: 'absolute',
-              width: 220, height: 220,
-              border: '2px solid #009C3B',
-              borderRadius: '50%',
-              opacity: 0,
-              animation: 'golStarBurst 1s ease-out 0.25s forwards',
+              position: 'absolute', borderRadius: '50%',
+              width: '70vw', height: '70vw', maxWidth: 560, maxHeight: 560,
+              background: 'radial-gradient(circle, rgba(0,140,53,0.22) 0%, transparent 68%)',
+              pointerEvents: 'none',
             }} />
 
-            {/* Emojis nas bordas */}
-            {(['🇧🇷','⭐','🏆','⭐','🇧🇷'] as const).map((s, i) => (
-              <div key={i} style={{
-                position: 'absolute',
-                fontSize: 32,
-                top:   `${18 + i * 13}%`,
-                left:  i % 2 === 0 ? `${5 + i * 2}%` : undefined,
-                right: i % 2 !== 0 ? `${5 + i * 2}%` : undefined,
-                animation: `golStarBurst 1.8s ease-out ${i * 0.1}s forwards`,
-              }}>{s}</div>
-            ))}
-
-            {/* Bola */}
-            <div style={{ fontSize: 100, animation: 'golBallSpin 0.65s cubic-bezier(0.2,1.4,0.5,1) forwards', filter: 'drop-shadow(0 0 24px #FFD700)' }}>⚽</div>
-
-            {/* GOL! */}
+            {/* Varredura diagonal de luz */}
             <div style={{
-              fontFamily: "'Press Start 2P', monospace",
-              fontSize: 64,
-              color: '#FFD700',
-              textShadow: '0 0 40px #009C3B, 0 0 80px #FFD700, 0 6px 0 #4a3800',
-              letterSpacing: 6,
-              marginTop: 10,
-              animation: 'golTextPop 0.75s cubic-bezier(0.2,1.4,0.5,1) 0.25s both',
-            }}>GOL!</div>
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.055) 50%, transparent 75%)',
+              animation: 'golBeamSweep 1.6s ease-out 0.15s both',
+              pointerEvents: 'none',
+            }} />
 
-            {/* Subtítulo */}
+            {/* Conteúdo central */}
             <div style={{
-              fontFamily: "'Press Start 2P', monospace",
-              fontSize: 10,
-              color: '#4ade80',
-              marginTop: 18,
-              letterSpacing: 2,
-              animation: 'golTextPop 0.5s ease-out 0.9s both',
-            }}>✓ CASO RESOLVIDO!</div>
-
-            {/* Pontos ganhos */}
-            {currentUser && (
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0,
+              animation: 'golSlideUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.05s both',
+            }}>
+              {/* Eyebrow */}
               <div style={{
-                marginTop: 12,
-                padding: '6px 18px',
-                background: 'rgba(0,156,59,0.3)',
-                border: '1px solid #009C3B80',
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: 9,
-                color: '#fff',
-                animation: 'golTextPop 0.5s ease-out 1.1s both',
+                fontSize: 9, letterSpacing: '0.28em',
+                color: '#008c35', fontFamily: "'Press Start 2P', monospace",
+                marginBottom: 14, opacity: 0.9,
               }}>
-                ⭐ {currentUser.points} PTS TOTAIS
+                CASO RESOLVIDO
               </div>
-            )}
+
+              {/* GOL! */}
+              <div style={{
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: 'clamp(56px, 11vw, 96px)',
+                fontWeight: 900, lineHeight: 1,
+                color: '#ffffff',
+                letterSpacing: '0.04em',
+                textShadow: '0 0 48px rgba(0,200,80,0.35), 0 3px 0 rgba(0,0,0,0.5)',
+              }}>
+                GOL!
+              </div>
+
+              {/* Linha acento — verde pulsando */}
+              <div style={{
+                width: 72, height: 2, marginTop: 18,
+                background: 'linear-gradient(90deg, transparent, #008c35, transparent)',
+                animation: 'golLinePulse 1.2s ease-in-out 0.4s infinite',
+              }} />
+
+              {/* Pontuação */}
+              {currentUser && (
+                <div style={{
+                  marginTop: 20,
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  animation: 'golSlideUp 0.4s ease-out 0.5s both',
+                }}>
+                  <span style={{ color: '#c9a227', fontSize: 14 }}>▲</span>
+                  <span style={{
+                    fontFamily: "'Press Start 2P', monospace",
+                    fontSize: 10, color: 'rgba(255,255,255,0.5)',
+                    letterSpacing: '0.1em',
+                  }}>
+                    {currentUser.points} PTS
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Barra inferior verde */}
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
+              background: 'linear-gradient(90deg, transparent, #008c35, #c9a227, #008c35, transparent)',
+            }} />
           </div>
         </>
       )}
@@ -1403,13 +1405,13 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
           {isCopaActive && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              padding: '4px 10px',
-              background: 'linear-gradient(90deg,#003d1a,#009C3B)',
-              border: '1px solid #D4A01740',
-              fontSize: 10,
+              padding: '3px 10px 3px 7px',
+              background: 'rgba(0,140,53,0.08)',
+              border: '1px solid rgba(0,140,53,0.28)',
+              borderRadius: 999,
             }}>
-              <span style={{ fontSize: 14 }}>⚽</span>
-              <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: '#FFD700', whiteSpace: 'nowrap' }}>COPA 2026</span>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#008c35', flexShrink: 0 }} />
+              <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: '#008c35', whiteSpace: 'nowrap' }}>COPA 2026</span>
             </div>
           )}
         </div>
