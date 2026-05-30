@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { setActiveCosmeticId } from '../data/cosmetics';
 
 export interface Powerups {
   shield: number;    // "Escudo de Streak" — próximo erro não zera streak
@@ -17,6 +18,7 @@ export interface GameUser {
   wrongAttempts: Record<string, number>; // puzzleId → nº de erros
   powerups: Powerups;
   purchasedCosmetics: string[];
+  activeCosmeticId: string | null; // cosmético equipado por este usuário
 }
 
 interface GameState {
@@ -25,6 +27,7 @@ interface GameState {
 }
 
 const STORAGE_KEY = 'ctrlplay_desafios_v2';
+const ADMIN_ID    = 'u_admin';
 
 /** FNV-1a 32-bit hash */
 function hashPassword(s: string): string {
@@ -39,18 +42,32 @@ function hashPassword(s: string): string {
 /** Garante que usuários antigos (sem os novos campos) tenham defaults */
 function migrateUser(u: Partial<GameUser> & Pick<GameUser, 'id' | 'name'>): GameUser {
   return {
-    id: u.id,
-    name: u.name,
-    avatar: u.avatar ?? '🕵',
-    passwordHash: u.passwordHash ?? '',
-    points: u.points ?? 0,
-    solvedPuzzles: u.solvedPuzzles ?? [],
-    hintsUsed: u.hintsUsed ?? [],
-    streak: u.streak ?? 0,
-    wrongAttempts: (u as any).wrongAttempts ?? {},
-    powerups: (u as any).powerups ?? { shield: 0, eliminate: 0 },
+    id:                 u.id,
+    name:               u.name,
+    avatar:             u.avatar             ?? '🕵',
+    passwordHash:       u.passwordHash       ?? '',
+    points:             u.points             ?? 0,
+    solvedPuzzles:      u.solvedPuzzles      ?? [],
+    hintsUsed:          u.hintsUsed          ?? [],
+    streak:             u.streak             ?? 0,
+    wrongAttempts:      (u as any).wrongAttempts      ?? {},
+    powerups:           (u as any).powerups           ?? { shield: 0, eliminate: 0 },
     purchasedCosmetics: (u as any).purchasedCosmetics ?? [],
+    activeCosmeticId:   (u as any).activeCosmeticId   ?? null,
   };
+}
+
+/** Garante que o usuário admin existe com credenciais padrão */
+function ensureAdmin(state: GameState): GameState {
+  if (state.users.some(u => u.id === ADMIN_ID)) return state;
+  const admin: GameUser = {
+    id: ADMIN_ID, name: 'admin', avatar: '👑',
+    passwordHash: hashPassword('admin'),
+    points: 999, solvedPuzzles: [], hintsUsed: [],
+    streak: 0, wrongAttempts: {}, powerups: { shield: 3, eliminate: 3 },
+    purchasedCosmetics: [], activeCosmeticId: null,
+  };
+  return { ...state, users: [...state.users, admin] };
 }
 
 function loadState(): GameState {
@@ -58,18 +75,18 @@ function loadState(): GameState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as GameState;
-      return { ...parsed, users: parsed.users.map(migrateUser) };
+      return ensureAdmin({ ...parsed, users: parsed.users.map(migrateUser) });
     }
     const v1 = localStorage.getItem('ctrlplay_desafios_v1');
     if (v1) {
       const old = JSON.parse(v1) as { users: any[]; currentUserId: string | null };
-      return {
+      return ensureAdmin({
         users: old.users.map(u => migrateUser({ ...u, passwordHash: '' })),
         currentUserId: old.currentUserId,
-      };
+      });
     }
   } catch { /* ignore */ }
-  return { users: [], currentUserId: null };
+  return ensureAdmin({ users: [], currentUserId: null });
 }
 
 function saveState(state: GameState) {
@@ -116,9 +133,10 @@ export function useGameState() {
       id, name, avatar, passwordHash: hashPassword(password),
       points: 0, solvedPuzzles: [], hintsUsed: [],
       streak: 0, wrongAttempts: {}, powerups: { shield: 0, eliminate: 0 },
-      purchasedCosmetics: [],
+      purchasedCosmetics: [], activeCosmeticId: null,
     };
     persist({ users: [...state.users, newUser], currentUserId: id });
+    setActiveCosmeticId(null); // novo usuário sem cosmético
     return id;
   }, [state, persist]);
 
@@ -126,17 +144,25 @@ export function useGameState() {
     const user = state.users.find(u => u.name.toLowerCase() === name.toLowerCase());
     if (!user) return 'not-found';
     if (user.passwordHash && user.passwordHash !== hashPassword(password)) return 'wrong-password';
+
+    let finalUser = user;
+    let nextUsers = state.users;
+
     if (!user.passwordHash) {
-      update(migrateUser({ ...user, passwordHash: hashPassword(password) }));
-      persist({ users: state.users.map(u => u.id === user.id ? migrateUser({ ...u, passwordHash: hashPassword(password) }) : u), currentUserId: user.id });
-    } else {
-      persist({ ...state, currentUserId: user.id });
+      finalUser = migrateUser({ ...user, passwordHash: hashPassword(password) });
+      nextUsers  = state.users.map(u => u.id === user.id ? finalUser : u);
     }
+
+    persist({ users: nextUsers, currentUserId: finalUser.id });
+    // Restaura o cosmético que o usuário tinha equipado
+    setActiveCosmeticId(finalUser.activeCosmeticId);
     return 'ok';
-  }, [state, persist, update]);
+  }, [state, persist]);
 
   const logout = useCallback(() => {
     persist({ ...state, currentUserId: null });
+    // Limpa o cosmético ao deslogar — sem conta logada, sem tema
+    setActiveCosmeticId(null);
   }, [state, persist]);
 
   /* ── Dica ───────────────────────────────────────────────────────── */
@@ -144,7 +170,6 @@ export function useGameState() {
   /**
    * FIX Bug 1: useHint apenas REGISTRA o uso da dica.
    * O desconto de -5 pts acontece UMA ÚNICA vez em recordAnswer.
-   * Antes estava descontando em ambos (dupla penalidade).
    */
   const useHint = useCallback((puzzleId: string): boolean => {
     if (!currentUser) return false;
@@ -157,12 +182,6 @@ export function useGameState() {
 
   /**
    * FIX Bug 2: penalidade progressiva por tentativas + integração com Escudo.
-   * Retorna { bonus, shieldUsed } para o caller poder mostrar feedback.
-   *
-   * Pontuação:
-   *   1ª tentativa certa:  base completo  (- 5 se usou dica)
-   *   2ª tentativa certa:  50% do base
-   *   3ª+ tentativa certa: 1 pt mínimo
    */
   const recordAnswer = useCallback((
     puzzleId: string,
@@ -189,9 +208,9 @@ export function useGameState() {
     if (currentUser.solvedPuzzles.includes(puzzleId)) return { bonus: 0, shieldUsed: false };
 
     const hintUsed = currentUser.hintsUsed.includes(puzzleId);
-    const earned = computeEarned(puzzlePoints, hintUsed, wrongCount);
+    const earned   = computeEarned(puzzlePoints, hintUsed, wrongCount);
     const newStreak = currentUser.streak + 1;
-    const bonus = newStreak % 5 === 0 ? 10 : 0;
+    const bonus    = newStreak % 5 === 0 ? 10 : 0;
 
     update({
       ...currentUser,
@@ -216,15 +235,26 @@ export function useGameState() {
 
   /* ── Cosméticos ────────────────────────────────────────────────── */
 
+  /** Compra o cosmético e o equipa automaticamente */
   const buyCosmetic = useCallback((cosmeticId: string, cost: number): boolean => {
     if (!currentUser || currentUser.points < cost) return false;
     if (currentUser.purchasedCosmetics.includes(cosmeticId)) return false;
-    update({
+    const updated: GameUser = {
       ...currentUser,
       points: currentUser.points - cost,
       purchasedCosmetics: [...currentUser.purchasedCosmetics, cosmeticId],
-    });
+      activeCosmeticId: cosmeticId,
+    };
+    update(updated);
+    setActiveCosmeticId(cosmeticId);
     return true;
+  }, [currentUser, update]);
+
+  /** Equipa ou desequipa um cosmético já comprado */
+  const equipCosmetic = useCallback((cosmeticId: string | null): void => {
+    if (!currentUser) return;
+    update({ ...currentUser, activeCosmeticId: cosmeticId });
+    setActiveCosmeticId(cosmeticId);
   }, [currentUser, update]);
 
   /* ── Power-up: Usar Eliminar Errada (consome 1 unidade) ─────────── */
@@ -243,6 +273,7 @@ export function useGameState() {
   return {
     currentUser, users: state.users, leaderboard,
     registerUser, login, logout,
-    useHint, recordAnswer, buyPowerup, useEliminate, buyCosmetic,
+    useHint, recordAnswer, buyPowerup, useEliminate,
+    buyCosmetic, equipCosmetic,
   };
 }

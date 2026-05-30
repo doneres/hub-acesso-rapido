@@ -9,7 +9,7 @@ import {
 import { useTheme } from '../hooks/useTheme';
 import { useGameState, GameUser, Powerups, computeEarned } from '../hooks/useGameState';
 import { PUZZLES, CATEGORY_CONFIG, getRank, Puzzle } from '../data/puzzles';
-import { COSMETICS, CosmeticDef, getActiveCosmeticId, setActiveCosmeticId } from '../data/cosmetics';
+import { COSMETICS, CosmeticDef, getActiveCosmeticId } from '../data/cosmetics';
 import { playWhistle, playCrowd } from '../utils/copa-sounds';
 
 /* ── Keyframes injetados como <style> ──────────────────────────────────── */
@@ -1060,37 +1060,34 @@ function PowerupShop({ T, isDark, currentUser, onBuy }: {
 /* ════════════════════════════════════════════════════════════════════════
    COSMETICS SHOP
 ════════════════════════════════════════════════════════════════════════ */
-function CosmeticsShop({ T, isDark, currentUser, onBuy }: {
+function CosmeticsShop({ T, isDark, currentUser, onBuy, onEquip }: {
   T: ReturnType<typeof getTheme>; isDark: boolean;
   currentUser: GameUser;
   onBuy: (id: string, cost: number) => boolean;
+  onEquip: (id: string | null) => void;
 }) {
   const [feedback, setFeedback] = useState<{ msg: string; ok: boolean } | null>(null);
   const [open, setOpen] = useState(false);
-  const [activeId, setActiveId] = useState<string | null>(getActiveCosmeticId);
+
+  // Fonte de verdade: activeCosmeticId salvo na conta do usuário
+  const activeId = currentUser.activeCosmeticId;
 
   const handleBuy = (c: CosmeticDef) => {
-    const ok = onBuy(c.id, c.cost);
-    if (ok) {
-      setActiveCosmeticId(c.id);
-      setActiveId(c.id);
-      setFeedback({ msg: `${c.emoji} Comprado e equipado! O Hub está vestindo a Copa.`, ok: true });
-    } else {
-      setFeedback({ msg: '❌ Pontos insuficientes', ok: false });
-    }
+    const ok = onBuy(c.id, c.cost); // buyCosmetic já equipa e salva na conta
+    setFeedback(ok
+      ? { msg: `${c.emoji} Comprado e equipado! O Hub está vestindo a Copa.`, ok: true }
+      : { msg: '❌ Pontos insuficientes', ok: false });
     setTimeout(() => setFeedback(null), 3000);
   };
 
   const handleEquip = (c: CosmeticDef) => {
-    setActiveCosmeticId(c.id);
-    setActiveId(c.id);
+    onEquip(c.id);
     setFeedback({ msg: `${c.emoji} Equipado! Volte ao Hub para ver.`, ok: true });
     setTimeout(() => setFeedback(null), 2200);
   };
 
   const handleUnequip = () => {
-    setActiveCosmeticId(null);
-    setActiveId(null);
+    onEquip(null);
     setFeedback({ msg: '🎨 Cosmético retirado.', ok: true });
     setTimeout(() => setFeedback(null), 2200);
   };
@@ -1200,7 +1197,7 @@ interface DesafiosPageProps { onBackToHub: () => void; }
 export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const { isDark, toggleTheme } = useTheme();
   const T = getTheme(isDark);
-  const { currentUser, users, leaderboard, registerUser, login, logout, useHint, recordAnswer, buyPowerup, useEliminate, buyCosmetic } = useGameState();
+  const { currentUser, users, leaderboard, registerUser, login, logout, useHint, recordAnswer, buyPowerup, useEliminate, buyCosmetic, equipCosmetic } = useGameState();
 
   // Tutorial sempre mostra ao entrar na página
   const [showTutorial, setShowTutorial] = useState(true);
@@ -1217,7 +1214,7 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const solvedCountForLevel = (levelIdx: number) =>
     (LEVELS[levelIdx].puzzleIds as readonly string[]).filter(id => isSolved(id)).length;
 
-  const isCopaActive = getActiveCosmeticId() === 'copa-2026';
+  const isCopaActive = currentUser?.activeCosmeticId === 'copa-2026';
 
   const handleSolve = (puzzle: Puzzle, correct: boolean) => {
     const { bonus, shieldUsed } = recordAnswer(puzzle.id, correct, puzzle.points);
@@ -1527,6 +1524,7 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
                 T={T} isDark={isDark}
                 currentUser={currentUser}
                 onBuy={buyCosmetic}
+                onEquip={equipCosmetic}
               />
 
               {/* Nível cards com progressão */}
