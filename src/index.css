@@ -91,6 +91,79 @@
   to   { transform: translateX(120%) skewX(-18deg); opacity: 0; }
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   FALLOUT: NEW VEGAS — Pip-Boy 3000 Mark IV
+════════════════════════════════════════════════════════════════════════ */
+@keyframes pipboyScan {
+  from { top: -3px; opacity: 0.8; }
+  5%   { opacity: 1; }
+  95%  { opacity: 0.9; }
+  to   { top: 100vh; opacity: 0; }
+}
+@keyframes pipboyGlow {
+  0%,100% { opacity: 1; text-shadow: 0 0 8px #00d632; }
+  50%     { opacity: 0.82; text-shadow: 0 0 16px #00d632; }
+}
+@keyframes radFloat {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+  50%  { transform: translateY(-18px) rotate(15deg); opacity: 0.9; }
+  100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+}
+/* Cards Pip-Boy */
+.theme-fallout-nv .tool-card {
+  background: #0b1508 !important;
+  border: 1px solid rgba(0,214,50,0.35) !important;
+  box-shadow: 0 0 10px rgba(0,214,50,0.12), inset 0 0 30px rgba(0,214,50,0.04) !important;
+  border-radius: 4px !important;
+  transition: box-shadow .2s, transform .2s !important;
+}
+.theme-fallout-nv .tool-card::before { display: none !important; }
+.theme-fallout-nv .tool-card::after  { display: none !important; }
+.theme-fallout-nv .tool-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(0,214,50,0.7) !important;
+  box-shadow: 0 0 24px rgba(0,214,50,0.4), 0 0 4px rgba(0,214,50,0.6), inset 0 0 30px rgba(0,214,50,0.07) !important;
+}
+.theme-fallout-nv .tool-name {
+  color: #00d632 !important;
+  font-family: monospace !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 6px rgba(0,214,50,0.5) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   COUNTER-STRIKE 1.6 — Buy Menu
+════════════════════════════════════════════════════════════════════════ */
+@keyframes bombBlink {
+  0%,100% { opacity: 1; box-shadow: 0 0 20px rgba(255,0,0,0.7); }
+  50%     { opacity: 0.65; box-shadow: 0 0 8px rgba(255,0,0,0.3); }
+}
+@keyframes bombEnter {
+  from { opacity: 0; transform: translateX(-50%) translateY(-14px); }
+  10%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  88%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+}
+/* Cards CS */
+.theme-csgo-16 .tool-card {
+  border-radius: 3px !important;
+  border: 1px solid rgba(255,102,0,0.2) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
+  transition: transform .2s, box-shadow .2s, border-color .15s !important;
+}
+.theme-csgo-16 .tool-card::before { display: none !important; }
+.theme-csgo-16 .tool-card::after  { display: none !important; }
+.theme-csgo-16 .tool-card:hover {
+  transform: translateY(-5px) !important;
+  border-color: rgba(255,102,0,0.6) !important;
+  box-shadow: 0 8px 24px rgba(255,102,0,0.2), 0 2px 6px rgba(0,0,0,0.4) !important;
+}
+.theme-csgo-16 .tool-name {
+  color: #d0d8d0 !important;
+  font-family: monospace !important;
+  font-weight: 700 !important;
+}
+
 /* Bola rolando da esquerda para direita */
 @keyframes ballRollLR {
   from { transform: translateX(0) rotate(0deg); }

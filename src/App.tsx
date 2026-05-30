@@ -55,6 +55,65 @@ function detectTouchDevice() {
   catch { return false; }
 }
 
+/* ── Banner temático — muda por cosmético ────────────────────────────────── */
+function CosmeticBanner({ cosmetic, isDark }: { cosmetic: CosmeticDef; isDark: boolean }) {
+  /* Copa */
+  if (cosmetic.id === 'copa-2026') return (
+    <div className="animate-fadeIn mb-6 relative overflow-hidden"
+      style={{ background:'#FFD100', borderBottom:'3px solid #009C3B', padding:'11px 20px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+      <div style={{ position:'absolute', inset:0, backgroundImage:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M11 1L21 11L11 21L1 11Z' fill='none' stroke='%23009C3B' stroke-width='0.7' opacity='0.18'/%3E%3C/svg%3E\")", pointerEvents:'none' }} />
+      <div style={{ display:'flex', alignItems:'center', gap:12, position:'relative', zIndex:1 }}>
+        <div style={{ width:32, height:32, borderRadius:'50%', background:'#009C3B', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, boxShadow:'0 2px 8px rgba(0,156,59,0.35)' }}>⚽</div>
+        <div>
+          <div style={{ fontSize:12, fontWeight:900, color:'#014d20', letterSpacing:'0.1em', lineHeight:1 }}>COPA DO MUNDO 2026</div>
+          <div style={{ fontSize:10, color:'rgba(1,77,32,0.65)', marginTop:2 }}>Tema ativo · gerencie em Desafios</div>
+        </div>
+      </div>
+      <div style={{ position:'relative', zIndex:1, fontSize:9, fontWeight:900, letterSpacing:'0.14em', color:'#014d20', padding:'4px 14px', background:'rgba(1,77,32,0.1)', border:'1px solid rgba(1,77,32,0.25)', borderRadius:999 }}>ATIVO</div>
+    </div>
+  );
+
+  /* Fallout NV */
+  if (cosmetic.id === 'fallout-nv') return (
+    <div className="animate-fadeIn mb-6" style={{ background:'#0b1208', border:'1px solid rgba(0,214,50,0.25)', borderLeft:'3px solid #00d632', padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 0 20px rgba(0,214,50,0.08), inset 0 0 30px rgba(0,214,50,0.03)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <span style={{ fontSize:22, filter:'drop-shadow(0 0 8px #00d632)' }}>☢️</span>
+        <div>
+          <div style={{ fontFamily:'monospace', fontSize:11, color:'#00d632', letterSpacing:'0.18em', animation:'pipboyGlow 2.5s ease-in-out infinite' }}>{'> FALLOUT: NEW VEGAS'}</div>
+          <div style={{ fontFamily:'monospace', fontSize:8, color:'rgba(0,214,50,0.45)', marginTop:3 }}>{'> PIP-BOY 3000 MARK IV · MODO ATIVO'}</div>
+        </div>
+      </div>
+      <div style={{ fontFamily:'monospace', fontSize:9, color:'#00d632', padding:'4px 14px', border:'1px solid rgba(0,214,50,0.4)', borderRadius:2, letterSpacing:'0.1em' }}>[ ONLINE ]</div>
+    </div>
+  );
+
+  /* CS 1.6 */
+  if (cosmetic.id === 'csgo-16') return (
+    <div className="animate-fadeIn mb-6" style={{ background:'#0f1218', borderTop:'2px solid #FF6600', borderBottom:'1px solid rgba(255,102,0,0.15)', padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <span style={{ fontSize:20 }}>💣</span>
+        <div>
+          <div style={{ fontFamily:'monospace', fontSize:11, fontWeight:900, color:'#FF6600', letterSpacing:'0.1em' }}>COUNTER-STRIKE 1.6</div>
+          <div style={{ fontFamily:'monospace', fontSize:8, color:'rgba(255,102,0,0.45)', marginTop:3 }}>BUY MENU ACTIVE · MANAGE IN DESAFIOS</div>
+        </div>
+      </div>
+      <div style={{ display:'flex', gap:8 }}>
+        <span style={{ fontFamily:'monospace', fontSize:9, fontWeight:900, color:'#fff', padding:'3px 10px', background:'#3a7bd5', borderRadius:2 }}>CT</span>
+        <span style={{ fontFamily:'monospace', fontSize:9, fontWeight:900, color:'#fff', padding:'3px 10px', background:'#FF6600', borderRadius:2 }}>T</span>
+      </div>
+    </div>
+  );
+
+  /* Fallback */
+  return (
+    <div className="animate-fadeIn mb-6 flex items-center justify-between px-5 py-3"
+      style={{ background: isDark ? '#111' : '#fff', borderLeft:`3px solid ${cosmetic.accent1}` }}>
+      <span style={{ fontWeight:700 }}>{cosmetic.name}</span>
+      <span style={{ fontSize:11, opacity:0.6 }}>ativo</span>
+    </div>
+  );
+}
+
 /* ── Gramado Copa — SVG com marcações reais ──────────────────────────────── */
 function PitchBackground() {
   const SW = 15; // stripe width (units)
@@ -174,6 +233,101 @@ function CopaSideEffects() {
   );
 }
 
+/* ── Fallout: New Vegas — fundo Wasteland ────────────────────────────────── */
+function FalloutBackground() {
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#070e05' }}>
+      {/* CRT scanlines */}
+      <div style={{ position:'absolute', inset:0, backgroundImage:'repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,214,50,0.018) 3px,rgba(0,214,50,0.018) 4px)' }} />
+      {/* Radial Pip-Boy glow */}
+      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 70% 55% at 50% 42%,rgba(0,214,50,0.07) 0%,transparent 70%)' }} />
+      {/* Símbolos de radiação estáticos */}
+      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0, opacity:0.055 }}>
+        {([[8,12],[88,18],[18,72],[82,78],[50,42],[28,88],[73,58],[42,25],[62,85],[15,50]] as [number,number][]).map(([x,y], i) => (
+          <text key={i} x={x} y={y} fontSize={i%3===0?7:4.5} fontFamily="monospace" fill="#00d632" textAnchor="middle">☢</text>
+        ))}
+      </svg>
+      {/* Terminal grid lines */}
+      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0, opacity:0.025 }}>
+        {Array.from({length:10},(_,i)=><line key={i} x1={0} y1={i*10} x2={100} y2={i*10} stroke="#00d632" strokeWidth="0.3"/>)}
+        {Array.from({length:14},(_,i)=><line key={i} x1={i*7.5} y1={0} x2={i*7.5} y2={100} stroke="#00d632" strokeWidth="0.3"/>)}
+      </svg>
+    </div>
+  );
+}
+
+function FalloutEffects() {
+  const [showScan, setShowScan] = React.useState(false);
+  React.useEffect(() => {
+    const iv = setInterval(() => {
+      setShowScan(true);
+      setTimeout(() => setShowScan(false), 2000);
+    }, 14000);
+    return () => clearInterval(iv);
+  }, []);
+  return showScan ? (
+    <div style={{ position:'fixed', left:0, right:0, zIndex:14, height:2, background:'linear-gradient(90deg,transparent,rgba(0,214,50,0.7) 20%,rgba(0,255,65,0.9) 50%,rgba(0,214,50,0.7) 80%,transparent)', boxShadow:'0 0 12px rgba(0,214,50,0.5)', pointerEvents:'none', animation:'pipboyScan 2s linear forwards' }} />
+  ) : null;
+}
+
+/* ── Counter-Strike 1.6 — fundo tático ───────────────────────────────────── */
+function CSGOBackground() {
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#08090a' }}>
+      {/* Grade tática overhead */}
+      <svg width="100%" height="100%" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0 }}>
+        <g stroke="rgba(255,102,0,0.055)" strokeWidth="0.7">
+          {Array.from({length:14},(_,i)=><line key={`h${i}`} x1={0} y1={i*50} x2={1000} y2={i*50}/>)}
+          {Array.from({length:21},(_,i)=><line key={`v${i}`} x1={i*50} y1={0} x2={i*50} y2={680}/>)}
+        </g>
+        {/* Mira central */}
+        <g stroke="rgba(255,102,0,0.18)" strokeWidth="1.5" fill="none">
+          <line x1={500} y1={290} x2={500} y2={390}/>
+          <line x1={445} y1={340} x2={555} y2={340}/>
+          <circle cx={500} cy={340} r={32}/>
+          <circle cx={500} cy={340} r={4} fill="rgba(255,102,0,0.3)" stroke="none"/>
+        </g>
+        {/* Sites A e B */}
+        <text x={130} y={170} fontSize={80} fontFamily="'Arial Black',monospace" fontWeight="900" fill="rgba(255,102,0,0.055)" textAnchor="middle">A</text>
+        <text x={870} y={540} fontSize={80} fontFamily="'Arial Black',monospace" fontWeight="900" fill="rgba(58,123,213,0.055)" textAnchor="middle">B</text>
+        {/* Silhueta CT + T (simplificada) */}
+        <text x={120} y={500} fontSize={18} fontFamily="monospace" fill="rgba(58,123,213,0.06)" textAnchor="middle">◈ CT</text>
+        <text x={880} y={200} fontSize={18} fontFamily="monospace" fill="rgba(255,102,0,0.06)" textAnchor="middle">◈ T</text>
+      </svg>
+    </div>
+  );
+}
+
+function CSGOEffects() {
+  const [show, setShow] = React.useState(false);
+  React.useEffect(() => {
+    let next: ReturnType<typeof setTimeout>;
+    const schedule = (first: boolean) => {
+      next = setTimeout(() => {
+        setShow(true);
+        setTimeout(() => setShow(false), 4500);
+        schedule(false);
+      }, first ? 20000 : 32000 + Math.random() * 25000);
+    };
+    schedule(true);
+    return () => clearTimeout(next);
+  }, []);
+  return show ? (
+    <div style={{
+      position:'fixed', top:18, left:'50%', zIndex:20, pointerEvents:'none',
+      background:'#cc0000', border:'2px solid #ff2020',
+      padding:'7px 22px',
+      display:'flex', alignItems:'center', gap:10,
+      animation:'bombEnter 4.5s ease-out forwards',
+      boxShadow:'0 0 0 2px rgba(255,0,0,0.15)',
+    }}>
+      <span style={{ fontSize:16, animation:'bombBlink 0.8s ease-in-out infinite' }}>💣</span>
+      <span style={{ fontFamily:'monospace', fontSize:12, fontWeight:900, color:'#fff', letterSpacing:'0.12em' }}>BOMB PLANTED</span>
+      <div style={{ width:8, height:8, borderRadius:'50%', background:'#ff4444', animation:'bombBlink 0.5s ease-in-out infinite' }} />
+    </div>
+  ) : null;
+}
+
 /* ── App ─────────────────────────────────────────────────────────────────── */
 
 const App: React.FC = () => {
@@ -208,15 +362,14 @@ const App: React.FC = () => {
     setActiveCosmetic(id ? (COSMETICS.find(c => c.id === id) ?? null) : null);
   }, [currentPage]);
 
-  /* Aplica/remove classe theme-copa no <html> para CSS global dos cards */
+  /* Aplica/remove classes de tema no <html> */
   useEffect(() => {
     const root = document.documentElement;
-    if (activeCosmetic?.id === 'copa-2026') {
-      root.classList.add('theme-copa');
-    } else {
-      root.classList.remove('theme-copa');
-    }
-    return () => root.classList.remove('theme-copa');
+    root.classList.remove('theme-copa', 'theme-fallout-nv', 'theme-csgo-16');
+    if (activeCosmetic?.id === 'copa-2026')   root.classList.add('theme-copa');
+    if (activeCosmetic?.id === 'fallout-nv') root.classList.add('theme-fallout-nv');
+    if (activeCosmetic?.id === 'csgo-16')    root.classList.add('theme-csgo-16');
+    return () => root.classList.remove('theme-copa', 'theme-fallout-nv', 'theme-csgo-16');
   }, [activeCosmetic]);
 
   const handleCloseProfessorModal = useCallback(() => setShowProfessorModal(false), []);
@@ -504,13 +657,19 @@ const App: React.FC = () => {
   return (
     <div
       className={`min-h-screen flex flex-col transition-colors duration-300 ${activeCosmetic ? '' : 'bg-[#eef2f6] dark:bg-[#0f172a] bg-dot-pattern'}`}
-      style={activeCosmetic ? { backgroundColor: isDark ? '#152f17' : '#1f7028' } : undefined}
+      style={activeCosmetic ? { backgroundColor: isDark ? activeCosmetic.darkBg : activeCosmetic.lightBg } : undefined}
     >
-      {/* Gramado + efeitos Copa */}
-      {activeCosmetic?.id === 'copa-2026' && <PitchBackground />}
-      {activeCosmetic?.id === 'copa-2026' && <CopaSideEffects />}
+      {/* Backgrounds temáticos */}
+      {activeCosmetic?.id === 'copa-2026'   && <PitchBackground />}
+      {activeCosmetic?.id === 'fallout-nv' && <FalloutBackground />}
+      {activeCosmetic?.id === 'csgo-16'    && <CSGOBackground />}
 
-      {/* Faixa topo — tricolor */}
+      {/* Efeitos ocasionais */}
+      {activeCosmetic?.id === 'copa-2026'   && <CopaSideEffects />}
+      {activeCosmetic?.id === 'fallout-nv' && <FalloutEffects />}
+      {activeCosmetic?.id === 'csgo-16'    && <CSGOEffects />}
+
+      {/* Faixa topo Copa — tricolor */}
       {activeCosmetic?.id === 'copa-2026' && (
         <div style={{ height: 4, display: 'flex', flexShrink: 0, position:'relative', zIndex:10 }}>
           <div style={{ flex: 1, background: '#009C3B' }} />
@@ -528,52 +687,8 @@ const App: React.FC = () => {
 
       <main className="flex-1 max-w-[1440px] w-full px-4 md:px-8 py-8 mx-auto relative z-10">
 
-        {/* Banner Copa — inspirado na camisa da Seleção */}
-        {activeCosmetic && (
-          <div
-            className="animate-fadeIn mb-6 relative overflow-hidden"
-            style={{
-              background: '#FFD100',
-              borderBottom: '3px solid #009C3B',
-              padding: '11px 20px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}
-          >
-            {/* Losango jacquard no fundo do banner */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'22\' height=\'22\'%3E%3Cpath d=\'M11 1L21 11L11 21L1 11Z\' fill=\'none\' stroke=\'%23009C3B\' stroke-width=\'0.7\' opacity=\'0.18\'/%3E%3C/svg%3E")',
-              pointerEvents: 'none',
-            }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, position: 'relative', zIndex: 1 }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: '50%',
-                background: '#009C3B',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, flexShrink: 0,
-                boxShadow: '0 2px 8px rgba(0,156,59,0.35)',
-              }}>⚽</div>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 900, color: '#014d20', letterSpacing: '0.1em', lineHeight: 1 }}>
-                  COPA DO MUNDO 2026
-                </div>
-                <div style={{ fontSize: 10, color: 'rgba(1,77,32,0.65)', marginTop: 2 }}>
-                  Tema ativo · gerencie em Desafios
-                </div>
-              </div>
-            </div>
-            <div style={{
-              position: 'relative', zIndex: 1,
-              fontSize: 9, fontWeight: 900, letterSpacing: '0.14em',
-              color: '#014d20',
-              padding: '4px 14px',
-              background: 'rgba(1,77,32,0.1)',
-              border: '1px solid rgba(1,77,32,0.25)',
-              borderRadius: 999,
-            }}>ATIVO</div>
-          </div>
-        )}
-
+        {/* Banner temático */}
+        {activeCosmetic && <CosmeticBanner cosmetic={activeCosmetic} isDark={isDark} />}
         <SearchBar
           value={searchQuery}
           onChange={setSearchQuery}
@@ -721,7 +836,7 @@ const App: React.FC = () => {
                   onTrack={handleTrack}
                   onCardClick={isTouchDevice ? handleMobileCardClick : undefined}
                   onCopy={handleCopy}
-                  copaActive={activeCosmetic?.id === 'copa-2026'}
+                  activeTheme={activeCosmetic?.id}
                 />
               ))}
             </div>

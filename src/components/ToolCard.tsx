@@ -68,13 +68,13 @@ interface ToolCardProps {
   onTrack?: (tool: Tool) => void;
   onCardClick?: (tool: Tool) => void;
   onCopy: (url: string) => void;
-  copaActive?: boolean;
+  activeTheme?: string; // cosmetic id ativo
 }
 
 const ToolCard: React.FC<ToolCardProps> = ({
   tool, index, isFavorite, searchQuery,
   onToggleFavorite, onMouseEnter, onMouseMove, onMouseLeave,
-  onTrack, onCardClick, onCopy, copaActive,
+  onTrack, onCardClick, onCopy, activeTheme,
 }) => {
   const [imgError, setImgError] = useState(false);
 
@@ -94,7 +94,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
   /* ══════════════════════════════════════════════════════════════════
      MODO COPA — Camisa da seleção
   ══════════════════════════════════════════════════════════════════ */
-  if (copaActive) {
+  if (activeTheme === 'copa-2026') {
     const j = getJersey(tool.id, !!tool.pinned);
     const jerseyBg = j.stripes
       ? { backgroundImage: `repeating-linear-gradient(0deg,${j.primary} 0,${j.primary} 12px,${j.secondary} 12px,${j.secondary} 24px)` }
@@ -195,6 +195,139 @@ const ToolCard: React.FC<ToolCardProps> = ({
               ✦ novo
             </div>
           )}
+        </a>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     MODO FALLOUT: NEW VEGAS — Pip-Boy 3000 Mark IV
+  ══════════════════════════════════════════════════════════════════ */
+  if (activeTheme === 'fallout-nv') {
+    return (
+      <div className="animate-fadeIn" style={{ animationDelay:`${Math.min(index*35,500)}ms`, animationFillMode:'backwards' }}>
+        <a
+          href={tool.url} target="_blank" rel="noopener noreferrer"
+          onClick={handleCardClick}
+          className="relative group flex flex-col min-h-[180px] overflow-hidden transition-all duration-200 rounded-sm"
+          style={{ background:'#0b1508', border:'1px solid rgba(0,214,50,0.32)', boxShadow:'0 0 10px rgba(0,214,50,0.12), inset 0 0 32px rgba(0,214,50,0.04)' }}
+          onMouseEnter={() => onMouseEnter(tool)} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
+        >
+          {/* CRT scanlines */}
+          <div style={{ position:'absolute', inset:0, backgroundImage:'repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,214,50,0.015) 2px,rgba(0,214,50,0.015) 3px)', pointerEvents:'none', zIndex:1 }} />
+
+          {/* Pip-Boy header */}
+          <div style={{ background:'rgba(0,214,50,0.1)', borderBottom:'1px solid rgba(0,214,50,0.25)', padding:'4px 8px', display:'flex', alignItems:'center', justifyContent:'space-between', zIndex:2 }}>
+            <span style={{ fontFamily:'monospace', fontSize:7, color:'rgba(0,214,50,0.55)', letterSpacing:'0.12em' }}>{'PIP-BOY 3000'}</span>
+            <span style={{ fontSize:9, color:'rgba(0,214,50,0.45)' }}>☢</span>
+          </div>
+
+          {/* Ícone com filtro fosfórico */}
+          <div style={{ display:'flex', justifyContent:'center', padding:'12px 0 6px', position:'relative', zIndex:2 }}
+            className="group-hover:scale-110 transition-transform duration-200">
+            <div style={{ width:52, height:52, border:'1px solid rgba(0,214,50,0.45)', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,214,50,0.06)', boxShadow:'0 0 14px rgba(0,214,50,0.18)' }}>
+              {!imgError
+                ? <img src={tool.iconUrl} alt={tool.name} style={{ width:32, height:32, objectFit:'contain', filter:'sepia(1) hue-rotate(92deg) saturate(2.2) brightness(0.85)' }} loading="lazy" onError={()=>setImgError(true)} />
+                : <span style={{ color:'#00d632', fontSize:18 }}>☢</span>}
+            </div>
+          </div>
+
+          {/* Info terminal */}
+          <div style={{ padding:'4px 10px 2px', flex:1, zIndex:2, display:'flex', flexDirection:'column', justifyContent:'center' }}>
+            <div style={{ fontFamily:'monospace', fontSize:7.5, color:'rgba(0,214,50,0.45)', marginBottom:2 }}>{'>'} ITEM:</div>
+            <div style={{ fontFamily:'monospace', fontSize:9.5, color:'#00d632', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.03em', lineHeight:1.25, textShadow:'0 0 6px rgba(0,214,50,0.4)' }}>
+              <HighlightText text={tool.name} query={searchQuery} />
+            </div>
+          </div>
+
+          {/* Barra de status */}
+          <div style={{ borderTop:'1px solid rgba(0,214,50,0.18)', padding:'3px 10px', display:'flex', alignItems:'center', justifyContent:'space-between', zIndex:2 }}>
+            <span style={{ fontFamily:'monospace', fontSize:7, color:'rgba(0,214,50,0.4)', letterSpacing:'0.08em' }}>STATUS</span>
+            <div style={{ display:'flex', gap:2 }}>
+              {[...Array(5)].map((_,i)=><div key={i} style={{ width:9, height:4, background:'rgba(0,214,50,0.65)' }} />)}
+            </div>
+          </div>
+
+          {/* Hover glow */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" style={{ boxShadow:'inset 0 0 28px rgba(0,214,50,0.1)', zIndex:3 }} />
+
+          {/* Favorito */}
+          <button onClick={handleFavoriteClick}
+            className={`absolute top-6 right-1.5 w-6 h-6 flex items-center justify-center rounded-full z-10 transition-all duration-200 ${isFavorite ? 'opacity-100 bg-emerald-900/60 text-emerald-400' : 'opacity-0 group-hover:opacity-100 bg-black/40 text-emerald-900 hover:text-emerald-400'}`}
+            aria-label={isFavorite?'Remover':'Adicionar'}>
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill={isFavorite?'currentColor':'none'} stroke="currentColor" strokeWidth={2}>
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
+        </a>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     MODO CS 1.6 — Buy Menu Tático
+  ══════════════════════════════════════════════════════════════════ */
+  if (activeTheme === 'csgo-16') {
+    const hash = tool.id.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+    const isCT = hash % 2 === 0;
+    const teamColor = isCT ? '#3a7bd5' : '#d46418';
+    const teamBg    = isCT ? '#0a1628' : '#1c0d02';
+    const teamLabel = isCT ? 'CT' : 'T';
+    return (
+      <div className="animate-fadeIn" style={{ animationDelay:`${Math.min(index*35,500)}ms`, animationFillMode:'backwards' }}>
+        <a
+          href={tool.url} target="_blank" rel="noopener noreferrer"
+          onClick={handleCardClick}
+          className="relative group flex flex-col min-h-[180px] overflow-hidden transition-all duration-200"
+          style={{ background:teamBg, border:`1px solid ${teamColor}38` }}
+          onMouseEnter={() => onMouseEnter(tool)} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
+        >
+          {/* Team bar */}
+          <div style={{ background:teamColor, padding:'3px 8px', display:'flex', alignItems:'center', gap:6 }}>
+            <span style={{ fontFamily:'monospace', fontSize:8, fontWeight:900, color:'#fff', letterSpacing:'0.1em' }}>{teamLabel}</span>
+            <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.25)' }} />
+            <span style={{ fontSize:8, color:'rgba(255,255,255,0.65)' }}>★</span>
+          </div>
+
+          {/* Mira + ícone */}
+          <div style={{ position:'relative', flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'10px' }}>
+            <svg style={{ position:'absolute', width:76, height:76, opacity:0.1 }} viewBox="0 0 76 76">
+              <line x1={38} y1={0}  x2={38} y2={76} stroke={teamColor} strokeWidth="1.5"/>
+              <line x1={0}  y1={38} x2={76} y2={38} stroke={teamColor} strokeWidth="1.5"/>
+              <circle cx={38} cy={38} r={20} fill="none" stroke={teamColor} strokeWidth="1"/>
+              <circle cx={38} cy={38} r={3}  fill={teamColor}/>
+            </svg>
+            <div
+              style={{ position:'relative', zIndex:2, width:50, height:50, borderRadius:'50%', border:`2px solid ${teamColor}55`, background:`${teamColor}18`, display:'flex', alignItems:'center', justifyContent:'center' }}
+              className="group-hover:scale-110 transition-transform duration-200"
+            >
+              {!imgError
+                ? <img src={tool.iconUrl} alt={tool.name} style={{ width:30, height:30, objectFit:'contain' }} loading="lazy" onError={()=>setImgError(true)} />
+                : <span style={{ color:teamColor, fontSize:18 }}>🔗</span>}
+            </div>
+          </div>
+
+          {/* Nome + barra de dinheiro */}
+          <div style={{ padding:'4px 8px 6px', borderTop:`1px solid ${teamColor}25` }}>
+            <div style={{ fontFamily:'monospace', fontSize:9.5, color:'#ccd4cc', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.04em', lineHeight:1.2, marginBottom:4 }}>
+              <HighlightText text={tool.name} query={searchQuery} />
+            </div>
+            <div style={{ display:'flex', gap:2 }}>
+              {[...Array(8)].map((_,i)=><div key={i} style={{ flex:1, height:3, background: i<5 ? '#4CAF50' : 'rgba(255,255,255,0.08)' }} />)}
+            </div>
+          </div>
+
+          {/* Hover */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" style={{ background:`${teamColor}0a`, boxShadow:`inset 0 0 0 1px ${teamColor}30` }} />
+
+          {/* Favorito */}
+          <button onClick={handleFavoriteClick}
+            className={`absolute top-6 right-1.5 w-6 h-6 flex items-center justify-center rounded-full z-10 transition-all duration-200 ${isFavorite ? 'opacity-100 text-amber-400' : 'opacity-0 group-hover:opacity-100 text-gray-600 hover:text-amber-400'}`}
+            aria-label={isFavorite?'Remover':'Adicionar'}>
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill={isFavorite?'currentColor':'none'} stroke="currentColor" strokeWidth={2}>
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
         </a>
       </div>
     );
