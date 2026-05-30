@@ -55,6 +55,125 @@ function detectTouchDevice() {
   catch { return false; }
 }
 
+/* ── Gramado Copa — SVG com marcações reais ──────────────────────────────── */
+function PitchBackground() {
+  const SW = 15; // stripe width (units)
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none' }}>
+      <svg width="100%" height="100%" viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" style={{ display:'block' }}>
+        <defs>
+          {/* Clip para arco da grande área esquerda (fora da área) */}
+          <clipPath id="arcClipL"><rect x="24" y="0" width="96" height="80"/></clipPath>
+          {/* Clip para arco da grande área direita (fora da área) */}
+          <clipPath id="arcClipR"><rect x="0"  y="0" width="96" height="80"/></clipPath>
+        </defs>
+
+        {/* Faixas do gramado — efeito cortador de grama */}
+        {Array.from({ length: 8 }, (_, i) => (
+          <rect key={i} x={i*SW} y={0} width={SW} height={80}
+            fill={i%2===0 ? '#1f7028' : '#267a30'} />
+        ))}
+
+        {/* Linhas brancas do campo */}
+        <g stroke="rgba(255,255,255,0.78)" strokeWidth="0.38" fill="none">
+          {/* Linha de fundo e laterais */}
+          <rect x={7.5} y={6} width={105} height={68}/>
+          {/* Linha do meio */}
+          <line x1={60} y1={6} x2={60} y2={74}/>
+          {/* Círculo central */}
+          <circle cx={60} cy={40} r={9.15}/>
+          {/* Grande área esquerda */}
+          <rect x={7.5}  y={19.84} width={16.5} height={40.32}/>
+          {/* Grande área direita */}
+          <rect x={96}   y={19.84} width={16.5} height={40.32}/>
+          {/* Pequena área esquerda */}
+          <rect x={7.5}  y={29.84} width={5.5}  height={20.32}/>
+          {/* Pequena área direita */}
+          <rect x={107}  y={29.84} width={5.5}  height={20.32}/>
+          {/* Arco da grande área esquerda (só a parte de fora) */}
+          <circle cx={18.5}  cy={40} r={9.15} clipPath="url(#arcClipL)"/>
+          {/* Arco da grande área direita */}
+          <circle cx={101.5} cy={40} r={9.15} clipPath="url(#arcClipR)"/>
+          {/* Arcos de escanteio */}
+          <path d="M 7.5,7.5  A 1.5,1.5 0 0,1 9,6"/>
+          <path d="M 111,6    A 1.5,1.5 0 0,1 112.5,7.5"/>
+          <path d="M 112.5,72.5 A 1.5,1.5 0 0,1 111,74"/>
+          <path d="M 9,74    A 1.5,1.5 0 0,1 7.5,72.5"/>
+        </g>
+        {/* Pontos (centro + pênaltis) */}
+        <g fill="rgba(255,255,255,0.78)">
+          <circle cx={60}    cy={40} r={0.42}/>
+          <circle cx={18.5}  cy={40} r={0.42}/>
+          <circle cx={101.5} cy={40} r={0.42}/>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+/* ── Efeitos Copa: bola rolando + vuvuzelas ───────────────────────────────── */
+function CopaSideEffects() {
+  const [ball, setBall] = React.useState<{ dir:1|-1; bottom:number } | null>(null);
+  const [vuvu, setVuvu]   = React.useState<number | null>(null);
+
+  /* bola */
+  React.useEffect(() => {
+    let next: ReturnType<typeof setTimeout>;
+    const schedule = (first: boolean) => {
+      const delay = first ? 12000 : 22000 + Math.random() * 20000;
+      next = setTimeout(() => {
+        setBall({ dir: Math.random()>0.5 ? 1 : -1, bottom: 10 + Math.floor(Math.random()*22) });
+        schedule(false);
+      }, delay);
+    };
+    schedule(true);
+    return () => clearTimeout(next);
+  }, []);
+
+  /* vuvuzela */
+  React.useEffect(() => {
+    let next: ReturnType<typeof setTimeout>;
+    const schedule = (first: boolean) => {
+      const delay = first ? 20000 : 18000 + Math.random() * 18000;
+      next = setTimeout(() => {
+        setVuvu(5 + Math.floor(Math.random()*88));
+        schedule(false);
+      }, delay);
+    };
+    schedule(true);
+    return () => clearTimeout(next);
+  }, []);
+
+  return (
+    <>
+      {ball && (
+        <div
+          style={{
+            position:'fixed', zIndex:15, pointerEvents:'none',
+            bottom:`${ball.bottom}%`,
+            ...(ball.dir===1 ? { left:'-56px' } : { right:'-56px' }),
+            fontSize:44,
+            animation: ball.dir===1
+              ? 'ballRollLR 5.5s linear forwards'
+              : 'ballRollRL 5.5s linear forwards',
+          }}
+          onAnimationEnd={() => setBall(null)}
+        >⚽</div>
+      )}
+      {vuvu !== null && (
+        <div
+          style={{
+            position:'fixed', bottom:'-8px', left:`${vuvu}%`,
+            zIndex:15, pointerEvents:'none', fontSize:30,
+            animation:'vuvuzelaBlast 2.4s ease-out forwards',
+          }}
+          onAnimationEnd={() => setVuvu(null)}
+        >🎺</div>
+      )}
+    </>
+  );
+}
+
 /* ── App ─────────────────────────────────────────────────────────────────── */
 
 const App: React.FC = () => {
@@ -385,13 +504,15 @@ const App: React.FC = () => {
   return (
     <div
       className={`min-h-screen flex flex-col transition-colors duration-300 ${activeCosmetic ? '' : 'bg-[#eef2f6] dark:bg-[#0f172a] bg-dot-pattern'}`}
-      style={activeCosmetic ? {
-        backgroundColor: isDark ? activeCosmetic.darkBg : activeCosmetic.lightBg,
-        backgroundImage: isDark ? activeCosmetic.patternDark : activeCosmetic.patternLight,
-      } : undefined}
+      style={activeCosmetic ? { backgroundColor: isDark ? '#152f17' : '#1f7028' } : undefined}
     >
+      {/* Gramado + efeitos Copa */}
+      {activeCosmetic?.id === 'copa-2026' && <PitchBackground />}
+      {activeCosmetic?.id === 'copa-2026' && <CopaSideEffects />}
+
+      {/* Faixa topo — tricolor */}
       {activeCosmetic?.id === 'copa-2026' && (
-        <div style={{ height: 4, display: 'flex', flexShrink: 0 }}>
+        <div style={{ height: 4, display: 'flex', flexShrink: 0, position:'relative', zIndex:10 }}>
           <div style={{ flex: 1, background: '#009C3B' }} />
           <div style={{ flex: 1, background: '#FFD100' }} />
           <div style={{ flex: 1, background: '#002776' }} />
@@ -600,6 +721,7 @@ const App: React.FC = () => {
                   onTrack={handleTrack}
                   onCardClick={isTouchDevice ? handleMobileCardClick : undefined}
                   onCopy={handleCopy}
+                  copaActive={activeCosmetic?.id === 'copa-2026'}
                 />
               ))}
             </div>
