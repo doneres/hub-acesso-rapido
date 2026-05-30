@@ -390,9 +390,12 @@ const App: React.FC = () => {
         backgroundImage: isDark ? activeCosmetic.patternDark : activeCosmetic.patternLight,
       } : undefined}
     >
-      {/* Faixa topo — sinal de transmissão Copa */}
       {activeCosmetic?.id === 'copa-2026' && (
-        <div style={{ height: 3, background: 'linear-gradient(90deg,#008c35 0%,#c9a227 50%,#008c35 100%)', flexShrink: 0 }} />
+        <div style={{ height: 4, display: 'flex', flexShrink: 0 }}>
+          <div style={{ flex: 1, background: '#009C3B' }} />
+          <div style={{ flex: 1, background: '#FFD100' }} />
+          <div style={{ flex: 1, background: '#002776' }} />
+        </div>
       )}
       <Header
         isDark={isDark}
@@ -404,55 +407,49 @@ const App: React.FC = () => {
 
       <main className="flex-1 max-w-[1440px] w-full px-4 md:px-8 py-8 mx-auto relative z-10">
 
-        {/* Banner Copa — estilo sports broadcast */}
+        {/* Banner Copa — inspirado na camisa da Seleção */}
         {activeCosmetic && (
           <div
-            className="animate-fadeIn mb-6"
+            className="animate-fadeIn mb-6 relative overflow-hidden"
             style={{
+              background: '#FFD100',
+              borderBottom: '3px solid #009C3B',
+              padding: '11px 20px',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '10px 20px',
-              background: isDark ? 'rgba(1,20,8,0.7)' : '#ffffff',
-              borderLeft: '3px solid #008c35',
-              borderBottom: `1px solid ${isDark ? 'rgba(0,140,53,0.15)' : 'rgba(0,140,53,0.1)'}`,
-              boxShadow: isDark
-                ? '0 1px 16px rgba(0,140,53,0.1)'
-                : '0 1px 12px rgba(0,140,53,0.07)',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {/* Indicador vivo */}
+            {/* Losango jacquard no fundo do banner */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'22\' height=\'22\'%3E%3Cpath d=\'M11 1L21 11L11 21L1 11Z\' fill=\'none\' stroke=\'%23009C3B\' stroke-width=\'0.7\' opacity=\'0.18\'/%3E%3C/svg%3E")',
+              pointerEvents: 'none',
+            }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, position: 'relative', zIndex: 1 }}>
               <div style={{
-                width: 8, height: 8, borderRadius: '50%',
-                background: '#008c35',
-                boxShadow: '0 0 0 3px rgba(0,140,53,0.18)',
-              }} />
+                width: 32, height: 32, borderRadius: '50%',
+                background: '#009C3B',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 16, flexShrink: 0,
+                boxShadow: '0 2px 8px rgba(0,156,59,0.35)',
+              }}>⚽</div>
               <div>
-                <div style={{
-                  fontSize: 11, fontWeight: 800, letterSpacing: '0.12em',
-                  color: isDark ? '#4ade80' : '#015f2a',
-                  lineHeight: 1,
-                }}>
+                <div style={{ fontSize: 12, fontWeight: 900, color: '#014d20', letterSpacing: '0.1em', lineHeight: 1 }}>
                   COPA DO MUNDO 2026
                 </div>
-                <div style={{
-                  fontSize: 10,
-                  color: isDark ? 'rgba(255,255,255,0.3)' : '#94a3b8',
-                  marginTop: 3,
-                }}>
+                <div style={{ fontSize: 10, color: 'rgba(1,77,32,0.65)', marginTop: 2 }}>
                   Tema ativo · gerencie em Desafios
                 </div>
               </div>
             </div>
             <div style={{
-              fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
-              color: isDark ? '#c9a227' : '#7a5c0e',
-              padding: '4px 12px',
-              background: isDark ? 'rgba(201,162,39,0.1)' : 'rgba(201,162,39,0.07)',
-              border: `1px solid ${isDark ? 'rgba(201,162,39,0.28)' : 'rgba(201,162,39,0.22)'}`,
+              position: 'relative', zIndex: 1,
+              fontSize: 9, fontWeight: 900, letterSpacing: '0.14em',
+              color: '#014d20',
+              padding: '4px 14px',
+              background: 'rgba(1,77,32,0.1)',
+              border: '1px solid rgba(1,77,32,0.25)',
               borderRadius: 999,
-            }}>
-              ATIVO
-            </div>
+            }}>ATIVO</div>
           </div>
         )}
 

@@ -62,48 +62,47 @@ const ANIM_CSS = `
   }
 `;
 
-/* ── Ticker-tape confetti — 3 cores Brasil, fitas finas ─────────────────── */
-const COPA_STRIPS = [
-  { c:'#008c35', l:'4%',  w:3,  h:16, dur:2.2, delay:0.00, rot: 15 },
-  { c:'#c9a227', l:'10%', w:2,  h:20, dur:2.5, delay:0.10, rot:-20 },
-  { c:'#ffffff', l:'16%', w:3,  h:14, dur:2.0, delay:0.22, rot: 35 },
-  { c:'#008c35', l:'23%', w:2,  h:18, dur:2.7, delay:0.05, rot:-8  },
-  { c:'#c9a227', l:'29%', w:4,  h:12, dur:2.1, delay:0.18, rot: 45 },
-  { c:'#ffffff', l:'36%', w:2,  h:20, dur:2.4, delay:0.30, rot:-30 },
-  { c:'#008c35', l:'42%', w:3,  h:16, dur:1.9, delay:0.12, rot: 20 },
-  { c:'#c9a227', l:'49%', w:2,  h:14, dur:2.6, delay:0.08, rot:-15 },
-  { c:'#ffffff', l:'55%', w:4,  h:18, dur:2.2, delay:0.25, rot: 40 },
-  { c:'#008c35', l:'62%', w:2,  h:20, dur:2.0, delay:0.15, rot:-25 },
-  { c:'#c9a227', l:'68%', w:3,  h:12, dur:2.8, delay:0.03, rot: 10 },
-  { c:'#ffffff', l:'75%', w:2,  h:16, dur:2.3, delay:0.20, rot:-40 },
-  { c:'#008c35', l:'81%', w:4,  h:18, dur:2.1, delay:0.35, rot: 28 },
-  { c:'#c9a227', l:'87%', w:2,  h:14, dur:2.5, delay:0.42, rot:-12 },
-  { c:'#ffffff', l:'93%', w:3,  h:20, dur:2.0, delay:0.28, rot: 50 },
+/* ── Diamantes jacquard caindo — confetti inspirado na camisa ─────────── */
+const COPA_DIAMONDS_DATA = [
+  { c:'#FFD100', l:'4%',  s:10, dur:2.1, delay:0.00, rot: 20  },
+  { c:'#009C3B', l:'10%', s: 8, dur:2.4, delay:0.10, rot:-15  },
+  { c:'#002776', l:'17%', s:11, dur:2.0, delay:0.22, rot: 40  },
+  { c:'#FFD100', l:'24%', s: 7, dur:2.6, delay:0.05, rot:-30  },
+  { c:'#ffffff', l:'31%', s: 9, dur:2.2, delay:0.18, rot: 10  },
+  { c:'#009C3B', l:'38%', s:12, dur:1.9, delay:0.30, rot:-45  },
+  { c:'#FFD100', l:'45%', s: 8, dur:2.5, delay:0.08, rot: 25  },
+  { c:'#002776', l:'52%', s:10, dur:2.1, delay:0.25, rot:-20  },
+  { c:'#FFD100', l:'59%', s: 7, dur:2.7, delay:0.12, rot: 35  },
+  { c:'#009C3B', l:'66%', s:11, dur:2.0, delay:0.35, rot:-10  },
+  { c:'#ffffff', l:'73%', s: 9, dur:2.3, delay:0.20, rot: 50  },
+  { c:'#FFD100', l:'80%', s: 8, dur:2.4, delay:0.42, rot:-35  },
+  { c:'#002776', l:'87%', s:10, dur:2.1, delay:0.15, rot: 15  },
+  { c:'#009C3B', l:'93%', s: 7, dur:2.6, delay:0.28, rot:-25  },
   // segunda onda
-  { c:'#c9a227', l:'7%',  w:2,  h:18, dur:2.4, delay:0.45, rot:-35 },
-  { c:'#008c35', l:'20%', w:3,  h:14, dur:2.1, delay:0.50, rot: 22 },
-  { c:'#ffffff', l:'33%', w:2,  h:20, dur:2.6, delay:0.38, rot:-18 },
-  { c:'#c9a227', l:'47%', w:4,  h:12, dur:2.2, delay:0.55, rot: 42 },
-  { c:'#008c35', l:'58%', w:2,  h:16, dur:2.3, delay:0.32, rot:-28 },
-  { c:'#ffffff', l:'71%', w:3,  h:18, dur:2.0, delay:0.48, rot: 15 },
-  { c:'#c9a227', l:'84%', w:2,  h:14, dur:2.7, delay:0.40, rot:-45 },
+  { c:'#FFD100', l:'7%',  s: 9, dur:2.3, delay:0.48, rot: 30  },
+  { c:'#002776', l:'21%', s:11, dur:2.0, delay:0.55, rot:-40  },
+  { c:'#009C3B', l:'35%', s: 8, dur:2.2, delay:0.38, rot: 18  },
+  { c:'#FFD100', l:'49%', s:10, dur:2.5, delay:0.45, rot:-22  },
+  { c:'#ffffff', l:'63%', s: 7, dur:2.1, delay:0.50, rot: 42  },
+  { c:'#FFD100', l:'77%', s:12, dur:2.3, delay:0.32, rot:-12  },
+  { c:'#002776', l:'90%', s: 9, dur:2.0, delay:0.40, rot: 28  },
 ];
 
 function CopaConfetti() {
   return (
     <>
-      {COPA_STRIPS.map((s, i) => (
+      {COPA_DIAMONDS_DATA.map((d, i) => (
         <div
           key={i}
-          className="copa-strip"
+          className="copa-diamond"
           style={{
-            left: s.l,
-            width: s.w,
-            height: s.h,
-            background: s.c,
-            '--dur':   `${s.dur}s`,
-            '--delay': `${s.delay}s`,
-            '--rot':   `${s.rot}deg`,
+            left: d.l,
+            width: d.s,
+            height: d.s,
+            background: d.c,
+            '--dur':   `${d.dur}s`,
+            '--delay': `${d.delay}s`,
+            '--rot':   `${d.rot}deg`,
           } as React.CSSProperties}
         />
       ))}
@@ -1295,78 +1294,76 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
     <div style={{ background: T.pageBg, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <style dangerouslySetInnerHTML={{ __html: ANIM_CSS }} />
 
-      {/* ── GOL! — overlay estilo transmissão profissional ─────────── */}
+      {/* ── GOL! — flash de estádio, camisa amarela ──────────────────── */}
       {showGol && (
         <>
           <CopaConfetti />
           <div style={{
             position: 'fixed', inset: 0, zIndex: 200,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            background: '#001309',
             pointerEvents: 'none',
             overflow: 'hidden',
-            animation: 'golFade 2.8s ease-out forwards',
+            animation: 'golFlash 2.9s ease-out forwards',
           }}>
-            {/* Glow central */}
+            {/* Losango jacquard no fundo do flash */}
             <div style={{
-              position: 'absolute', borderRadius: '50%',
-              width: '70vw', height: '70vw', maxWidth: 560, maxHeight: 560,
-              background: 'radial-gradient(circle, rgba(0,140,53,0.22) 0%, transparent 68%)',
+              position: 'absolute', inset: 0,
+              backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'28\' height=\'28\'%3E%3Cpath d=\'M14 2L26 14L14 26L2 14Z\' fill=\'none\' stroke=\'%23009C3B\' stroke-width=\'1\' opacity=\'0.13\'/%3E%3C/svg%3E")',
               pointerEvents: 'none',
             }} />
 
-            {/* Varredura diagonal de luz */}
+            {/* Varredura de luz lateral */}
             <div style={{
               position: 'absolute', inset: 0,
-              background: 'linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.055) 50%, transparent 75%)',
-              animation: 'golBeamSweep 1.6s ease-out 0.15s both',
+              background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.45) 50%, transparent 80%)',
+              animation: 'golBeam 1.8s ease-out 0.2s both',
               pointerEvents: 'none',
             }} />
 
             {/* Conteúdo central */}
             <div style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0,
-              animation: 'golSlideUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.05s both',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              animation: 'golEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.08s both',
+              position: 'relative', zIndex: 2,
             }}>
               {/* Eyebrow */}
               <div style={{
-                fontSize: 9, letterSpacing: '0.28em',
-                color: '#008c35', fontFamily: "'Press Start 2P', monospace",
-                marginBottom: 14, opacity: 0.9,
-              }}>
-                CASO RESOLVIDO
-              </div>
+                fontSize: 9, letterSpacing: '0.3em', color: '#009C3B',
+                fontFamily: "'Press Start 2P', monospace", marginBottom: 12,
+              }}>CASO RESOLVIDO</div>
 
-              {/* GOL! */}
+              {/* GOL! — verde escuro sobre amarelo */}
               <div style={{
                 fontFamily: "'Press Start 2P', monospace",
-                fontSize: 'clamp(56px, 11vw, 96px)',
-                fontWeight: 900, lineHeight: 1,
-                color: '#ffffff',
-                letterSpacing: '0.04em',
-                textShadow: '0 0 48px rgba(0,200,80,0.35), 0 3px 0 rgba(0,0,0,0.5)',
-              }}>
-                GOL!
-              </div>
+                fontSize: 'clamp(52px, 12vw, 96px)',
+                lineHeight: 1, letterSpacing: '0.04em',
+                color: '#013d1a',
+                textShadow: '0 4px 0 rgba(0,0,0,0.12), 0 0 40px rgba(0,100,40,0.2)',
+              }}>GOL!</div>
 
-              {/* Linha acento — verde pulsando */}
+              {/* Linha verde — detalhe do colarinho */}
               <div style={{
-                width: 72, height: 2, marginTop: 18,
-                background: 'linear-gradient(90deg, transparent, #008c35, transparent)',
-                animation: 'golLinePulse 1.2s ease-in-out 0.4s infinite',
+                width: 80, height: 3, marginTop: 18,
+                background: '#009C3B',
+                animation: 'golPulse 1.0s ease-in-out 0.5s infinite',
               }} />
 
               {/* Pontuação */}
               {currentUser && (
                 <div style={{
                   marginTop: 20,
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  animation: 'golSlideUp 0.4s ease-out 0.5s both',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  animation: 'golEnter 0.4s ease-out 0.55s both',
                 }}>
-                  <span style={{ color: '#c9a227', fontSize: 14 }}>▲</span>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: '50%',
+                    background: '#009C3B',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 14,
+                  }}>⚽</div>
                   <span style={{
                     fontFamily: "'Press Start 2P', monospace",
-                    fontSize: 10, color: 'rgba(255,255,255,0.5)',
+                    fontSize: 10, color: '#013d1a',
                     letterSpacing: '0.1em',
                   }}>
                     {currentUser.points} PTS
@@ -1375,10 +1372,14 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
               )}
             </div>
 
-            {/* Barra inferior verde */}
+            {/* Faixas verticais laterais — listras da camisa */}
             <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
-              background: 'linear-gradient(90deg, transparent, #008c35, #c9a227, #008c35, transparent)',
+              position: 'absolute', left: 0, top: 0, bottom: 0, width: 6,
+              background: 'linear-gradient(180deg, #009C3B, #002776, #009C3B)',
+            }} />
+            <div style={{
+              position: 'absolute', right: 0, top: 0, bottom: 0, width: 6,
+              background: 'linear-gradient(180deg, #009C3B, #002776, #009C3B)',
             }} />
           </div>
         </>
@@ -1405,13 +1406,13 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
           {isCopaActive && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              padding: '3px 10px 3px 7px',
-              background: 'rgba(0,140,53,0.08)',
-              border: '1px solid rgba(0,140,53,0.28)',
+              padding: '3px 10px 3px 8px',
+              background: '#FFD100',
+              border: '1px solid #009C3B',
               borderRadius: 999,
             }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#008c35', flexShrink: 0 }} />
-              <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: '#008c35', whiteSpace: 'nowrap' }}>COPA 2026</span>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#009C3B', flexShrink: 0 }} />
+              <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: '#014d20', whiteSpace: 'nowrap' }}>COPA 2026</span>
             </div>
           )}
         </div>

@@ -30,9 +30,9 @@ export interface CosmeticDef {
   accent2: string;
 }
 
-/* ── Padrão gramado: faixas horizontais como campo de futebol ────────── */
-export const COPA_PATTERN_LIGHT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='72'%3E%3Crect width='1' height='36' fill='%23008c35' opacity='0.032'/%3E%3C/svg%3E")`;
-export const COPA_PATTERN_DARK  = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='72'%3E%3Crect width='1' height='36' fill='%2300b347' opacity='0.05'/%3E%3C/svg%3E")`;
+/* ── Padrão jacquard: losangos da camisa da Seleção Brasileira ────────── */
+export const COPA_PATTERN_LIGHT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Cpath d='M14 2 L26 14 L14 26 L2 14 Z' fill='none' stroke='%23FFD100' stroke-width='0.9' opacity='0.13'/%3E%3C/svg%3E")`;
+export const COPA_PATTERN_DARK  = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Cpath d='M14 2 L26 14 L14 26 L2 14 Z' fill='none' stroke='%23009C3B' stroke-width='0.8' opacity='0.09'/%3E%3C/svg%3E")`;
 
 /* ── Cosméticos disponíveis ──────────────────────────────────────────── */
 export const COSMETICS: CosmeticDef[] = [
@@ -44,13 +44,13 @@ export const COSMETICS: CosmeticDef[] = [
     emoji: '⚽',
     tag: 'COPA 2026',
     tagColor: '#FFD700',
-    previewGradient: 'linear-gradient(135deg, #012d16 0%, #015c28 40%, #008c35 70%, #c9a227 100%)',
-    lightBg: '#f4fef7',
-    darkBg: '#020c05',
+    previewGradient: 'linear-gradient(135deg,#003d1a 0%,#009C3B 35%,#FFD100 70%,#002776 100%)',
+    lightBg: '#fffef0',
+    darkBg: '#030a02',
     patternLight: COPA_PATTERN_LIGHT,
     patternDark: COPA_PATTERN_DARK,
-    accent1: '#009C3B',   // verde Brasil
-    accent2: '#D4A017',   // dourado
+    accent1: '#FFD100',   // amarelo Canarinho
+    accent2: '#009C3B',   // verde
   },
 ];
 
