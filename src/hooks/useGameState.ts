@@ -16,6 +16,7 @@ export interface GameUser {
   streak: number;
   wrongAttempts: Record<string, number>; // puzzleId → nº de erros
   powerups: Powerups;
+  purchasedCosmetics: string[];
 }
 
 interface GameState {
@@ -48,6 +49,7 @@ function migrateUser(u: Partial<GameUser> & Pick<GameUser, 'id' | 'name'>): Game
     streak: u.streak ?? 0,
     wrongAttempts: (u as any).wrongAttempts ?? {},
     powerups: (u as any).powerups ?? { shield: 0, eliminate: 0 },
+    purchasedCosmetics: (u as any).purchasedCosmetics ?? [],
   };
 }
 
@@ -211,6 +213,19 @@ export function useGameState() {
     return true;
   }, [currentUser, update]);
 
+  /* ── Cosméticos ────────────────────────────────────────────────── */
+
+  const buyCosmetic = useCallback((cosmeticId: string, cost: number): boolean => {
+    if (!currentUser || currentUser.points < cost) return false;
+    if (currentUser.purchasedCosmetics.includes(cosmeticId)) return false;
+    update({
+      ...currentUser,
+      points: currentUser.points - cost,
+      purchasedCosmetics: [...currentUser.purchasedCosmetics, cosmeticId],
+    });
+    return true;
+  }, [currentUser, update]);
+
   /* ── Power-up: Usar Eliminar Errada (consome 1 unidade) ─────────── */
 
   const useEliminate = useCallback((): boolean => {
@@ -227,6 +242,6 @@ export function useGameState() {
   return {
     currentUser, users: state.users, leaderboard,
     registerUser, login, logout,
-    useHint, recordAnswer, buyPowerup, useEliminate,
+    useHint, recordAnswer, buyPowerup, useEliminate, buyCosmetic,
   };
 }

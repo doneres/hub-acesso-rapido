@@ -9,6 +9,7 @@ import {
 import { useTheme } from '../hooks/useTheme';
 import { useGameState, GameUser, Powerups, computeEarned } from '../hooks/useGameState';
 import { PUZZLES, CATEGORY_CONFIG, getRank, Puzzle } from '../data/puzzles';
+import { COSMETICS, CosmeticDef, getActiveCosmeticId, setActiveCosmeticId } from '../data/cosmetics';
 
 /* ── Keyframes injetados como <style> ──────────────────────────────────── */
 const ANIM_CSS = `
@@ -1032,6 +1033,141 @@ function PowerupShop({ T, isDark, currentUser, onBuy }: {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
+   COSMETICS SHOP
+════════════════════════════════════════════════════════════════════════ */
+function CosmeticsShop({ T, isDark, currentUser, onBuy }: {
+  T: ReturnType<typeof getTheme>; isDark: boolean;
+  currentUser: GameUser;
+  onBuy: (id: string, cost: number) => boolean;
+}) {
+  const [feedback, setFeedback] = useState<{ msg: string; ok: boolean } | null>(null);
+  const [open, setOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(getActiveCosmeticId);
+
+  const handleBuy = (c: CosmeticDef) => {
+    const ok = onBuy(c.id, c.cost);
+    if (ok) {
+      setActiveCosmeticId(c.id);
+      setActiveId(c.id);
+      setFeedback({ msg: `${c.emoji} Comprado e equipado! O Hub está vestindo a Copa.`, ok: true });
+    } else {
+      setFeedback({ msg: '❌ Pontos insuficientes', ok: false });
+    }
+    setTimeout(() => setFeedback(null), 3000);
+  };
+
+  const handleEquip = (c: CosmeticDef) => {
+    setActiveCosmeticId(c.id);
+    setActiveId(c.id);
+    setFeedback({ msg: `${c.emoji} Equipado! Volte ao Hub para ver.`, ok: true });
+    setTimeout(() => setFeedback(null), 2200);
+  };
+
+  const handleUnequip = () => {
+    setActiveCosmeticId(null);
+    setActiveId(null);
+    setFeedback({ msg: '🎨 Cosmético retirado.', ok: true });
+    setTimeout(() => setFeedback(null), 2200);
+  };
+
+  const activeCosmetic = COSMETICS.find(c => c.id === activeId);
+
+  return (
+    <div style={{ background: T.cardBg, border: `2px solid ${T.cardBorder}`, boxShadow: `4px 4px 0 ${T.cardShadow}`, marginBottom: 16 }}>
+      <button onClick={() => setOpen(v => !v)}
+        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', borderBottom: open ? `2px solid ${T.topBorder}` : 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 16 }}>🎨</span>
+          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: T.text }}>LOJA DE COSMÉTICOS</span>
+          {activeCosmetic && (
+            <>
+              <span style={{ fontSize: 11, color: T.textMut }}>·</span>
+              <span style={{ fontSize: 11, color: T.textSec }}>{activeCosmetic.emoji} {activeCosmetic.tag} equipado</span>
+            </>
+          )}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: T.accent }}>{currentUser.points} PTS</span>
+          {open ? <ChevronUp size={16} color={T.textMut} /> : <ChevronDown size={16} color={T.textMut} />}
+        </div>
+      </button>
+
+      {open && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
+          {COSMETICS.map((c, i) => {
+            const owned    = currentUser.purchasedCosmetics.includes(c.id);
+            const isActive = activeId === c.id;
+            const canBuy   = !owned && currentUser.points >= c.cost;
+
+            return (
+              <div key={c.id} style={{ padding: '18px 20px', borderLeft: i > 0 ? `2px solid ${T.topBorder}` : 'none' }}>
+                {/* Preview gradient */}
+                <div style={{
+                  width: '100%', height: 64, marginBottom: 14,
+                  background: c.previewGradient,
+                  border: `2px solid ${isActive ? c.tagColor : T.cardBorder}`,
+                  boxShadow: isActive ? `0 0 12px ${c.tagColor}60` : 'none',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28,
+                  transition: 'box-shadow .2s',
+                }}>
+                  {c.emoji}
+                </div>
+
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: c.tagColor, marginBottom: 4 }}>{c.tag}</div>
+                    <div style={{ fontSize: 13, fontWeight: 900, color: T.text }}>{c.name}</div>
+                  </div>
+                  {isActive && (
+                    <span style={{ fontSize: 9, fontFamily: "'Press Start 2P', monospace", color: c.tagColor, border: `1px solid ${c.tagColor}`, padding: '3px 6px' }}>ON</span>
+                  )}
+                </div>
+
+                <p style={{ fontSize: 12, color: T.textSec, lineHeight: 1.55, margin: '0 0 14px' }}>{c.desc}</p>
+
+                {!owned ? (
+                  <button
+                    onClick={() => handleBuy(c)}
+                    disabled={!canBuy}
+                    onMouseEnter={e => canBuy && ((e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)')}
+                    onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.transform = '')}
+                    style={{ width: '100%', padding: '9px 12px', background: canBuy ? c.tagColor : (isDark ? '#1e2a3a' : '#e5e7eb'), border: 'none', color: canBuy ? '#fff' : T.textMut, fontFamily: "'Press Start 2P', monospace", fontSize: 7, cursor: canBuy ? 'pointer' : 'not-allowed', boxShadow: canBuy ? `3px 3px 0 ${c.tagColor}60` : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all .1s' }}>
+                    {c.emoji} COMPRAR — {c.cost} PTS
+                  </button>
+                ) : isActive ? (
+                  <button
+                    onClick={handleUnequip}
+                    onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)')}
+                    onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.transform = '')}
+                    style={{ width: '100%', padding: '9px 12px', background: isDark ? '#1a2a1a' : '#f0faf1', border: `2px solid ${c.tagColor}`, color: c.tagColor, fontFamily: "'Press Start 2P', monospace", fontSize: 7, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all .1s' }}>
+                    ✓ EQUIPADO — RETIRAR
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleEquip(c)}
+                    onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)')}
+                    onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.transform = '')}
+                    style={{ width: '100%', padding: '9px 12px', background: c.tagColor, border: 'none', color: '#fff', fontFamily: "'Press Start 2P', monospace", fontSize: 7, cursor: 'pointer', boxShadow: `3px 3px 0 ${c.tagColor}60`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all .1s' }}>
+                    {c.emoji} EQUIPAR
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {feedback && (
+        <div style={{ padding: '10px 20px', borderTop: `2px solid ${T.topBorder}`, textAlign: 'center', fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: feedback.ok ? '#22c55e' : '#ef4444' }}>
+          {feedback.msg}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════════
    MAIN PAGE
 ════════════════════════════════════════════════════════════════════════ */
 interface DesafiosPageProps { onBackToHub: () => void; }
@@ -1039,7 +1175,7 @@ interface DesafiosPageProps { onBackToHub: () => void; }
 export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
   const { isDark, toggleTheme } = useTheme();
   const T = getTheme(isDark);
-  const { currentUser, users, leaderboard, registerUser, login, logout, useHint, recordAnswer, buyPowerup, useEliminate } = useGameState();
+  const { currentUser, users, leaderboard, registerUser, login, logout, useHint, recordAnswer, buyPowerup, useEliminate, buyCosmetic } = useGameState();
 
   // Tutorial sempre mostra ao entrar na página
   const [showTutorial, setShowTutorial] = useState(true);
@@ -1296,6 +1432,13 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
                 T={T} isDark={isDark}
                 currentUser={currentUser}
                 onBuy={buyPowerup}
+              />
+
+              {/* Loja de cosméticos */}
+              <CosmeticsShop
+                T={T} isDark={isDark}
+                currentUser={currentUser}
+                onBuy={buyCosmetic}
               />
 
               {/* Nível cards com progressão */}

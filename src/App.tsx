@@ -28,6 +28,7 @@ import NoticiasPage from './pages/NoticiasPage';
 import DesafiosPage from './pages/DesafiosPage';
 import PasswordModal from './components/PasswordModal';
 import FloatingNav from './components/FloatingNav';
+import { COSMETICS, CosmeticDef, getActiveCosmeticId } from './data/cosmetics';
 
 /* ── Constantes ──────────────────────────────────────────────────────────── */
 
@@ -76,6 +77,17 @@ const App: React.FC = () => {
   });
 
   const [showProfessorModal, setShowProfessorModal] = useState(false);
+
+  /* ── Cosmético ativo ──────────────────────────────────────────────── */
+  const [activeCosmetic, setActiveCosmetic] = useState<CosmeticDef | null>(() => {
+    const id = getActiveCosmeticId();
+    return id ? (COSMETICS.find(c => c.id === id) ?? null) : null;
+  });
+
+  useEffect(() => {
+    const id = getActiveCosmeticId();
+    setActiveCosmetic(id ? (COSMETICS.find(c => c.id === id) ?? null) : null);
+  }, [currentPage]);
 
   const handleCloseProfessorModal = useCallback(() => setShowProfessorModal(false), []);
   const handleProfessorSuccess    = useCallback(() => {
@@ -360,7 +372,13 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#eef2f6] dark:bg-[#0f172a] bg-dot-pattern transition-colors duration-300">
+    <div
+      className={`min-h-screen flex flex-col transition-colors duration-300 ${activeCosmetic ? '' : 'bg-[#eef2f6] dark:bg-[#0f172a] bg-dot-pattern'}`}
+      style={activeCosmetic ? {
+        backgroundColor: isDark ? activeCosmetic.darkBg : activeCosmetic.lightBg,
+        backgroundImage: isDark ? activeCosmetic.patternDark : activeCosmetic.patternLight,
+      } : undefined}
+    >
       <Header
         isDark={isDark}
         onToggleTheme={toggleTheme}
@@ -370,6 +388,30 @@ const App: React.FC = () => {
       />
 
       <main className="flex-1 max-w-[1440px] w-full px-4 md:px-8 py-8 mx-auto">
+
+        {/* Banner cosmético ativo */}
+        {activeCosmetic && (
+          <div
+            className="flex items-center gap-3 px-5 py-3 mb-6 rounded-xl animate-fadeIn"
+            style={{
+              background: activeCosmetic.previewGradient,
+              border: `2px solid ${activeCosmetic.tagColor}40`,
+              boxShadow: `0 4px 20px ${activeCosmetic.tagColor}25`,
+            }}
+          >
+            <span className="text-2xl">{activeCosmetic.emoji}</span>
+            <div className="flex-1 min-w-0">
+              <div className="text-white font-black text-sm leading-tight">{activeCosmetic.name}</div>
+              <div className="text-white/70 text-xs">Cosmético ativo — mude na Loja de Cosméticos em Desafios</div>
+            </div>
+            <span
+              className="shrink-0 text-xs font-black px-2 py-1 rounded"
+              style={{ background: activeCosmetic.tagColor, color: '#000' }}
+            >
+              {activeCosmetic.tag}
+            </span>
+          </div>
+        )}
 
         <SearchBar
           value={searchQuery}
