@@ -681,94 +681,166 @@ function MinecraftEffects() {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
-   DARK SOULS
+   DARK SOULS — Forjado nas Cinzas
 ════════════════════════════════════════════════════════════════════════ */
+const ASH_PARTICLES = Array.from({length: 38}, (_, i) => ({
+  left: (i * 2.65 + 1.2) % 100,
+  size: 1.2 + (i % 4) * 0.5,
+  dur:  5.5 + (i % 5) * 0.9,
+  delay: -((i * 0.24) % 5.2),
+  drift: ((i % 5) - 2) * 22,
+}));
+
+const DS_GROUND_MSGS = [
+  'Try jumping', 'Amazing chest ahead >>>',
+  'Praise the sun  \\o/', 'Be wary of edge',
+  "Don't give up, skeleton!", 'Enemy ahead >>>',
+  'Here be dragon', 'Seek bonfire ahead',
+  'Invaded by phantom', 'Try attacking',
+];
+
 function DarkSoulsBackground() {
   return (
-    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#060301' }}>
-      {/* Stone floor texture */}
-      <svg width="100%" height="100%" style={{ position:'absolute', inset:0, opacity:0.04 }}>
-        <defs>
-          <pattern id="dsStone" width="80" height="80" patternUnits="userSpaceOnUse">
-            <rect width="80" height="80" fill="#100a04"/>
-            <line x1="0" y1="40" x2="80" y2="40" stroke="#c7832a" strokeWidth="0.5"/>
-            <line x1="40" y1="0" x2="40" y2="80" stroke="#c7832a" strokeWidth="0.5"/>
-            <rect x="1" y="1" width="38" height="38" fill="none" stroke="#c7832a" strokeWidth="0.3" opacity="0.5"/>
-            <rect x="41" y="41" width="38" height="38" fill="none" stroke="#c7832a" strokeWidth="0.3" opacity="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#dsStone)"/>
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#030201' }}>
+
+      {/* Ash particles falling from above */}
+      {ASH_PARTICLES.map((p, i) => (
+        <div key={i} style={{
+          position:'absolute', top:-10, left:`${p.left}%`,
+          width:p.size, height:p.size * 1.3, borderRadius:'50%',
+          background:'rgba(215,175,130,0.58)',
+          animation:`ashFall ${p.dur}s ${p.delay}s linear infinite`,
+          '--ash-drift': `${p.drift}px`,
+        } as React.CSSProperties}/>
+      ))}
+
+      {/* Left crumbling wall */}
+      <svg width="200" height="100%" viewBox="0 0 180 700" preserveAspectRatio="none"
+        style={{ position:'absolute', left:0, top:0, opacity:0.3 }}>
+        <rect width="65" height="700" fill="#0e0804"/>
+        {[0,90,180,270,360,450,540,630].map((y, i) => (
+          <rect key={i} x={i%2===0?2:6} y={y+3} width={i%2===0?61:55} height={83}
+            fill={i%3===0?'#1c1408':'#140f05'} stroke="#060301" strokeWidth="1.5"/>
+        ))}
+        <path d="M8,100 L8,210 Q33,48 62,210 L62,100" fill="rgba(199,131,42,0.04)"
+          stroke="#c7832a" strokeWidth="0.9" opacity="0.4"/>
+        <line x1="78" y1="700" x2="68" y2="400" stroke="#1c1208" strokeWidth="7"/>
+        <line x1="68" y1="520" x2="36" y2="455" stroke="#1c1208" strokeWidth="4.5"/>
+        <line x1="68" y1="485" x2="100" y2="438" stroke="#1c1208" strokeWidth="3.5"/>
+        <line x1="36" y1="455" x2="15" y2="415" stroke="#1c1208" strokeWidth="2.8"/>
+        <line x1="36" y1="455" x2="52" y2="428" stroke="#1c1208" strokeWidth="2.2"/>
       </svg>
-      {/* Gothic arch silhouettes */}
-      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0, opacity:0.08 }}>
-        <path d="M0,100 L0,60 Q5,30 10,60 L10,100Z" fill="#c7832a"/>
-        <path d="M90,100 L90,60 Q95,30 100,60 L100,100Z" fill="#c7832a"/>
-        <path d="M18,100 L18,70 Q23,45 28,70 L28,100Z" fill="#8c4a10" opacity="0.7"/>
-        <path d="M72,100 L72,70 Q77,45 82,70 L82,100Z" fill="#8c4a10" opacity="0.7"/>
+
+      {/* Right crumbling wall */}
+      <svg width="200" height="100%" viewBox="0 0 180 700" preserveAspectRatio="none"
+        style={{ position:'absolute', right:0, top:0, opacity:0.3, transform:'scaleX(-1)' }}>
+        <rect width="65" height="700" fill="#0e0804"/>
+        {[0,90,180,270,360,450,540,630].map((y, i) => (
+          <rect key={i} x={i%2===0?2:6} y={y+3} width={i%2===0?61:55} height={83}
+            fill={i%3===0?'#1c1408':'#140f05'} stroke="#060301" strokeWidth="1.5"/>
+        ))}
+        <path d="M8,100 L8,210 Q33,48 62,210 L62,100" fill="rgba(199,131,42,0.04)"
+          stroke="#c7832a" strokeWidth="0.9" opacity="0.4"/>
+        <line x1="78" y1="700" x2="68" y2="400" stroke="#1c1208" strokeWidth="7"/>
+        <line x1="68" y1="520" x2="36" y2="455" stroke="#1c1208" strokeWidth="4.5"/>
+        <line x1="68" y1="485" x2="100" y2="438" stroke="#1c1208" strokeWidth="3.5"/>
+        <line x1="36" y1="455" x2="15" y2="415" stroke="#1c1208" strokeWidth="2.8"/>
+        <line x1="36" y1="455" x2="52" y2="428" stroke="#1c1208" strokeWidth="2.2"/>
       </svg>
-      {/* Ember-glow radial intenso no chão */}
-      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 55% 30% at 50% 95%, rgba(199,131,42,0.22) 0%, rgba(140,74,16,0.08) 50%, transparent 70%)' }} />
-      {/* Bonfire SVG (centro-base) — mais visível */}
-      <svg width="160" height="180" viewBox="0 0 120 140" style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', opacity:0.62, filter:'drop-shadow(0 0 18px rgba(199,131,42,0.5))' }}>
-        <ellipse cx="60" cy="128" rx="28" ry="5" fill="#1a0e06"/>
-        <line x1="60" y1="35" x2="60" y2="120" stroke="#6b4a1e" strokeWidth="4"/>
-        <line x1="44" y1="85" x2="76" y2="85" stroke="#6b4a1e" strokeWidth="3.5"/>
-        <rect x="56" y="32" width="8" height="6" rx="2" fill="#8a6030"/>
-        <path d="M60,38 C50,28 44,20 48,10 C51,3 56,1 60,0 C64,1 69,3 72,10 C76,20 70,28 60,38Z" fill="#c7832a" opacity="0.85"/>
-        <path d="M60,36 C54,28 52,22 54,15 C56,10 59,8 60,5 C61,8 64,10 66,15 C68,22 66,28 60,36Z" fill="#e8c97a" opacity="0.75"/>
-        <path d="M60,34 C57,28 56,24 57,18 C58,14 59.5,12 60,10 C60.5,12 62,14 63,18 C64,24 63,28 60,34Z" fill="#fff8e8" opacity="0.45"/>
-        <circle cx="48" cy="90" r="2" fill="#c7832a" opacity="0.6"/>
-        <circle cx="72" cy="95" r="1.5" fill="#e8c97a" opacity="0.5"/>
-        <circle cx="55" cy="100" r="1.5" fill="#c7832a" opacity="0.55"/>
-        <circle cx="66" cy="108" r="1.2" fill="#e8c97a" opacity="0.4"/>
+
+      {/* Bonfire ground glow */}
+      <div style={{ position:'absolute', inset:0,
+        background:'radial-gradient(ellipse 38% 22% at 50% 97%, rgba(199,131,42,0.35) 0%, rgba(140,74,16,0.15) 52%, transparent 72%)' }} />
+
+      {/* Animated bonfire — SVG SMIL flame morphing */}
+      <svg width="190" height="230" viewBox="0 0 120 160"
+        style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)',
+          filter:'drop-shadow(0 0 24px rgba(199,131,42,0.7)) drop-shadow(0 0 8px rgba(232,201,122,0.4))' }}>
+        <ellipse cx="60" cy="150" rx="32" ry="7" fill="#1c1208"/>
+        <line x1="60" y1="28" x2="60" y2="140" stroke="#5a3c14" strokeWidth="5.5"/>
+        <line x1="43" y1="90" x2="77" y2="90" stroke="#5a3c14" strokeWidth="4.5"/>
+        <rect x="55" y="24" width="10" height="9" rx="2.5" fill="#7a5228"/>
+        {/* Outer flame */}
+        <path fill="#c7832a" opacity="0.9">
+          <animate attributeName="d" dur="0.85s" repeatCount="indefinite" values="
+            M60,32 C47,21 41,13 45,2 C48,-5 55,-8 60,-9 C65,-8 72,-5 75,2 C79,13 73,21 60,32Z;
+            M60,35 C45,20 39,11 44,0 C47,-7 54,-10 60,-11 C66,-10 73,-7 76,0 C81,11 75,20 60,35Z;
+            M60,30 C49,22 43,15 47,5 C50,-2 56,-4 60,-5 C64,-4 70,-2 73,5 C77,15 71,22 60,30Z;
+            M60,32 C47,21 41,13 45,2 C48,-5 55,-8 60,-9 C65,-8 72,-5 75,2 C79,13 73,21 60,32Z"/>
+        </path>
+        {/* Mid flame */}
+        <path fill="#e8a035" opacity="0.75">
+          <animate attributeName="d" dur="0.65s" repeatCount="indefinite" values="
+            M60,30 C53,22 51,16 53,8 C55,3 58,1 60,-1 C62,1 65,3 67,8 C69,16 67,22 60,30Z;
+            M60,33 C51,21 49,15 52,6 C54,1 57,-1 60,-3 C63,-1 66,1 68,6 C71,15 69,21 60,33Z;
+            M60,28 C55,22 53,17 55,10 C57,5 59,3 60,2 C61,3 63,5 65,10 C67,17 65,22 60,28Z;
+            M60,30 C53,22 51,16 53,8 C55,3 58,1 60,-1 C62,1 65,3 67,8 C69,16 67,22 60,30Z"/>
+        </path>
+        {/* Core */}
+        <path fill="#fff4d0" opacity="0.52">
+          <animate attributeName="d" dur="0.5s" repeatCount="indefinite" values="
+            M60,26 C57,20 57,15 58,11 C59,7 59.5,6 60,5 C60.5,6 61,7 62,11 C63,15 63,20 60,26Z;
+            M60,29 C56,19 56,14 57,10 C58,6 59,4 60,3 C61,4 62,6 63,10 C64,14 64,19 60,29Z;
+            M60,24 C58,20 58,16 59,13 C60,9 60,8 60,7 C60,8 60,9 61,13 C62,16 62,20 60,24Z;
+            M60,26 C57,20 57,15 58,11 C59,7 59.5,6 60,5 C60.5,6 61,7 62,11 C63,15 63,20 60,26Z"/>
+        </path>
+        <circle cx="47" cy="95" r="2.5" fill="#c7832a" opacity="0.7"/>
+        <circle cx="73" cy="100" r="2" fill="#e8c97a" opacity="0.62"/>
+        <circle cx="53" cy="112" r="2.2" fill="#c7832a" opacity="0.68"/>
+        <circle cx="67" cy="120" r="1.6" fill="#e8c97a" opacity="0.52"/>
       </svg>
-      {/* Fog layer at ground */}
-      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'25%', background:'linear-gradient(0deg, rgba(60,20,5,0.35) 0%, transparent 100%)' }} />
+
+      {/* Floor fog */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'28%',
+        background:'linear-gradient(0deg, rgba(20,8,2,0.68) 0%, rgba(12,5,1,0.22) 55%, transparent 100%)' }} />
       {/* Vignette */}
-      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 85% 75% at 50% 50%, transparent 25%, rgba(0,0,0,0.82) 100%)' }} />
+      <div style={{ position:'absolute', inset:0,
+        background:'radial-gradient(ellipse 78% 70% at 50% 50%, transparent 16%, rgba(0,0,0,0.92) 100%)' }} />
     </div>
   );
 }
 
 function DarkSoulsEffects() {
-  const [embers, setEmbers] = React.useState<{ id:number; left:number; size:number; bottom:number }[]>([]);
-  const [phantom, setPhantom] = React.useState(false);
-  const [msg, setMsg] = React.useState<string|null>(null);
-  const phantomRef  = React.useRef<HTMLDivElement>(null);
-  const phantomData = React.useRef<{ x:number; dir:1|-1 } | null>(null);
+  const [msgs, setMsgs]              = React.useState<{ id:number; left:number; text:string }[]>([]);
+  const [soldierVisible, setSoldier] = React.useState(false);
+  const [youDied, setYouDied]        = React.useState(false);
+  const soldierRef  = React.useRef<HTMLDivElement>(null);
+  const soldierData = React.useRef<{ x:number; dir:1|-1 } | null>(null);
   const animRef     = React.useRef<number>(0);
 
-  /* embers — spread largo */
+  /* Ground messages — mechânica icônica do DS */
   React.useEffect(() => {
     let t: ReturnType<typeof setTimeout>; let uid = 0;
-    const s = () => {
+    const s = (first: boolean) => {
       t = setTimeout(() => {
         const id = uid++;
-        setEmbers(e => [...e, { id, left: 8 + Math.random() * 84, size: 5 + Math.random() * 10, bottom: 6 + Math.random() * 18 }]);
-        setTimeout(() => setEmbers(e => e.filter(x => x.id !== id)), 4200);
-        s();
-      }, 700 + Math.random() * 1300);
+        const text = DS_GROUND_MSGS[Math.floor(Math.random() * DS_GROUND_MSGS.length)];
+        const left = 12 + Math.random() * 58;
+        setMsgs(m => [...m, { id, left, text }]);
+        setTimeout(() => setMsgs(m => m.filter(x => x.id !== id)), 8800);
+        s(false);
+      }, first ? 5000 : 15000 + Math.random() * 12000);
     };
-    s();
+    s(true);
     return () => clearTimeout(t);
   }, []);
 
-  /* phantom player traversal */
-  const launchPhantom = React.useCallback((dir: 1|-1) => {
+  /* Hollow soldier walking */
+  const launchSoldier = React.useCallback((dir: 1|-1) => {
     cancelAnimationFrame(animRef.current);
-    const startX = dir === 1 ? -55 : window.innerWidth + 55;
-    phantomData.current = { x: startX, dir };
-    setPhantom(true);
-    const speed = (window.innerWidth + 170) / 9000;
+    const startX = dir === 1 ? -70 : window.innerWidth + 70;
+    soldierData.current = { x: startX, dir };
+    setSoldier(true);
+    const speed = (window.innerWidth + 200) / 9500;
     let last = performance.now();
     const tick = (now: number) => {
       const dt = Math.min(now - last, 50); last = now;
-      const pd = phantomData.current; if (!pd) return;
-      pd.x += pd.dir * speed * dt;
-      const el = phantomRef.current;
-      if (el) el.style.setProperty('--phx', `${pd.x}px`);
-      const off = pd.dir === 1 ? pd.x > window.innerWidth + 56 : pd.x < -56;
-      if (off) { setPhantom(false); phantomData.current = null; return; }
+      const sd = soldierData.current; if (!sd) return;
+      sd.x += sd.dir * speed * dt;
+      const el = soldierRef.current;
+      if (el) el.style.setProperty('--sdx', `${sd.x}px`);
+      const off = sd.dir === 1 ? sd.x > window.innerWidth + 71 : sd.x < -71;
+      if (off) { setSoldier(false); soldierData.current = null; return; }
       animRef.current = requestAnimationFrame(tick);
     };
     animRef.current = requestAnimationFrame(tick);
@@ -777,80 +849,123 @@ function DarkSoulsEffects() {
   React.useEffect(() => {
     let t: ReturnType<typeof setTimeout>;
     const s = (first: boolean) => {
-      t = setTimeout(() => { launchPhantom(Math.random() > 0.5 ? 1 : -1); s(false); },
-        first ? 20000 : 30000 + Math.random() * 22000);
+      t = setTimeout(() => { launchSoldier(Math.random() > 0.5 ? 1 : -1); s(false); },
+        first ? 14000 : 28000 + Math.random() * 20000);
     };
     s(true);
     return () => { clearTimeout(t); cancelAnimationFrame(animRef.current); };
-  }, [launchPhantom]);
+  }, [launchSoldier]);
 
-  /* DS messages */
+  /* YOU DIED — easter egg ocasional */
   React.useEffect(() => {
-    const MSGS = ['BONFIRE LIT', 'PRAISE THE SUN  \\o/', 'HUMANITY RESTORED', 'SOUL OF A HERO', 'YOU DIED'];
     let t: ReturnType<typeof setTimeout>;
     const s = (first: boolean) => {
       t = setTimeout(() => {
-        setMsg(MSGS[Math.floor(Math.random() * MSGS.length)]);
-        setTimeout(() => setMsg(null), 4200);
+        setYouDied(true);
+        setTimeout(() => setYouDied(false), 4600);
         s(false);
-      }, first ? 25000 : 35000 + Math.random() * 28000);
+      }, first ? 50000 : 90000 + Math.random() * 60000);
     };
     s(true);
     return () => clearTimeout(t);
   }, []);
 
-  const pDir = phantomData.current?.dir ?? 1;
+  const sDir = soldierData.current?.dir ?? 1;
   return (
     <>
-      {embers.map(em => (
-        <div key={em.id} style={{
-          position:'fixed', bottom:`${em.bottom}%`, left:`${em.left}%`,
-          zIndex:14, pointerEvents:'none',
-          width:em.size, height:em.size, borderRadius:'50%',
-          background:'radial-gradient(circle, #e8c97a 0%, #c7832a 60%, transparent 100%)',
-          boxShadow:`0 0 ${em.size * 1.3}px rgba(199,131,42,0.72)`,
-          animation:'soulEmber 3.8s ease-out forwards',
-        }}/>
+      {/* Ground messages */}
+      {msgs.map(m => (
+        <div key={m.id} style={{
+          position:'fixed', bottom:'14%', left:`${m.left}%`,
+          zIndex:16, pointerEvents:'none',
+          animation:'groundMsgAppear 8.8s ease-out forwards',
+        }}>
+          <div style={{
+            background:'rgba(16,10,3,0.94)',
+            border:'1px solid rgba(199,131,42,0.52)',
+            borderBottom:'2px solid rgba(199,131,42,0.7)',
+            padding:'5px 14px 6px',
+            fontFamily:'monospace', fontSize:11, fontWeight:700,
+            color:'#c7832a', letterSpacing:'0.1em',
+            textShadow:'0 0 10px rgba(199,131,42,0.75)',
+            whiteSpace:'nowrap',
+            boxShadow:'0 0 18px rgba(199,131,42,0.18), inset 0 0 24px rgba(199,131,42,0.06)',
+          }}>{m.text}</div>
+        </div>
       ))}
-      {phantom && (
+
+      {/* Hollow soldier com armadura e animação de caminhada */}
+      {soldierVisible && (
         <div
-          ref={phantomRef}
+          ref={soldierRef}
           style={{
-            position:'fixed', zIndex:15, bottom:'22%',
-            left:'var(--phx,-55px)', '--phx':`${phantomData.current?.x ?? -55}px`,
+            position:'fixed', zIndex:15, bottom:'12%',
+            left:'var(--sdx,-70px)', '--sdx':`${soldierData.current?.x ?? -70}px`,
             pointerEvents:'none',
-            filter:'blur(0.8px)',
-            transform: pDir === -1 ? 'scaleX(-1)' : 'none',
+            transform: sDir === -1 ? 'scaleX(-1)' : 'none',
           } as React.CSSProperties}
         >
-          <svg width="34" height="58" viewBox="0 0 34 58" opacity="0.38">
-            {/* helmet */}
-            <ellipse cx="17" cy="8" rx="9" ry="8" fill="#c8b8ff"/>
-            {/* visor slit */}
-            <rect x="10" y="7" width="14" height="3" rx="1.5" fill="#7060cc" opacity="0.7"/>
-            {/* body */}
-            <rect x="11" y="15" width="12" height="18" rx="3" fill="#c8b8ff"/>
-            {/* sword arm */}
-            <rect x="22" y="18" width="14" height="3" rx="1.5" fill="#d8ccff"/>
-            <polygon points="36,19.5 33,17 33,22" fill="#e0d8ff"/>
-            {/* off arm */}
-            <rect x="0" y="18" width="10" height="3" rx="1.5" fill="#c8b8ff" opacity="0.8"/>
-            {/* legs */}
-            <rect x="11" y="33" width="5" height="18" rx="2" fill="#c8b8ff"/>
-            <rect x="18" y="33" width="5" height="18" rx="2" fill="#c8b8ff"/>
-            {/* boots */}
-            <ellipse cx="13" cy="52" rx="6" ry="3" fill="#a898e0"/>
-            <ellipse cx="21" cy="52" rx="6" ry="3" fill="#a898e0"/>
+          <svg width="52" height="76" viewBox="0 0 52 76">
+            {/* Body com bob */}
+            <g style={{ animation:'dsBody 0.68s ease-in-out infinite' }}>
+              {/* Escudo */}
+              <ellipse cx="7" cy="37" rx="6.5" ry="9.5" fill="#5c4222" stroke="#3a2810" strokeWidth="1.3"/>
+              <ellipse cx="7" cy="37" rx="4" ry="6.5" fill="#6e5030" opacity="0.65"/>
+              <line x1="7" y1="28" x2="7" y2="46" stroke="#7a6040" strokeWidth="0.9" opacity="0.5"/>
+              <line x1="2" y1="37" x2="12" y2="37" stroke="#7a6040" strokeWidth="0.9" opacity="0.5"/>
+              {/* Surcoat */}
+              <rect x="16" y="23" width="18" height="28" rx="2.5" fill="#2e2218"/>
+              {/* Hem rasgado */}
+              <path d="M16,51 L18,56 L20,51 L22,56 L24,51 L26,56 L28,51 L30,56 L32,52 L34,51 L34,54 L16,54Z" fill="#2e2218"/>
+              {/* Elmo */}
+              <ellipse cx="25" cy="14" rx="11" ry="11.5" fill="#4a4035"/>
+              {/* Proteções laterais */}
+              <path d="M14.5,18 L14,25 Q14,27 16,27 L16,25Z" fill="#3e3428"/>
+              <path d="M35.5,18 L36,25 Q36,27 34,27 L34,25Z" fill="#3e3428"/>
+              {/* Viseira */}
+              <rect x="17" y="13" width="16" height="5" rx="1.8" fill="#100d08"/>
+              {/* Crest */}
+              <path d="M15,11 Q25,6 35,11" stroke="#5a5040" strokeWidth="1.5" fill="none"/>
+              {/* Gola */}
+              <rect x="18" y="23" width="14" height="5" rx="1" fill="#382c1c"/>
+              {/* Braço da espada */}
+              <rect x="34" y="20" width="5.5" height="24" rx="2.5" fill="#2e2218"/>
+              {/* Espada */}
+              <line x1="40" y1="9" x2="40" y2="45" stroke="#706858" strokeWidth="3.2" strokeLinecap="round"/>
+              <line x1="36" y1="27" x2="44" y2="27" stroke="#706858" strokeWidth="2.8" strokeLinecap="round"/>
+              <rect x="37.5" y="6.5" width="5" height="6" rx="1.5" fill="#8a7860"/>
+              <line x1="40" y1="10" x2="40" y2="23" stroke="rgba(200,190,170,0.35)" strokeWidth="1" strokeLinecap="round"/>
+            </g>
+            {/* Perna esquerda */}
+            <g style={{ transformBox:'fill-box', transformOrigin:'50% 0%', animation:'dsLeg 0.68s ease-in-out infinite' }}>
+              <rect x="17" y="51" width="8" height="20" rx="3.5" fill="#26200e"/>
+              <rect x="15.5" y="68" width="10.5" height="6" rx="2" fill="#1c1808"/>
+            </g>
+            {/* Perna direita */}
+            <g style={{ transformBox:'fill-box', transformOrigin:'50% 0%', animation:'dsLeg 0.68s ease-in-out infinite reverse' }}>
+              <rect x="27" y="51" width="8" height="20" rx="3.5" fill="#26200e"/>
+              <rect x="25.5" y="68" width="10.5" height="6" rx="2" fill="#1c1808"/>
+            </g>
           </svg>
         </div>
       )}
-      {msg && (
+
+      {/* YOU DIED */}
+      {youDied && (
         <div style={{
-          position:'fixed', top:24, left:'50%', zIndex:20, pointerEvents:'none',
-          fontFamily:'monospace', fontSize:14, fontWeight:900, letterSpacing:'0.24em',
-          color:'#c7832a', textShadow:'0 0 16px rgba(199,131,42,0.95), 0 0 32px rgba(199,131,42,0.45)',
-          animation:'dsMsg 4.2s ease-out forwards',
-        }}>{msg}</div>
+          position:'fixed', inset:0, zIndex:50, pointerEvents:'none',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          animation:'youDiedOverlay 4.6s ease-out forwards',
+        }}>
+          <div style={{
+            fontFamily:'Georgia, "Times New Roman", serif',
+            fontSize:'clamp(38px, 7.5vw, 78px)',
+            fontWeight:400, color:'#c0392b',
+            letterSpacing:'0.14em',
+            animation:'youDiedText 4.6s ease-out forwards',
+            textShadow:'0 0 30px rgba(192,57,43,0.85), 0 0 60px rgba(192,57,43,0.45)',
+          }}>YOU DIED</div>
+        </div>
       )}
     </>
   );
@@ -1138,98 +1253,124 @@ function PokemonEffects() {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
-   HOLLOW KNIGHT
+   HOLLOW KNIGHT — City of Tears / Hallownest
 ════════════════════════════════════════════════════════════════════════ */
+const HK_STALACTITES: Array<[number,number,number,number]> = [
+  [3,0,3.5,14],[9,0,2.5,9],[17,0,4,18],[26,0,3,12],[34,0,4.5,22],[44,0,2.5,10],
+  [53,0,3.5,16],[62,0,4,20],[71,0,3,11],[80,0,4.5,19],[88,0,3,13],[94,0,2.5,8],
+  [6,0,2,7],[13,0,1.8,5],[21,0,2.5,10],[30,0,2,8],[38,0,2,9],[48,0,1.8,6],
+  [57,0,2,7],[67,0,2.5,11],[75,0,1.8,6],[84,0,2,8],[91,0,1.5,5],
+];
+
+const HK_RAIN = Array.from({length: 65}, (_, i) => ({
+  left:  (i * 1.556 + 0.5) % 100,
+  dur:   0.5 + (i % 6) * 0.068,
+  delay: -((i * 0.038) % 1.8),
+  height: 12 + (i % 4) * 6,
+  opacity: 0.17 + (i % 4) * 0.055,
+  width: i % 5 === 0 ? 2.2 : 1.3,
+}));
+
+const LUMAFLIES_DATA = Array.from({length: 12}, (_, i) => ({
+  x:    (i * 7.8 + 5.2) % 88 + 4,
+  y:    (i * 5.6 + 12)  % 65 + 10,
+  dur:  3.2 + (i % 5) * 0.55,
+  delay: (i * 0.38) % 2.8,
+  size: 3.5 + (i % 3) * 1.6,
+}));
+
 function HollowKnightBackground() {
   return (
-    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#060709' }}>
-      {/* Stalactites + cave ceiling */}
-      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0 }}>
-        {/* Stalactites from ceiling */}
-        {([[4,0,3.5,14],[10,0,2.5,9],[18,0,4,18],[27,0,3,12],[35,0,4.5,22],[45,0,2.5,10],[54,0,3.5,16],[63,0,4,20],[72,0,3,11],[81,0,4.5,19],[89,0,3,13],[95,0,2.5,8]] as [number,number,number,number][]).map(([x,y,w,h], i) => (
-          <polygon key={i} points={`${x},${y} ${x+w},${y} ${x+w/2},${y+h}`} fill="#0c0f14" opacity="0.95"/>
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#050608' }}>
+
+      {/* City of Tears — chuva contínua */}
+      {HK_RAIN.map((r, i) => (
+        <div key={i} style={{
+          position:'absolute', top:0, left:`${r.left}%`,
+          width:r.width, height:r.height,
+          background:`linear-gradient(180deg, transparent 0%, rgba(180,222,242,${r.opacity}) 50%, transparent 100%)`,
+          animation:`rainDrop ${r.dur}s ${r.delay}s linear infinite`,
+          willChange:'transform',
+        }}/>
+      ))}
+
+      {/* Parede esquerda — catedral gótica */}
+      <svg width="180" height="100%" viewBox="0 0 160 700" preserveAspectRatio="none"
+        style={{ position:'absolute', left:0, top:0, opacity:0.24 }}>
+        <rect width="55" height="700" fill="#080a0e"/>
+        {[0,90,180,270,360,450,540,630].map((y, i) => (
+          <rect key={i} x={i%2===0?2:5} y={y+3} width={i%2===0?51:45} height={83}
+            fill={i%3===0?'#0e1018':'#0b0d12'} stroke="#040508" strokeWidth="1.2"/>
         ))}
-        {/* Secondary smaller stalactites */}
-        {([[7,0,1.8,6],[14,0,2,8],[23,0,1.5,5],[31,0,2.5,10],[40,0,1.8,7],[50,0,2,9],[58,0,1.5,5],[68,0,2,8],[77,0,1.8,6],[85,0,2.5,10],[92,0,1.5,5]] as [number,number,number,number][]).map(([x,y,w,h], i) => (
-          <polygon key={i+20} points={`${x},${y} ${x+w},${y} ${x+w/2},${y+h}`} fill="#0e1218" opacity="0.8"/>
-        ))}
-        {/* Soul vessel glow from center-bottom */}
-        <defs>
-          <radialGradient id="soulGlow" cx="50%" cy="80%" r="40%">
-            <stop offset="0%" stopColor="#c5e8f0" stopOpacity="0.06"/>
-            <stop offset="60%" stopColor="#8ab4d0" stopOpacity="0.02"/>
-            <stop offset="100%" stopColor="#c5e8f0" stopOpacity="0"/>
-          </radialGradient>
-        </defs>
-        <rect width="100" height="100" fill="url(#soulGlow)"/>
-        {/* Stone wall cracks */}
-        <g stroke="#c5e8f0" strokeWidth="0.18" fill="none" opacity="0.06">
-          <path d="M2,35 L5,42 L3,50"/>
-          <path d="M96,28 L93,38 L95,48"/>
-          <path d="M12,80 L15,88 L13,95"/>
-          <path d="M85,75 L82,85 L84,92"/>
-        </g>
-        {/* Runic marks (Hallownest language feel) */}
-        <g fill="#c5e8f0" opacity="0.035" fontFamily="monospace" fontSize="3.5">
-          <text x="5" y="62">⚬ ─ ⚬</text>
-          <text x="88" y="55">⚬ ─ ⚬</text>
-          <text x="46" y="90">─ ⚬ ─</text>
-        </g>
+        {/* Vitral gótico com luz pálida */}
+        <path d="M7,72 L7,200 Q28,22 55,200 L55,72"
+          fill="rgba(140,200,230,0.055)" stroke="#c5e8f0" strokeWidth="0.9" opacity="0.55"/>
+        <path d="M7,310 L7,430 Q28,265 55,430 L55,310"
+          fill="rgba(140,200,230,0.03)" stroke="#c5e8f0" strokeWidth="0.7" opacity="0.38"/>
+        {/* Musgo escorrendo */}
+        <path d="M14,0 Q16,28 12,58 Q14,88 12,120" stroke="#2a4020" strokeWidth="2" fill="none" opacity="0.45"/>
+        <path d="M32,0 Q34,22 30,46 Q32,72 30,100" stroke="#2a4020" strokeWidth="1.5" fill="none" opacity="0.35"/>
       </svg>
-      {/* Dark cave ambient vignette */}
-      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 70% 65% at 50% 55%, transparent 20%, rgba(0,0,0,0.78) 100%)' }} />
-      {/* Subtle ground mist */}
-      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'20%', background:'linear-gradient(0deg, rgba(10,14,20,0.5) 0%, transparent 100%)' }} />
+
+      {/* Parede direita */}
+      <svg width="180" height="100%" viewBox="0 0 160 700" preserveAspectRatio="none"
+        style={{ position:'absolute', right:0, top:0, opacity:0.24, transform:'scaleX(-1)' }}>
+        <rect width="55" height="700" fill="#080a0e"/>
+        {[0,90,180,270,360,450,540,630].map((y, i) => (
+          <rect key={i} x={i%2===0?2:5} y={y+3} width={i%2===0?51:45} height={83}
+            fill={i%3===0?'#0e1018':'#0b0d12'} stroke="#040508" strokeWidth="1.2"/>
+        ))}
+        <path d="M7,72 L7,200 Q28,22 55,200 L55,72"
+          fill="rgba(140,200,230,0.055)" stroke="#c5e8f0" strokeWidth="0.9" opacity="0.55"/>
+        <path d="M7,310 L7,430 Q28,265 55,430 L55,310"
+          fill="rgba(140,200,230,0.03)" stroke="#c5e8f0" strokeWidth="0.7" opacity="0.38"/>
+        <path d="M14,0 Q16,28 12,58 Q14,88 12,120" stroke="#2a4020" strokeWidth="2" fill="none" opacity="0.45"/>
+        <path d="M32,0 Q34,22 30,46 Q32,72 30,100" stroke="#2a4020" strokeWidth="1.5" fill="none" opacity="0.35"/>
+      </svg>
+
+      {/* Estalactites */}
+      <svg width="100%" height="130" viewBox="0 0 100 42" preserveAspectRatio="xMidYMin slice"
+        style={{ position:'absolute', top:0 }}>
+        {HK_STALACTITES.map(([x,y,w,h], i) => (
+          <polygon key={i} points={`${x},${y} ${x+w},${y} ${x+w/2},${y+h}`}
+            fill={i < 12 ? '#0b0d12' : '#0d1018'} opacity={i < 12 ? 0.98 : 0.78}/>
+        ))}
+      </svg>
+
+      {/* Feixe de luz central (Hallownest) */}
+      <div style={{ position:'absolute', top:0, left:'44%', right:'42%', height:'100%',
+        background:'linear-gradient(180deg, rgba(197,232,240,0.058) 0%, rgba(197,232,240,0.022) 45%, transparent 75%)' }} />
+
+      {/* Chão + reflexo de poça */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'20%',
+        background:'linear-gradient(0deg, #05070c 0%, #07090f 45%, transparent 100%)' }} />
+      <div style={{ position:'absolute', bottom:0, left:'15%', right:'15%', height:'9%',
+        background:'radial-gradient(ellipse 70% 100% at 50% 100%, rgba(100,160,200,0.07) 0%, transparent 100%)',
+        borderTop:'1px solid rgba(140,185,215,0.07)' }} />
+
+      {/* Vignette escura de caverna */}
+      <div style={{ position:'absolute', inset:0,
+        background:'radial-gradient(ellipse 72% 65% at 50% 52%, transparent 18%, rgba(0,0,0,0.86) 100%)' }} />
     </div>
   );
 }
 
 function HollowKnightEffects() {
-  const [souls, setSouls]         = React.useState<{ id:number; left:number; size:number }[]>([]);
-  const [geos, setGeos]           = React.useState<{ id:number; left:number }[]>([]);
   const [knightVisible, setKnight] = React.useState(false);
-  const [msg, setMsg]             = React.useState<string|null>(null);
+  const [shade, setShade]          = React.useState<{ x:number; y:number } | null>(null);
+  const [geos, setGeos]            = React.useState<{ id:number; left:number }[]>([]);
+  const [msg, setMsg]              = React.useState<string|null>(null);
   const knightRef  = React.useRef<HTMLDivElement>(null);
   const knightData = React.useRef<{ x:number; dir:1|-1; bottom:number } | null>(null);
   const animRef    = React.useRef<number>(0);
 
-  /* soul orbs floating up */
-  React.useEffect(() => {
-    let t: ReturnType<typeof setTimeout>; let uid = 0;
-    const s = () => {
-      t = setTimeout(() => {
-        const id = uid++;
-        setSouls(sl => [...sl, { id, left: 10 + Math.random() * 80, size: 7 + Math.random() * 9 }]);
-        setTimeout(() => setSouls(sl => sl.filter(x => x.id !== id)), 4800);
-        s();
-      }, 1400 + Math.random() * 1800);
-    };
-    s();
-    return () => clearTimeout(t);
-  }, []);
-
-  /* geo coins dropping */
-  React.useEffect(() => {
-    let t: ReturnType<typeof setTimeout>; let uid = 0;
-    const s = (first: boolean) => {
-      t = setTimeout(() => {
-        const id = uid++;
-        setGeos(g => [...g, { id, left: 8 + Math.random() * 84 }]);
-        setTimeout(() => setGeos(g => g.filter(x => x.id !== id)), 3200);
-        s(false);
-      }, first ? 9000 : 14000 + Math.random() * 16000);
-    };
-    s(true);
-    return () => clearTimeout(t);
-  }, []);
-
   /* The Knight traversal */
   const launchKnight = React.useCallback((dir: 1|-1) => {
     cancelAnimationFrame(animRef.current);
-    const startX = dir === 1 ? -60 : window.innerWidth + 60;
+    const startX = dir === 1 ? -68 : window.innerWidth + 68;
     knightData.current = { x: startX, dir, bottom: 8 + Math.floor(Math.random() * 18) };
     setKnight(true);
-    const speed = (window.innerWidth + 180) / 7500;
+    const speed = (window.innerWidth + 200) / 7200;
     let last = performance.now();
     const tick = (now: number) => {
       const dt = Math.min(now - last, 50); last = now;
@@ -1237,7 +1378,7 @@ function HollowKnightEffects() {
       kd.x += kd.dir * speed * dt;
       const el = knightRef.current;
       if (el) el.style.setProperty('--knx', `${kd.x}px`);
-      const off = kd.dir === 1 ? kd.x > window.innerWidth + 61 : kd.x < -61;
+      const off = kd.dir === 1 ? kd.x > window.innerWidth + 69 : kd.x < -69;
       if (off) { setKnight(false); knightData.current = null; return; }
       animRef.current = requestAnimationFrame(tick);
     };
@@ -1248,13 +1389,44 @@ function HollowKnightEffects() {
     let t: ReturnType<typeof setTimeout>;
     const s = (first: boolean) => {
       t = setTimeout(() => { launchKnight(Math.random() > 0.5 ? 1 : -1); s(false); },
-        first ? 12000 : 24000 + Math.random() * 20000);
+        first ? 10000 : 22000 + Math.random() * 18000);
     };
     s(true);
     return () => { clearTimeout(t); cancelAnimationFrame(animRef.current); };
   }, [launchKnight]);
 
-  /* HK notifications */
+  /* Shade — versão escura do Cavaleiro aparece em cantos */
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => {
+        const x = Math.random() > 0.5 ? 4 + Math.random() * 10 : 86 + Math.random() * 10;
+        const y = 28 + Math.random() * 38;
+        setShade({ x, y });
+        setTimeout(() => setShade(null), 6500);
+        s(false);
+      }, first ? 32000 : 48000 + Math.random() * 36000);
+    };
+    s(true);
+    return () => clearTimeout(t);
+  }, []);
+
+  /* Geo coins */
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>; let uid = 0;
+    const s = (first: boolean) => {
+      t = setTimeout(() => {
+        const id = uid++;
+        setGeos(g => [...g, { id, left: 8 + Math.random() * 84 }]);
+        setTimeout(() => setGeos(g => g.filter(x => x.id !== id)), 3500);
+        s(false);
+      }, first ? 7000 : 12000 + Math.random() * 14000);
+    };
+    s(true);
+    return () => clearTimeout(t);
+  }, []);
+
+  /* Notifications */
   React.useEffect(() => {
     const MSGS = ['DREAM NAIL', 'SHADE SOUL', 'VESSEL FILLED', "KING'S SOUL", 'HALLOWNEST RISES', 'FOCUS'];
     let t: ReturnType<typeof setTimeout>;
@@ -1263,7 +1435,7 @@ function HollowKnightEffects() {
         setMsg(MSGS[Math.floor(Math.random() * MSGS.length)]);
         setTimeout(() => setMsg(null), 4200);
         s(false);
-      }, first ? 18000 : 28000 + Math.random() * 24000);
+      }, first ? 20000 : 30000 + Math.random() * 22000);
     };
     s(true);
     return () => clearTimeout(t);
@@ -1272,76 +1444,119 @@ function HollowKnightEffects() {
   const kDir = knightData.current?.dir ?? 1;
   return (
     <>
-      {/* Soul orbs */}
-      {souls.map(s => (
-        <div key={s.id} style={{
-          position:'fixed', bottom:'18%', left:`${s.left}%`,
-          zIndex:14, pointerEvents:'none',
-          width:s.size, height:s.size, borderRadius:'50%',
-          background:'radial-gradient(circle, #ffffff 0%, #c5e8f0 45%, rgba(100,180,220,0.3) 100%)',
-          boxShadow:`0 0 ${s.size*1.8}px rgba(197,232,240,0.85), 0 0 ${s.size*0.6}px rgba(255,255,255,0.9)`,
-          animation:'soulOrbFloat 4.5s ease-out forwards',
+      {/* Lumaflies permanentes */}
+      {LUMAFLIES_DATA.map((l, i) => (
+        <div key={i} style={{
+          position:'fixed', left:`${l.x}%`, top:`${l.y}%`,
+          zIndex:13, pointerEvents:'none',
+          width:l.size, height:l.size, borderRadius:'50%',
+          background:'radial-gradient(circle, #ffffff 0%, #c5e8f0 50%, transparent 100%)',
+          boxShadow:`0 0 ${l.size*2.4}px rgba(197,232,240,0.92), 0 0 ${l.size}px rgba(255,255,255,0.85)`,
+          animation:`lumaFloat ${l.dur}s ${l.delay}s ease-in-out infinite`,
         }}/>
       ))}
-      {/* Geo coins */}
+
+      {/* Geo girando e caindo */}
       {geos.map(g => (
         <div key={g.id} style={{
-          position:'fixed', top:'-16px', left:`${g.left}%`,
+          position:'fixed', top:'-18px', left:`${g.left}%`,
           zIndex:14, pointerEvents:'none',
-          animation:'geoFall 3s ease-in forwards',
+          animation:'geoFall 3.3s ease-in forwards',
         }}>
-          <svg width="16" height="16" viewBox="0 0 16 16">
+          <svg width="16" height="16" viewBox="0 0 16 16"
+            style={{ animation:'geoSpin 0.9s linear infinite' }}>
             <polygon points="8,0 16,8 8,16 0,8" fill="#e8d870" stroke="#b8a840" strokeWidth="1"/>
-            <polygon points="8,3 13,8 8,13 3,8" fill="#f4ec98" opacity="0.55"/>
-            <circle cx="8" cy="8" r="2" fill="#f8f4b8" opacity="0.4"/>
+            <polygon points="8,3 13,8 8,13 3,8" fill="#f4ec98" opacity="0.58"/>
+            <circle cx="8" cy="8" r="1.8" fill="#f8f4c0" opacity="0.4"/>
           </svg>
         </div>
       ))}
-      {/* The Knight */}
+
+      {/* Shade — versão sombria do Cavaleiro */}
+      {shade && (
+        <div style={{
+          position:'fixed', left:`${shade.x}%`, top:`${shade.y}%`,
+          zIndex:15, pointerEvents:'none',
+          animation:'shadeAppear 6.5s ease-out forwards',
+          filter:'drop-shadow(0 0 10px rgba(80,80,220,0.65))',
+        }}>
+          <svg width="32" height="46" viewBox="0 0 42 58">
+            <path d="M14,22 Q3,32 5,50 L12,44 L14,32Z" fill="#0d0e28"/>
+            <path d="M28,22 Q39,32 37,50 L30,44 L28,32Z" fill="#0d0e28"/>
+            <rect x="13" y="19" width="16" height="16" rx="3" fill="#0a0b20"/>
+            <ellipse cx="21" cy="11" rx="9.5" ry="10.5" fill="#0a0b20"/>
+            <path d="M12,5 Q10,0 7,0 Q9,2 11,6Z" fill="#0a0b20"/>
+            <path d="M30,5 Q32,0 35,0 Q33,2 31,6Z" fill="#0a0b20"/>
+            {/* Olhos brancos brilhantes — marca da Shade */}
+            <ellipse cx="16.5" cy="11" rx="2.8" ry="3.2" fill="#ffffff"/>
+            <ellipse cx="25.5" cy="11" rx="2.8" ry="3.2" fill="#ffffff"/>
+            <ellipse cx="16.5" cy="11" rx="4" ry="4.5" fill="none"
+              stroke="rgba(255,255,255,0.35)" strokeWidth="1.2"/>
+            <ellipse cx="25.5" cy="11" rx="4" ry="4.5" fill="none"
+              stroke="rgba(255,255,255,0.35)" strokeWidth="1.2"/>
+            <rect x="14" y="35" width="5" height="17" rx="2.5" fill="#0a0b20"/>
+            <rect x="21" y="35" width="5" height="17" rx="2.5" fill="#0a0b20"/>
+          </svg>
+        </div>
+      )}
+
+      {/* O Cavaleiro com animação de caminhada */}
       {knightVisible && (
         <div
           ref={knightRef}
           style={{
             position:'fixed', zIndex:15, bottom:`${knightData.current?.bottom ?? 10}%`,
-            left:'var(--knx,-60px)', '--knx':`${knightData.current?.x ?? -60}px`,
+            left:'var(--knx,-68px)', '--knx':`${knightData.current?.x ?? -68}px`,
             pointerEvents:'none',
             transform: kDir === -1 ? 'scaleX(-1)' : 'none',
-            filter:'drop-shadow(0 0 6px rgba(197,232,240,0.4))',
+            filter:'drop-shadow(0 0 6px rgba(197,232,240,0.38))',
           } as React.CSSProperties}
         >
-          <svg width="38" height="56" viewBox="0 0 38 56">
-            {/* Cape behind body */}
-            <path d="M14,22 Q4,30 6,48 L13,42 L14,32Z" fill="#7aaccb" opacity="0.88"/>
-            <path d="M24,22 Q34,30 32,48 L25,42 L24,32Z" fill="#7aaccb" opacity="0.88"/>
-            {/* Body */}
-            <rect x="13" y="19" width="12" height="15" rx="3" fill="#d4e8f4"/>
-            {/* Head oval */}
-            <ellipse cx="19" cy="11" rx="8.5" ry="9.5" fill="#d4e8f4"/>
-            {/* Horns */}
-            <path d="M12,5 Q10,0 7,0 Q9,2 11,6Z" fill="#d4e8f4"/>
-            <path d="M26,5 Q28,0 31,0 Q29,2 27,6Z" fill="#d4e8f4"/>
-            {/* Glowing eyes */}
-            <ellipse cx="15" cy="11" rx="2.5" ry="3" fill="#9ed0ec"/>
-            <ellipse cx="23" cy="11" rx="2.5" ry="3" fill="#9ed0ec"/>
-            {/* Nail pointing right */}
-            <line x1="24" y1="28" x2="46" y2="28" stroke="#d4e8f4" strokeWidth="2.8" strokeLinecap="round"/>
-            <polygon points="46,28 43,25.5 43,30.5" fill="#c0dcf0"/>
-            <line x1="22" y1="24" x2="22" y2="32" stroke="#9ab8d0" strokeWidth="2.2" strokeLinecap="round"/>
-            {/* Legs */}
-            <rect x="14" y="34" width="4.5" height="16" rx="2.2" fill="#d4e8f4"/>
-            <rect x="19.5" y="34" width="4.5" height="16" rx="2.2" fill="#d4e8f4"/>
-            {/* Feet */}
-            <ellipse cx="15.5" cy="51" rx="5.5" ry="2.5" fill="#aac8e0"/>
-            <ellipse cx="22.5" cy="51" rx="5.5" ry="2.5" fill="#aac8e0"/>
+          <svg width="44" height="62" viewBox="0 0 44 62">
+            {/* Capa — flutua */}
+            <g style={{ transformBox:'fill-box', transformOrigin:'50% 0%',
+              animation:'hkCapeFlow 0.5s ease-in-out infinite' }}>
+              <path d="M15,24 Q4,33 6,52 L13,46 L15,34Z" fill="#5a90b5" opacity="0.9"/>
+              <path d="M29,24 Q40,33 38,52 L31,46 L29,34Z" fill="#5a90b5" opacity="0.9"/>
+            </g>
+            {/* Corpo */}
+            <rect x="15" y="21" width="14" height="17" rx="3.5" fill="#cae3f2"/>
+            {/* Cabeça */}
+            <ellipse cx="22" cy="13" rx="9.5" ry="10.5" fill="#cae3f2"/>
+            {/* Chifres */}
+            <path d="M13,7 Q11,1 8,0 Q10,3 12,8Z" fill="#cae3f2"/>
+            <path d="M31,7 Q33,1 36,0 Q34,3 32,8Z" fill="#cae3f2"/>
+            {/* Olhos brilhantes */}
+            <ellipse cx="18" cy="13" rx="3" ry="3.5" fill="#78c5e8"/>
+            <ellipse cx="26" cy="13" rx="3" ry="3.5" fill="#78c5e8"/>
+            <ellipse cx="18" cy="13" rx="1.8" ry="2" fill="#c0e8f8" opacity="0.7"/>
+            <ellipse cx="26" cy="13" rx="1.8" ry="2" fill="#c0e8f8" opacity="0.7"/>
+            {/* Nail */}
+            <line x1="28" y1="31" x2="52" y2="31" stroke="#cae3f2" strokeWidth="3.2" strokeLinecap="round"/>
+            <polygon points="52,31 49,28 49,34" fill="#a8d0ea"/>
+            <line x1="26" y1="26.5" x2="26" y2="35.5" stroke="#88b8d2" strokeWidth="2.5" strokeLinecap="round"/>
+            {/* Perna esquerda — animação */}
+            <g style={{ transformBox:'fill-box', transformOrigin:'50% 0%',
+              animation:'hkLegL 0.5s ease-in-out infinite' }}>
+              <rect x="15" y="38" width="6.5" height="19" rx="3.2" fill="#cae3f2"/>
+              <ellipse cx="18" cy="57.5" rx="6.5" ry="2.8" fill="#98c2da"/>
+            </g>
+            {/* Perna direita — animação */}
+            <g style={{ transformBox:'fill-box', transformOrigin:'50% 0%',
+              animation:'hkLegR 0.5s ease-in-out infinite' }}>
+              <rect x="22.5" y="38" width="6.5" height="19" rx="3.2" fill="#cae3f2"/>
+              <ellipse cx="26" cy="57.5" rx="6.5" ry="2.8" fill="#98c2da"/>
+            </g>
           </svg>
         </div>
       )}
+
       {/* Notification */}
       {msg && (
         <div style={{
           position:'fixed', top:24, left:'50%', zIndex:20, pointerEvents:'none',
-          fontFamily:'monospace', fontSize:12, fontWeight:900, letterSpacing:'0.22em',
-          color:'#c5e8f0', textShadow:'0 0 14px rgba(197,232,240,0.95), 0 0 28px rgba(197,232,240,0.5)',
+          fontFamily:'monospace', fontSize:12, fontWeight:900, letterSpacing:'0.24em',
+          color:'#c5e8f0', textShadow:'0 0 16px rgba(197,232,240,0.98), 0 0 30px rgba(197,232,240,0.55)',
           animation:'hkNotif 4.2s ease-out forwards',
         }}>{msg}</div>
       )}

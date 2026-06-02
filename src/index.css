@@ -302,8 +302,35 @@
 }
 
 /* ════════════════════════════════════════════════════════════════════════
-   DARK SOULS — forjado nas cinzas
+   DARK SOULS — Forjado nas Cinzas
 ════════════════════════════════════════════════════════════════════════ */
+@keyframes ashFall {
+  0%   { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
+  6%   { opacity: 0.65; }
+  80%  { transform: translateY(105vh) translateX(var(--ash-drift,0px)) rotate(185deg); opacity: 0.45; }
+  100% { transform: translateY(112vh) translateX(var(--ash-drift,0px)) rotate(220deg); opacity: 0; }
+}
+@keyframes dsLeg {
+  0%,100% { transform: rotate(-22deg); }
+  50%     { transform: rotate(22deg); }
+}
+@keyframes dsBody {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-3px); }
+}
+@keyframes groundMsgAppear {
+  0%   { opacity: 0; transform: scaleX(0.8); }
+  10%  { opacity: 1; transform: scaleX(1); }
+  82%  { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+@keyframes youDiedOverlay {
+  0%   { background: rgba(0,0,0,0); }
+  8%   { background: rgba(20,2,2,0.94); }
+  50%  { background: rgba(28,3,3,0.96); }
+  88%  { background: rgba(10,1,1,0.9); opacity: 1; }
+  100% { background: rgba(0,0,0,0); opacity: 0; }
+}
 @keyframes soulEmber {
   0%   { transform: translateY(0) scale(0.8); opacity: 0; }
   10%  { opacity: 1; }
@@ -488,8 +515,40 @@
 }
 
 /* ════════════════════════════════════════════════════════════════════════
-   HOLLOW KNIGHT — Hallownest, cavernas e soul
+   HOLLOW KNIGHT — City of Tears / Hallownest
 ════════════════════════════════════════════════════════════════════════ */
+@keyframes rainDrop {
+  from { transform: translateY(-80px); }
+  to   { transform: translateY(110vh); }
+}
+@keyframes lumaFloat {
+  0%,100% { transform: translate(0, 0);       opacity: 0.62; }
+  25%     { transform: translate(9px, -14px); opacity: 0.95; }
+  50%     { transform: translate(16px, -3px); opacity: 0.72; }
+  75%     { transform: translate(8px, 12px);  opacity: 0.92; }
+}
+@keyframes hkLegL {
+  0%,100% { transform: rotate(-22deg); }
+  50%     { transform: rotate(22deg); }
+}
+@keyframes hkLegR {
+  0%,100% { transform: rotate(22deg); }
+  50%     { transform: rotate(-22deg); }
+}
+@keyframes hkCapeFlow {
+  0%,100% { transform: skewX(-4deg); }
+  50%     { transform: skewX(4deg); }
+}
+@keyframes shadeAppear {
+  0%   { opacity: 0; transform: scale(0.92); }
+  14%  { opacity: 0.62; transform: scale(1); }
+  78%  { opacity: 0.5; }
+  100% { opacity: 0; transform: scale(0.95); }
+}
+@keyframes geoSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
 @keyframes soulOrbFloat {
   0%   { transform: translateY(0) scale(0.75); opacity: 0; }
   12%  { opacity: 1; }
