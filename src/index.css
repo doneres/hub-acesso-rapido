@@ -307,8 +307,14 @@
 @keyframes soulEmber {
   0%   { transform: translateY(0) scale(0.8); opacity: 0; }
   10%  { opacity: 1; }
-  65%  { transform: translateY(-80px) scale(1.15) rotate(20deg); opacity: 0.85; }
-  100% { transform: translateY(-140px) scale(0.55) rotate(40deg); opacity: 0; }
+  60%  { transform: translateY(-75px) scale(1.2) rotate(18deg); opacity: 0.9; }
+  100% { transform: translateY(-155px) scale(0.5) rotate(42deg); opacity: 0; }
+}
+@keyframes dsMsg {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  12%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  78%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-5px); }
 }
 @keyframes youDiedAnim {
   0%   { background: #000; }
@@ -479,6 +485,48 @@
 }
 .dark .theme-pokemon .tool-name {
   color: #FFDE00 !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   HOLLOW KNIGHT — Hallownest, cavernas e soul
+════════════════════════════════════════════════════════════════════════ */
+@keyframes soulOrbFloat {
+  0%   { transform: translateY(0) scale(0.75); opacity: 0; }
+  12%  { opacity: 1; }
+  55%  { transform: translateY(-80px) scale(1.12); opacity: 0.9; }
+  100% { transform: translateY(-165px) scale(0.55); opacity: 0; }
+}
+@keyframes geoFall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+  8%   { opacity: 0.95; }
+  80%  { transform: translateY(85vh) rotate(340deg); opacity: 0.85; }
+  100% { transform: translateY(100vh) rotate(400deg); opacity: 0; }
+}
+@keyframes hkNotif {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(14px); }
+  12%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  78%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+}
+.theme-hollow-knight .tool-card {
+  background: #0d1016 !important;
+  border: 1px solid rgba(197,232,240,0.14) !important;
+  border-bottom: 2px solid rgba(197,232,240,0.24) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 14px rgba(100,170,200,0.07), inset 0 0 22px rgba(100,170,200,0.025) !important;
+  transition: box-shadow .25s, border-color .25s, transform .2s !important;
+}
+.theme-hollow-knight .tool-card::before { display: none !important; }
+.theme-hollow-knight .tool-card::after  { display: none !important; }
+.theme-hollow-knight .tool-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(197,232,240,0.55) !important;
+  box-shadow: 0 0 26px rgba(100,170,200,0.28), 0 8px 22px rgba(0,0,0,0.72) !important;
+}
+.theme-hollow-knight .tool-name {
+  color: #c5e8f0 !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 8px rgba(197,232,240,0.22) !important;
 }
 
 @layer utilities {

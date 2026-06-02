@@ -176,6 +176,24 @@ export const COSMETICS: CosmeticDef[] = [
     accent1: '#EE1515',
     accent2: '#FFDE00',
   },
+
+  /* ─── Hollow Knight ─────────────────────────────────────────────── */
+  {
+    id: 'hollow-knight',
+    name: 'Hollow Knight',
+    desc: 'O Reino de Hallownest aguarda nas cavernas. Soul orbs flutuam no escuro, O Cavaleiro silencioso atravessa o Hub com sua Nail, Geo tintila pelo chão. Dream Nail. Vessel Filled. A luz permanece.',
+    cost: 650,
+    emoji: '🗡️',
+    tag: 'HOLLOW KNIGHT',
+    tagColor: '#c5e8f0',
+    previewGradient: 'linear-gradient(135deg,#050607 0%,#0c1018 40%,#1a2332 70%,#c5e8f0 100%)',
+    lightBg: '#0c1018',
+    darkBg:  '#070809',
+    patternLight: '',
+    patternDark:  '',
+    accent1: '#c5e8f0',
+    accent2: '#e8d870',
+  },
 ];
 
 /* ── Helpers localStorage ─────────────────────────────────────────────── */

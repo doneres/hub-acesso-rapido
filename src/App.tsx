@@ -120,15 +120,18 @@ function CosmeticBanner({ cosmetic, isDark }: { cosmetic: CosmeticDef; isDark: b
 
   /* Dark Souls */
   if (cosmetic.id === 'dark-souls') return (
-    <div className="animate-fadeIn mb-6" style={{ background:'#0a0703', border:'1px solid rgba(199,131,42,0.2)', borderBottom:'2px solid rgba(199,131,42,0.4)', padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 0 20px rgba(199,131,42,0.08)' }}>
+    <div className="animate-fadeIn mb-6" style={{ background:'#0a0703', border:'1px solid rgba(199,131,42,0.25)', borderLeft:'3px solid #c7832a', borderBottom:'2px solid rgba(199,131,42,0.45)', padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 0 28px rgba(199,131,42,0.12), inset 0 0 40px rgba(199,131,42,0.04)' }}>
       <div style={{ display:'flex', alignItems:'center', gap:14 }}>
-        <span style={{ fontSize:20, filter:'drop-shadow(0 0 6px rgba(199,131,42,0.7))' }}>🔥</span>
+        <span style={{ fontSize:22, filter:'drop-shadow(0 0 10px rgba(199,131,42,0.9)) drop-shadow(0 0 4px #e8c97a)' }}>🔥</span>
         <div>
-          <div style={{ fontFamily:'monospace', fontSize:11, fontWeight:900, color:'#c7832a', letterSpacing:'0.12em', textShadow:'0 0 8px rgba(199,131,42,0.4)' }}>DARK SOULS</div>
-          <div style={{ fontFamily:'monospace', fontSize:8, color:'rgba(199,131,42,0.45)', marginTop:3 }}>KINDLE THE BONFIRE · TEMA ATIVO</div>
+          <div style={{ fontFamily:'monospace', fontSize:11, fontWeight:900, color:'#c7832a', letterSpacing:'0.16em', textShadow:'0 0 10px rgba(199,131,42,0.6)' }}>DARK SOULS</div>
+          <div style={{ fontFamily:'monospace', fontSize:8, color:'rgba(199,131,42,0.5)', marginTop:3, letterSpacing:'0.1em' }}>⚔ KINDLE THE BONFIRE · TEMA ATIVO</div>
         </div>
       </div>
-      <div style={{ fontFamily:'monospace', fontSize:9, color:'#c7832a', padding:'4px 14px', border:'1px solid rgba(199,131,42,0.4)', letterSpacing:'0.1em' }}>† ATIVO</div>
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
+        <div style={{ fontFamily:'monospace', fontSize:9, color:'#c7832a', padding:'3px 12px', border:'1px solid rgba(199,131,42,0.5)', letterSpacing:'0.1em', textShadow:'0 0 6px rgba(199,131,42,0.5)' }}>† ATIVO</div>
+        <div style={{ fontFamily:'monospace', fontSize:7, color:'rgba(199,131,42,0.35)', letterSpacing:'0.08em' }}>prepare to study</div>
+      </div>
     </div>
   );
 
@@ -171,6 +174,32 @@ function CosmeticBanner({ cosmetic, isDark }: { cosmetic: CosmeticDef; isDark: b
         </div>
       </div>
       <div style={{ fontSize:9, fontWeight:900, color:'#fff', padding:'4px 14px', background:'#EE1515', borderRadius:999, letterSpacing:'0.1em', boxShadow:'2px 2px 0 rgba(0,0,0,0.3)' }}>ATIVO</div>
+    </div>
+  );
+
+  /* Hollow Knight */
+  if (cosmetic.id === 'hollow-knight') return (
+    <div className="animate-fadeIn mb-6" style={{ background:'#08090d', border:'1px solid rgba(197,232,240,0.16)', borderLeft:'3px solid #c5e8f0', borderBottom:'2px solid rgba(197,232,240,0.28)', padding:'10px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 0 24px rgba(100,170,200,0.1), inset 0 0 40px rgba(100,170,200,0.03)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <svg width="28" height="38" viewBox="0 0 38 56" style={{ filter:'drop-shadow(0 0 8px rgba(197,232,240,0.7))' }}>
+          <path d="M14,22 Q4,30 6,48 L13,42 L14,32Z" fill="#5a8aab" opacity="0.9"/>
+          <path d="M24,22 Q34,30 32,48 L25,42 L24,32Z" fill="#5a8aab" opacity="0.9"/>
+          <rect x="13" y="19" width="12" height="15" rx="3" fill="#c5e8f0"/>
+          <ellipse cx="19" cy="11" rx="8.5" ry="9.5" fill="#c5e8f0"/>
+          <path d="M12,5 Q10,0 7,0 Q9,2 11,6Z" fill="#c5e8f0"/>
+          <path d="M26,5 Q28,0 31,0 Q29,2 27,6Z" fill="#c5e8f0"/>
+          <ellipse cx="15" cy="11" rx="2.5" ry="3" fill="#7ecce8"/>
+          <ellipse cx="23" cy="11" rx="2.5" ry="3" fill="#7ecce8"/>
+        </svg>
+        <div>
+          <div style={{ fontFamily:'monospace', fontSize:11, fontWeight:900, color:'#c5e8f0', letterSpacing:'0.16em', textShadow:'0 0 10px rgba(197,232,240,0.55)' }}>HOLLOW KNIGHT</div>
+          <div style={{ fontFamily:'monospace', fontSize:8, color:'rgba(197,232,240,0.42)', marginTop:3, letterSpacing:'0.1em' }}>🗡 HALLOWNEST · TEMA ATIVO</div>
+        </div>
+      </div>
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
+        <div style={{ fontFamily:'monospace', fontSize:9, color:'#c5e8f0', padding:'3px 12px', border:'1px solid rgba(197,232,240,0.4)', letterSpacing:'0.1em', textShadow:'0 0 6px rgba(197,232,240,0.5)' }}>◈ ATIVO</div>
+        <div style={{ fontFamily:'monospace', fontSize:7, color:'rgba(197,232,240,0.32)', letterSpacing:'0.08em' }}>focus. dream nail.</div>
+      </div>
     </div>
   );
 
@@ -656,61 +685,173 @@ function MinecraftEffects() {
 ════════════════════════════════════════════════════════════════════════ */
 function DarkSoulsBackground() {
   return (
-    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#070402' }}>
-      {/* Subtle ember-glow radial */}
-      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 45% 35% at 50% 88%, rgba(199,131,42,0.12) 0%, transparent 65%)' }} />
-      {/* Bonfire SVG (centro-base) */}
-      <svg width="120" height="140" viewBox="0 0 120 140" style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', opacity:0.35 }}>
-        {/* Base / pedra */}
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#060301' }}>
+      {/* Stone floor texture */}
+      <svg width="100%" height="100%" style={{ position:'absolute', inset:0, opacity:0.04 }}>
+        <defs>
+          <pattern id="dsStone" width="80" height="80" patternUnits="userSpaceOnUse">
+            <rect width="80" height="80" fill="#100a04"/>
+            <line x1="0" y1="40" x2="80" y2="40" stroke="#c7832a" strokeWidth="0.5"/>
+            <line x1="40" y1="0" x2="40" y2="80" stroke="#c7832a" strokeWidth="0.5"/>
+            <rect x="1" y="1" width="38" height="38" fill="none" stroke="#c7832a" strokeWidth="0.3" opacity="0.5"/>
+            <rect x="41" y="41" width="38" height="38" fill="none" stroke="#c7832a" strokeWidth="0.3" opacity="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dsStone)"/>
+      </svg>
+      {/* Gothic arch silhouettes */}
+      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0, opacity:0.08 }}>
+        <path d="M0,100 L0,60 Q5,30 10,60 L10,100Z" fill="#c7832a"/>
+        <path d="M90,100 L90,60 Q95,30 100,60 L100,100Z" fill="#c7832a"/>
+        <path d="M18,100 L18,70 Q23,45 28,70 L28,100Z" fill="#8c4a10" opacity="0.7"/>
+        <path d="M72,100 L72,70 Q77,45 82,70 L82,100Z" fill="#8c4a10" opacity="0.7"/>
+      </svg>
+      {/* Ember-glow radial intenso no chão */}
+      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 55% 30% at 50% 95%, rgba(199,131,42,0.22) 0%, rgba(140,74,16,0.08) 50%, transparent 70%)' }} />
+      {/* Bonfire SVG (centro-base) — mais visível */}
+      <svg width="160" height="180" viewBox="0 0 120 140" style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', opacity:0.62, filter:'drop-shadow(0 0 18px rgba(199,131,42,0.5))' }}>
         <ellipse cx="60" cy="128" rx="28" ry="5" fill="#1a0e06"/>
-        {/* Espada fincada */}
         <line x1="60" y1="35" x2="60" y2="120" stroke="#6b4a1e" strokeWidth="4"/>
         <line x1="44" y1="85" x2="76" y2="85" stroke="#6b4a1e" strokeWidth="3.5"/>
-        {/* Empunhadura */}
         <rect x="56" y="32" width="8" height="6" rx="2" fill="#8a6030"/>
-        {/* Chama externa */}
-        <path d="M60,38 C50,28 44,20 48,10 C51,3 56,1 60,0 C64,1 69,3 72,10 C76,20 70,28 60,38Z" fill="#c7832a" opacity="0.7"/>
-        {/* Chama interna */}
-        <path d="M60,36 C54,28 52,22 54,15 C56,10 59,8 60,5 C61,8 64,10 66,15 C68,22 66,28 60,36Z" fill="#e8c97a" opacity="0.55"/>
-        {/* Brasas */}
-        <circle cx="48" cy="90" r="2" fill="#c7832a" opacity="0.4"/>
-        <circle cx="72" cy="95" r="1.5" fill="#e8c97a" opacity="0.3"/>
-        <circle cx="55" cy="100" r="1.5" fill="#c7832a" opacity="0.35"/>
+        <path d="M60,38 C50,28 44,20 48,10 C51,3 56,1 60,0 C64,1 69,3 72,10 C76,20 70,28 60,38Z" fill="#c7832a" opacity="0.85"/>
+        <path d="M60,36 C54,28 52,22 54,15 C56,10 59,8 60,5 C61,8 64,10 66,15 C68,22 66,28 60,36Z" fill="#e8c97a" opacity="0.75"/>
+        <path d="M60,34 C57,28 56,24 57,18 C58,14 59.5,12 60,10 C60.5,12 62,14 63,18 C64,24 63,28 60,34Z" fill="#fff8e8" opacity="0.45"/>
+        <circle cx="48" cy="90" r="2" fill="#c7832a" opacity="0.6"/>
+        <circle cx="72" cy="95" r="1.5" fill="#e8c97a" opacity="0.5"/>
+        <circle cx="55" cy="100" r="1.5" fill="#c7832a" opacity="0.55"/>
+        <circle cx="66" cy="108" r="1.2" fill="#e8c97a" opacity="0.4"/>
       </svg>
+      {/* Fog layer at ground */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'25%', background:'linear-gradient(0deg, rgba(60,20,5,0.35) 0%, transparent 100%)' }} />
       {/* Vignette */}
-      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 90% 80% at 50% 50%, transparent 30%, rgba(0,0,0,0.75) 100%)' }} />
+      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 85% 75% at 50% 50%, transparent 25%, rgba(0,0,0,0.82) 100%)' }} />
     </div>
   );
 }
 
 function DarkSoulsEffects() {
-  const [embers, setEmbers] = React.useState<{ id:number; left:number; size:number }[]>([]);
+  const [embers, setEmbers] = React.useState<{ id:number; left:number; size:number; bottom:number }[]>([]);
+  const [phantom, setPhantom] = React.useState(false);
+  const [msg, setMsg] = React.useState<string|null>(null);
+  const phantomRef  = React.useRef<HTMLDivElement>(null);
+  const phantomData = React.useRef<{ x:number; dir:1|-1 } | null>(null);
+  const animRef     = React.useRef<number>(0);
+
+  /* embers — spread largo */
   React.useEffect(() => {
     let t: ReturnType<typeof setTimeout>; let uid = 0;
     const s = () => {
       t = setTimeout(() => {
         const id = uid++;
-        setEmbers(e => [...e, { id, left: 30 + Math.random() * 40, size: 8 + Math.random() * 8 }]);
-        setTimeout(() => setEmbers(e => e.filter(x => x.id !== id)), 3500);
+        setEmbers(e => [...e, { id, left: 8 + Math.random() * 84, size: 5 + Math.random() * 10, bottom: 6 + Math.random() * 18 }]);
+        setTimeout(() => setEmbers(e => e.filter(x => x.id !== id)), 4200);
         s();
-      }, 1200 + Math.random() * 1800);
+      }, 700 + Math.random() * 1300);
     };
     s();
     return () => clearTimeout(t);
   }, []);
 
+  /* phantom player traversal */
+  const launchPhantom = React.useCallback((dir: 1|-1) => {
+    cancelAnimationFrame(animRef.current);
+    const startX = dir === 1 ? -55 : window.innerWidth + 55;
+    phantomData.current = { x: startX, dir };
+    setPhantom(true);
+    const speed = (window.innerWidth + 170) / 9000;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 50); last = now;
+      const pd = phantomData.current; if (!pd) return;
+      pd.x += pd.dir * speed * dt;
+      const el = phantomRef.current;
+      if (el) el.style.setProperty('--phx', `${pd.x}px`);
+      const off = pd.dir === 1 ? pd.x > window.innerWidth + 56 : pd.x < -56;
+      if (off) { setPhantom(false); phantomData.current = null; return; }
+      animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => { launchPhantom(Math.random() > 0.5 ? 1 : -1); s(false); },
+        first ? 20000 : 30000 + Math.random() * 22000);
+    };
+    s(true);
+    return () => { clearTimeout(t); cancelAnimationFrame(animRef.current); };
+  }, [launchPhantom]);
+
+  /* DS messages */
+  React.useEffect(() => {
+    const MSGS = ['BONFIRE LIT', 'PRAISE THE SUN  \\o/', 'HUMANITY RESTORED', 'SOUL OF A HERO', 'YOU DIED'];
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => {
+        setMsg(MSGS[Math.floor(Math.random() * MSGS.length)]);
+        setTimeout(() => setMsg(null), 4200);
+        s(false);
+      }, first ? 25000 : 35000 + Math.random() * 28000);
+    };
+    s(true);
+    return () => clearTimeout(t);
+  }, []);
+
+  const pDir = phantomData.current?.dir ?? 1;
   return (
     <>
       {embers.map(em => (
         <div key={em.id} style={{
-          position:'fixed', bottom: '18%', left:`${em.left}%`,
+          position:'fixed', bottom:`${em.bottom}%`, left:`${em.left}%`,
           zIndex:14, pointerEvents:'none',
-          width: em.size, height: em.size, borderRadius:'50%',
+          width:em.size, height:em.size, borderRadius:'50%',
           background:'radial-gradient(circle, #e8c97a 0%, #c7832a 60%, transparent 100%)',
-          boxShadow:`0 0 ${em.size}px rgba(199,131,42,0.6)`,
-          animation:'soulEmber 3.2s ease-out forwards',
+          boxShadow:`0 0 ${em.size * 1.3}px rgba(199,131,42,0.72)`,
+          animation:'soulEmber 3.8s ease-out forwards',
         }}/>
       ))}
+      {phantom && (
+        <div
+          ref={phantomRef}
+          style={{
+            position:'fixed', zIndex:15, bottom:'22%',
+            left:'var(--phx,-55px)', '--phx':`${phantomData.current?.x ?? -55}px`,
+            pointerEvents:'none',
+            filter:'blur(0.8px)',
+            transform: pDir === -1 ? 'scaleX(-1)' : 'none',
+          } as React.CSSProperties}
+        >
+          <svg width="34" height="58" viewBox="0 0 34 58" opacity="0.38">
+            {/* helmet */}
+            <ellipse cx="17" cy="8" rx="9" ry="8" fill="#c8b8ff"/>
+            {/* visor slit */}
+            <rect x="10" y="7" width="14" height="3" rx="1.5" fill="#7060cc" opacity="0.7"/>
+            {/* body */}
+            <rect x="11" y="15" width="12" height="18" rx="3" fill="#c8b8ff"/>
+            {/* sword arm */}
+            <rect x="22" y="18" width="14" height="3" rx="1.5" fill="#d8ccff"/>
+            <polygon points="36,19.5 33,17 33,22" fill="#e0d8ff"/>
+            {/* off arm */}
+            <rect x="0" y="18" width="10" height="3" rx="1.5" fill="#c8b8ff" opacity="0.8"/>
+            {/* legs */}
+            <rect x="11" y="33" width="5" height="18" rx="2" fill="#c8b8ff"/>
+            <rect x="18" y="33" width="5" height="18" rx="2" fill="#c8b8ff"/>
+            {/* boots */}
+            <ellipse cx="13" cy="52" rx="6" ry="3" fill="#a898e0"/>
+            <ellipse cx="21" cy="52" rx="6" ry="3" fill="#a898e0"/>
+          </svg>
+        </div>
+      )}
+      {msg && (
+        <div style={{
+          position:'fixed', top:24, left:'50%', zIndex:20, pointerEvents:'none',
+          fontFamily:'monospace', fontSize:14, fontWeight:900, letterSpacing:'0.24em',
+          color:'#c7832a', textShadow:'0 0 16px rgba(199,131,42,0.95), 0 0 32px rgba(199,131,42,0.45)',
+          animation:'dsMsg 4.2s ease-out forwards',
+        }}>{msg}</div>
+      )}
     </>
   );
 }
@@ -996,6 +1137,218 @@ function PokemonEffects() {
   );
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   HOLLOW KNIGHT
+════════════════════════════════════════════════════════════════════════ */
+function HollowKnightBackground() {
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', background:'#060709' }}>
+      {/* Stalactites + cave ceiling */}
+      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style={{ position:'absolute', inset:0 }}>
+        {/* Stalactites from ceiling */}
+        {([[4,0,3.5,14],[10,0,2.5,9],[18,0,4,18],[27,0,3,12],[35,0,4.5,22],[45,0,2.5,10],[54,0,3.5,16],[63,0,4,20],[72,0,3,11],[81,0,4.5,19],[89,0,3,13],[95,0,2.5,8]] as [number,number,number,number][]).map(([x,y,w,h], i) => (
+          <polygon key={i} points={`${x},${y} ${x+w},${y} ${x+w/2},${y+h}`} fill="#0c0f14" opacity="0.95"/>
+        ))}
+        {/* Secondary smaller stalactites */}
+        {([[7,0,1.8,6],[14,0,2,8],[23,0,1.5,5],[31,0,2.5,10],[40,0,1.8,7],[50,0,2,9],[58,0,1.5,5],[68,0,2,8],[77,0,1.8,6],[85,0,2.5,10],[92,0,1.5,5]] as [number,number,number,number][]).map(([x,y,w,h], i) => (
+          <polygon key={i+20} points={`${x},${y} ${x+w},${y} ${x+w/2},${y+h}`} fill="#0e1218" opacity="0.8"/>
+        ))}
+        {/* Soul vessel glow from center-bottom */}
+        <defs>
+          <radialGradient id="soulGlow" cx="50%" cy="80%" r="40%">
+            <stop offset="0%" stopColor="#c5e8f0" stopOpacity="0.06"/>
+            <stop offset="60%" stopColor="#8ab4d0" stopOpacity="0.02"/>
+            <stop offset="100%" stopColor="#c5e8f0" stopOpacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="100" height="100" fill="url(#soulGlow)"/>
+        {/* Stone wall cracks */}
+        <g stroke="#c5e8f0" strokeWidth="0.18" fill="none" opacity="0.06">
+          <path d="M2,35 L5,42 L3,50"/>
+          <path d="M96,28 L93,38 L95,48"/>
+          <path d="M12,80 L15,88 L13,95"/>
+          <path d="M85,75 L82,85 L84,92"/>
+        </g>
+        {/* Runic marks (Hallownest language feel) */}
+        <g fill="#c5e8f0" opacity="0.035" fontFamily="monospace" fontSize="3.5">
+          <text x="5" y="62">⚬ ─ ⚬</text>
+          <text x="88" y="55">⚬ ─ ⚬</text>
+          <text x="46" y="90">─ ⚬ ─</text>
+        </g>
+      </svg>
+      {/* Dark cave ambient vignette */}
+      <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 70% 65% at 50% 55%, transparent 20%, rgba(0,0,0,0.78) 100%)' }} />
+      {/* Subtle ground mist */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'20%', background:'linear-gradient(0deg, rgba(10,14,20,0.5) 0%, transparent 100%)' }} />
+    </div>
+  );
+}
+
+function HollowKnightEffects() {
+  const [souls, setSouls]         = React.useState<{ id:number; left:number; size:number }[]>([]);
+  const [geos, setGeos]           = React.useState<{ id:number; left:number }[]>([]);
+  const [knightVisible, setKnight] = React.useState(false);
+  const [msg, setMsg]             = React.useState<string|null>(null);
+  const knightRef  = React.useRef<HTMLDivElement>(null);
+  const knightData = React.useRef<{ x:number; dir:1|-1; bottom:number } | null>(null);
+  const animRef    = React.useRef<number>(0);
+
+  /* soul orbs floating up */
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>; let uid = 0;
+    const s = () => {
+      t = setTimeout(() => {
+        const id = uid++;
+        setSouls(sl => [...sl, { id, left: 10 + Math.random() * 80, size: 7 + Math.random() * 9 }]);
+        setTimeout(() => setSouls(sl => sl.filter(x => x.id !== id)), 4800);
+        s();
+      }, 1400 + Math.random() * 1800);
+    };
+    s();
+    return () => clearTimeout(t);
+  }, []);
+
+  /* geo coins dropping */
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>; let uid = 0;
+    const s = (first: boolean) => {
+      t = setTimeout(() => {
+        const id = uid++;
+        setGeos(g => [...g, { id, left: 8 + Math.random() * 84 }]);
+        setTimeout(() => setGeos(g => g.filter(x => x.id !== id)), 3200);
+        s(false);
+      }, first ? 9000 : 14000 + Math.random() * 16000);
+    };
+    s(true);
+    return () => clearTimeout(t);
+  }, []);
+
+  /* The Knight traversal */
+  const launchKnight = React.useCallback((dir: 1|-1) => {
+    cancelAnimationFrame(animRef.current);
+    const startX = dir === 1 ? -60 : window.innerWidth + 60;
+    knightData.current = { x: startX, dir, bottom: 8 + Math.floor(Math.random() * 18) };
+    setKnight(true);
+    const speed = (window.innerWidth + 180) / 7500;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 50); last = now;
+      const kd = knightData.current; if (!kd) return;
+      kd.x += kd.dir * speed * dt;
+      const el = knightRef.current;
+      if (el) el.style.setProperty('--knx', `${kd.x}px`);
+      const off = kd.dir === 1 ? kd.x > window.innerWidth + 61 : kd.x < -61;
+      if (off) { setKnight(false); knightData.current = null; return; }
+      animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  React.useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => { launchKnight(Math.random() > 0.5 ? 1 : -1); s(false); },
+        first ? 12000 : 24000 + Math.random() * 20000);
+    };
+    s(true);
+    return () => { clearTimeout(t); cancelAnimationFrame(animRef.current); };
+  }, [launchKnight]);
+
+  /* HK notifications */
+  React.useEffect(() => {
+    const MSGS = ['DREAM NAIL', 'SHADE SOUL', 'VESSEL FILLED', "KING'S SOUL", 'HALLOWNEST RISES', 'FOCUS'];
+    let t: ReturnType<typeof setTimeout>;
+    const s = (first: boolean) => {
+      t = setTimeout(() => {
+        setMsg(MSGS[Math.floor(Math.random() * MSGS.length)]);
+        setTimeout(() => setMsg(null), 4200);
+        s(false);
+      }, first ? 18000 : 28000 + Math.random() * 24000);
+    };
+    s(true);
+    return () => clearTimeout(t);
+  }, []);
+
+  const kDir = knightData.current?.dir ?? 1;
+  return (
+    <>
+      {/* Soul orbs */}
+      {souls.map(s => (
+        <div key={s.id} style={{
+          position:'fixed', bottom:'18%', left:`${s.left}%`,
+          zIndex:14, pointerEvents:'none',
+          width:s.size, height:s.size, borderRadius:'50%',
+          background:'radial-gradient(circle, #ffffff 0%, #c5e8f0 45%, rgba(100,180,220,0.3) 100%)',
+          boxShadow:`0 0 ${s.size*1.8}px rgba(197,232,240,0.85), 0 0 ${s.size*0.6}px rgba(255,255,255,0.9)`,
+          animation:'soulOrbFloat 4.5s ease-out forwards',
+        }}/>
+      ))}
+      {/* Geo coins */}
+      {geos.map(g => (
+        <div key={g.id} style={{
+          position:'fixed', top:'-16px', left:`${g.left}%`,
+          zIndex:14, pointerEvents:'none',
+          animation:'geoFall 3s ease-in forwards',
+        }}>
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <polygon points="8,0 16,8 8,16 0,8" fill="#e8d870" stroke="#b8a840" strokeWidth="1"/>
+            <polygon points="8,3 13,8 8,13 3,8" fill="#f4ec98" opacity="0.55"/>
+            <circle cx="8" cy="8" r="2" fill="#f8f4b8" opacity="0.4"/>
+          </svg>
+        </div>
+      ))}
+      {/* The Knight */}
+      {knightVisible && (
+        <div
+          ref={knightRef}
+          style={{
+            position:'fixed', zIndex:15, bottom:`${knightData.current?.bottom ?? 10}%`,
+            left:'var(--knx,-60px)', '--knx':`${knightData.current?.x ?? -60}px`,
+            pointerEvents:'none',
+            transform: kDir === -1 ? 'scaleX(-1)' : 'none',
+            filter:'drop-shadow(0 0 6px rgba(197,232,240,0.4))',
+          } as React.CSSProperties}
+        >
+          <svg width="38" height="56" viewBox="0 0 38 56">
+            {/* Cape behind body */}
+            <path d="M14,22 Q4,30 6,48 L13,42 L14,32Z" fill="#7aaccb" opacity="0.88"/>
+            <path d="M24,22 Q34,30 32,48 L25,42 L24,32Z" fill="#7aaccb" opacity="0.88"/>
+            {/* Body */}
+            <rect x="13" y="19" width="12" height="15" rx="3" fill="#d4e8f4"/>
+            {/* Head oval */}
+            <ellipse cx="19" cy="11" rx="8.5" ry="9.5" fill="#d4e8f4"/>
+            {/* Horns */}
+            <path d="M12,5 Q10,0 7,0 Q9,2 11,6Z" fill="#d4e8f4"/>
+            <path d="M26,5 Q28,0 31,0 Q29,2 27,6Z" fill="#d4e8f4"/>
+            {/* Glowing eyes */}
+            <ellipse cx="15" cy="11" rx="2.5" ry="3" fill="#9ed0ec"/>
+            <ellipse cx="23" cy="11" rx="2.5" ry="3" fill="#9ed0ec"/>
+            {/* Nail pointing right */}
+            <line x1="24" y1="28" x2="46" y2="28" stroke="#d4e8f4" strokeWidth="2.8" strokeLinecap="round"/>
+            <polygon points="46,28 43,25.5 43,30.5" fill="#c0dcf0"/>
+            <line x1="22" y1="24" x2="22" y2="32" stroke="#9ab8d0" strokeWidth="2.2" strokeLinecap="round"/>
+            {/* Legs */}
+            <rect x="14" y="34" width="4.5" height="16" rx="2.2" fill="#d4e8f4"/>
+            <rect x="19.5" y="34" width="4.5" height="16" rx="2.2" fill="#d4e8f4"/>
+            {/* Feet */}
+            <ellipse cx="15.5" cy="51" rx="5.5" ry="2.5" fill="#aac8e0"/>
+            <ellipse cx="22.5" cy="51" rx="5.5" ry="2.5" fill="#aac8e0"/>
+          </svg>
+        </div>
+      )}
+      {/* Notification */}
+      {msg && (
+        <div style={{
+          position:'fixed', top:24, left:'50%', zIndex:20, pointerEvents:'none',
+          fontFamily:'monospace', fontSize:12, fontWeight:900, letterSpacing:'0.22em',
+          color:'#c5e8f0', textShadow:'0 0 14px rgba(197,232,240,0.95), 0 0 28px rgba(197,232,240,0.5)',
+          animation:'hkNotif 4.2s ease-out forwards',
+        }}>{msg}</div>
+      )}
+    </>
+  );
+}
+
 /* ── App ─────────────────────────────────────────────────────────────────── */
 
 const App: React.FC = () => {
@@ -1033,16 +1386,17 @@ const App: React.FC = () => {
   /* Aplica/remove classes de tema no <html> */
   useEffect(() => {
     const root = document.documentElement;
-    const ALL = ['theme-copa','theme-fallout-nv','theme-csgo-16','theme-minecraft','theme-dark-souls','theme-matrix','theme-among-us','theme-pokemon'];
+    const ALL = ['theme-copa','theme-fallout-nv','theme-csgo-16','theme-minecraft','theme-dark-souls','theme-matrix','theme-among-us','theme-pokemon','theme-hollow-knight'];
     root.classList.remove(...ALL);
-    if (activeCosmetic?.id === 'copa-2026')   root.classList.add('theme-copa');
-    if (activeCosmetic?.id === 'fallout-nv')  root.classList.add('theme-fallout-nv');
-    if (activeCosmetic?.id === 'csgo-16')     root.classList.add('theme-csgo-16');
-    if (activeCosmetic?.id === 'minecraft')   root.classList.add('theme-minecraft');
-    if (activeCosmetic?.id === 'dark-souls')  root.classList.add('theme-dark-souls');
-    if (activeCosmetic?.id === 'matrix')      root.classList.add('theme-matrix');
-    if (activeCosmetic?.id === 'among-us')    root.classList.add('theme-among-us');
-    if (activeCosmetic?.id === 'pokemon')     root.classList.add('theme-pokemon');
+    if (activeCosmetic?.id === 'copa-2026')      root.classList.add('theme-copa');
+    if (activeCosmetic?.id === 'fallout-nv')     root.classList.add('theme-fallout-nv');
+    if (activeCosmetic?.id === 'csgo-16')        root.classList.add('theme-csgo-16');
+    if (activeCosmetic?.id === 'minecraft')      root.classList.add('theme-minecraft');
+    if (activeCosmetic?.id === 'dark-souls')     root.classList.add('theme-dark-souls');
+    if (activeCosmetic?.id === 'matrix')         root.classList.add('theme-matrix');
+    if (activeCosmetic?.id === 'among-us')       root.classList.add('theme-among-us');
+    if (activeCosmetic?.id === 'pokemon')        root.classList.add('theme-pokemon');
+    if (activeCosmetic?.id === 'hollow-knight')  root.classList.add('theme-hollow-knight');
     return () => root.classList.remove(...ALL);
   }, [activeCosmetic]);
 
@@ -1334,24 +1688,26 @@ const App: React.FC = () => {
       style={activeCosmetic ? { backgroundColor: isDark ? activeCosmetic.darkBg : activeCosmetic.lightBg } : undefined}
     >
       {/* Backgrounds temáticos */}
-      {activeCosmetic?.id === 'copa-2026'  && <PitchBackground />}
-      {activeCosmetic?.id === 'fallout-nv' && <FalloutBackground />}
-      {activeCosmetic?.id === 'csgo-16'    && <CSGOBackground />}
-      {activeCosmetic?.id === 'minecraft'  && <MinecraftBackground />}
-      {activeCosmetic?.id === 'dark-souls' && <DarkSoulsBackground />}
-      {activeCosmetic?.id === 'matrix'     && <MatrixBackground />}
-      {activeCosmetic?.id === 'among-us'   && <AmongUsBackground />}
-      {activeCosmetic?.id === 'pokemon'    && <PokemonBackground />}
+      {activeCosmetic?.id === 'copa-2026'     && <PitchBackground />}
+      {activeCosmetic?.id === 'fallout-nv'    && <FalloutBackground />}
+      {activeCosmetic?.id === 'csgo-16'       && <CSGOBackground />}
+      {activeCosmetic?.id === 'minecraft'     && <MinecraftBackground />}
+      {activeCosmetic?.id === 'dark-souls'    && <DarkSoulsBackground />}
+      {activeCosmetic?.id === 'matrix'        && <MatrixBackground />}
+      {activeCosmetic?.id === 'among-us'      && <AmongUsBackground />}
+      {activeCosmetic?.id === 'pokemon'       && <PokemonBackground />}
+      {activeCosmetic?.id === 'hollow-knight' && <HollowKnightBackground />}
 
       {/* Efeitos ocasionais */}
-      {activeCosmetic?.id === 'copa-2026'  && <CopaSideEffects />}
-      {activeCosmetic?.id === 'fallout-nv' && <FalloutEffects />}
-      {activeCosmetic?.id === 'csgo-16'    && <CSGOEffects />}
-      {activeCosmetic?.id === 'minecraft'  && <MinecraftEffects />}
-      {activeCosmetic?.id === 'dark-souls' && <DarkSoulsEffects />}
-      {activeCosmetic?.id === 'matrix'     && <MatrixEffects />}
-      {activeCosmetic?.id === 'among-us'   && <AmongUsEffects />}
-      {activeCosmetic?.id === 'pokemon'    && <PokemonEffects />}
+      {activeCosmetic?.id === 'copa-2026'     && <CopaSideEffects />}
+      {activeCosmetic?.id === 'fallout-nv'    && <FalloutEffects />}
+      {activeCosmetic?.id === 'csgo-16'       && <CSGOEffects />}
+      {activeCosmetic?.id === 'minecraft'     && <MinecraftEffects />}
+      {activeCosmetic?.id === 'dark-souls'    && <DarkSoulsEffects />}
+      {activeCosmetic?.id === 'matrix'        && <MatrixEffects />}
+      {activeCosmetic?.id === 'among-us'      && <AmongUsEffects />}
+      {activeCosmetic?.id === 'pokemon'       && <PokemonEffects />}
+      {activeCosmetic?.id === 'hollow-knight' && <HollowKnightEffects />}
 
       {/* Faixa topo Copa — tricolor */}
       {activeCosmetic?.id === 'copa-2026' && (
