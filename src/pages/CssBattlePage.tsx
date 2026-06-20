@@ -4,15 +4,13 @@ import {
   Lightbulb, ChevronDown, ChevronUp, Play, Swords, Home,
   Link, Gamepad2, Crown, Eye, Code2, Circle, Square,
   Palette, AlignCenter, MousePointer, User, LayoutGrid,
-  RotateCw, Users, Star, X, TrendingUp
+  RotateCw, Users, Star, X, TrendingUp, type LucideIcon
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { db } from '../lib/firebase';
 import { ref, set, update, onValue, get } from 'firebase/database';
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
-
-type LucideIcon = React.FC<{ size?: number; color?: string; strokeWidth?: number }>;
 
 interface Challenge {
   id: number;
