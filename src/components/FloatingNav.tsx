@@ -1,14 +1,15 @@
 import React from 'react';
-import { Settings, Newspaper, Trophy } from 'lucide-react';
+import { Settings, Newspaper, Trophy, Swords } from 'lucide-react';
 
 interface FloatingNavProps {
   isDark: boolean;
   onOpenMaker: () => void;
   onOpenNoticias: () => void;
   onOpenDesafios: () => void;
+  onOpenCssBattle: () => void;
 }
 
-const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNoticias, onOpenDesafios }) => {
+const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNoticias, onOpenDesafios, onOpenCssBattle }) => {
   return (
     <>
       <style>{`
@@ -88,6 +89,20 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNo
         @keyframes fnav-glow-purple {
           0%,50%,100% { box-shadow: -2px 0 6px rgba(167,139,250,0.05); }
           25%          { box-shadow: -6px 0 32px rgba(167,139,250,0.70), 0 0 14px rgba(167,139,250,0.30); }
+        }
+
+        /* Brilho vermelho/rosa (CSS Battle) */
+        @keyframes fnav-glow-battle {
+          0%,50%,100% { box-shadow: -2px 0 6px rgba(239,68,68,0.05); }
+          25%          { box-shadow: -6px 0 32px rgba(239,68,68,0.65), 0 0 14px rgba(239,68,68,0.28); }
+        }
+
+        /* Espada CSS Battle pulsa */
+        @keyframes fnav-sword-pulse {
+          0%,80%,100% { transform: scale(1) rotate(0deg); }
+          85%          { transform: scale(1.20) rotate(-12deg); }
+          90%          { transform: scale(1.15) rotate(8deg); }
+          95%          { transform: scale(1.08) rotate(-4deg); }
         }
 
         /* Engrenagem girando */
@@ -174,6 +189,15 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNo
           animation: fnav-trophy-pulse 6s ease-in-out 2s infinite;
         }
 
+        .fnav-battle {
+          animation:
+            fnav-knock       10s ease-in-out 8s    infinite,
+            fnav-glow-battle  4s ease-in-out 3s    infinite;
+        }
+        .fnav-battle .fnav-sword {
+          animation: fnav-sword-pulse 5s ease-in-out 3s infinite;
+        }
+
         .fnav-gear { animation: fnav-spin 9s linear infinite; }
       `}</style>
 
@@ -249,6 +273,26 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNo
             <span className="fnav-cp fnav-cp6" />
           </div>
         </button>
+
+        {/* CSS Battle */}
+        <button
+          onClick={onOpenCssBattle}
+          aria-label="CSS Battle"
+          className="fnav-btn fnav-battle focus:outline-none"
+          style={{
+            background: isDark
+              ? 'linear-gradient(135deg, #1a0505 0%, #2d0a0a 100%)'
+              : 'linear-gradient(135deg, #ffffff 0%, #fff5f5 100%)',
+            border: `1.5px solid ${isDark ? 'rgba(239,68,68,0.40)' : 'rgba(220,38,38,0.40)'}`,
+          }}
+        >
+          <span className="fnav-label" style={{ color: isDark ? '#f87171' : '#dc2626' }}>
+            CSS Battle
+          </span>
+          <div className="fnav-icon">
+            <Swords className="fnav-sword w-5 h-5" style={{ color: isDark ? '#f87171' : '#dc2626' }} />
+          </div>
+        </button>
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════
@@ -298,6 +342,21 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ isDark, onOpenMaker, onOpenNo
           }}
         >
           <Trophy className="w-4 h-4" style={{ color: isDark ? '#a78bfa' : '#7c3aed' }} />
+        </button>
+
+        <button
+          aria-label="CSS Battle"
+          onClick={onOpenCssBattle}
+          className="w-11 h-11 rounded-full flex items-center justify-center active:scale-95 transition-transform"
+          style={{
+            background: isDark
+              ? 'linear-gradient(135deg, #1a0505, #2d0a0a)'
+              : 'linear-gradient(135deg, #ffffff, #fff5f5)',
+            border: `1.5px solid ${isDark ? 'rgba(239,68,68,0.55)' : 'rgba(220,38,38,0.55)'}`,
+            boxShadow: '0 4px 14px rgba(239,68,68,0.30)',
+          }}
+        >
+          <Swords className="w-4 h-4" style={{ color: isDark ? '#f87171' : '#dc2626' }} />
         </button>
       </div>
     </>

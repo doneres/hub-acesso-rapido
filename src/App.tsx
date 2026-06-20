@@ -26,6 +26,7 @@ import ProfessorPage from './pages/ProfessorPage';
 import MakerPage from './pages/MakerPage';
 import NoticiasPage from './pages/NoticiasPage';
 import DesafiosPage from './pages/DesafiosPage';
+import CssBattlePage from './pages/CssBattlePage';
 import PasswordModal from './components/PasswordModal';
 import FloatingNav from './components/FloatingNav';
 import { COSMETICS, CosmeticDef, getActiveCosmeticId } from './data/cosmetics';
@@ -1575,12 +1576,13 @@ const App: React.FC = () => {
   const { mode: viewMode, toggleMode: toggleViewMode } = useViewMode();
 
   /* ── Página atual ────────────────────────────────────────────────────── */
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios'>(() => {
-    if (window.location.hash === '#roadmaps') return 'roadmaps';
-    if (window.location.hash === '#suporte')  return 'suporte';
-    if (window.location.hash === '#maker')    return 'maker';
-    if (window.location.hash === '#noticias') return 'noticias';
-    if (window.location.hash === '#desafios') return 'desafios';
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'cssbattle'>(() => {
+    if (window.location.hash === '#roadmaps')  return 'roadmaps';
+    if (window.location.hash === '#suporte')   return 'suporte';
+    if (window.location.hash === '#maker')     return 'maker';
+    if (window.location.hash === '#noticias')  return 'noticias';
+    if (window.location.hash === '#desafios')  return 'desafios';
+    if (window.location.hash === '#cssbattle') return 'cssbattle';
     // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
   });
@@ -1633,6 +1635,8 @@ const App: React.FC = () => {
       window.location.hash = 'noticias';
     } else if (currentPage === 'desafios') {
       window.location.hash = 'desafios';
+    } else if (currentPage === 'cssbattle') {
+      window.location.hash = 'cssbattle';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -1647,6 +1651,7 @@ const App: React.FC = () => {
       else if (hash === '#maker')     setCurrentPage('maker');
       else if (hash === '#noticias')  setCurrentPage('noticias');
       else if (hash === '#desafios')  setCurrentPage('desafios');
+      else if (hash === '#cssbattle') setCurrentPage('cssbattle');
       else setCurrentPage('hub');
     };
     window.addEventListener('popstate', handlePopstate);
@@ -1895,6 +1900,11 @@ const App: React.FC = () => {
   /* Desafios page */
   if (currentPage === 'desafios') {
     return <DesafiosPage onBackToHub={() => setCurrentPage('hub')} />;
+  }
+
+  /* CSS Battle page */
+  if (currentPage === 'cssbattle') {
+    return <CssBattlePage onBackToHub={() => setCurrentPage('hub')} />;
   }
 
   return (
@@ -2175,6 +2185,7 @@ const App: React.FC = () => {
         onOpenMaker={() => setCurrentPage('maker')}
         onOpenNoticias={() => setCurrentPage('noticias')}
         onOpenDesafios={() => setCurrentPage('desafios')}
+        onOpenCssBattle={() => setCurrentPage('cssbattle')}
       />
 
       {/* Modal mobile */}
