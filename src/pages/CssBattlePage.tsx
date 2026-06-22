@@ -9,7 +9,7 @@ import {
 import { useTheme } from '../hooks/useTheme';
 import { useGameState } from '../hooks/useGameState';
 import { db } from '../lib/firebase';
-import { ref, set, update as dbUpdate, onValue, get, runTransaction } from 'firebase/database';
+import { ref, set, update as dbUpdate, onValue, get } from 'firebase/database';
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
 
@@ -725,26 +725,28 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     if (code.length!==4){ setError('Código deve ter 4 caracteres.'); return; }
     setLoading(true); setError('');
     try {
-      /* get() primeiro para carregar o room no cache local — sem isso o
-         runTransaction recebe data=null na primeira chamada e aborta */
       const snap = await get(ref(db,`rooms/${code}`));
-      if (!snap.exists()){ setError('Sala não encontrada.'); setLoading(false); return; }
+      if (!snap.exists()){ setError('Sala não encontrada. Confira o código.'); setLoading(false); return; }
 
-      let rejectionReason = '';
-      const { committed } = await runTransaction(ref(db,`rooms/${code}`), (data)=>{
-        if (!data){ rejectionReason='Sala não encontrada.'; return; }
-        if (data.status==='finished'){ rejectionReason='Esta sala já terminou.'; return; }
-        if (data.status==='playing'){  rejectionReason='A partida já começou.'; return; }
-        const count = Object.keys(data.players||{}).length;
-        if (count>=(data.maxPlayers??2)){ rejectionReason=`Sala cheia (máx. ${data.maxPlayers??2}).`; return; }
-        return { ...data, players:{ ...data.players, [playerId.current]:{ name:playerName.trim(), scores:{}, totalScore:0, submittedAt:0 } } };
+      const room = snap.val();
+      if (room.status==='finished'){ setError('Esta sala já terminou.'); setLoading(false); return; }
+      if (room.status==='playing'){  setError('A partida já começou.'); setLoading(false); return; }
+
+      const count = Object.keys(room.players||{}).length;
+      if (count>=(room.maxPlayers??2)){ setError(`Sala cheia (máx. ${room.maxPlayers??2} jogadores).`); setLoading(false); return; }
+
+      await dbUpdate(ref(db,`rooms/${code}/players/${playerId.current}`), {
+        name: playerName.trim(), totalScore: 0, submittedAt: 0,
       });
-      if (!committed){ setError(rejectionReason||'Não foi possível entrar na sala.'); setLoading(false); return; }
+
       setRoomCode(code); setIsHost(false);
       prevRoundRef.current = -1;
       roundScoresRef.current = {};
       subscribeRoom(code); setView('lobby');
-    } catch { setError('Erro ao entrar na sala.'); }
+    } catch(err: any) {
+      console.error('[CSS Battle] joinRoom:', err);
+      setError(`Erro ao entrar na sala: ${err?.code ?? err?.message ?? 'verifique a conexão.'}`);
+    }
     setLoading(false);
   };
 
