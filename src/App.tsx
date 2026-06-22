@@ -812,18 +812,19 @@ function DarkSoulsEffects() {
   /* Ground messages — mechânica icônica do DS */
   React.useEffect(() => {
     let t: ReturnType<typeof setTimeout>; let uid = 0;
+    const inner: ReturnType<typeof setTimeout>[] = [];
     const s = (first: boolean) => {
       t = setTimeout(() => {
         const id = uid++;
         const text = DS_GROUND_MSGS[Math.floor(Math.random() * DS_GROUND_MSGS.length)];
         const left = 12 + Math.random() * 58;
         setMsgs(m => [...m, { id, left, text }]);
-        setTimeout(() => setMsgs(m => m.filter(x => x.id !== id)), 8800);
+        inner.push(setTimeout(() => setMsgs(m => m.filter(x => x.id !== id)), 8800));
         s(false);
       }, first ? 5000 : 15000 + Math.random() * 12000);
     };
     s(true);
-    return () => clearTimeout(t);
+    return () => { clearTimeout(t); inner.forEach(clearTimeout); };
   }, []);
 
   /* Hollow soldier walking */

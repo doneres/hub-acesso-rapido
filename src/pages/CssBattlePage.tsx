@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { db } from '../lib/firebase';
-import { ref, set, update, onValue, get } from 'firebase/database';
+import { ref, set, update, onValue, get, runTransaction } from 'firebase/database';
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
 
@@ -203,7 +203,8 @@ function genCode() {
   return Array.from({length:4},()=>ch[Math.floor(Math.random()*ch.length)]).join('');
 }
 function buildDoc(html: string, css: string) {
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{box-sizing:border-box;}body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;}${css}</style></head><body>${html}</body></html>`;
+  const safeCss = css.replace(/<\//g, '<\\/');
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{box-sizing:border-box;}body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;}${safeCss}</style></head><body>${html}</body></html>`;
 }
 
 const DIFF_COLOR: Record<string,string> = { Fácil:'#22c55e', Médio:'#f59e0b', Difícil:'#ef4444' };
@@ -352,10 +353,10 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void }> = ({ onBackToHub }) =
         setView('results');
       }
 
-      /* auto-finish when everyone submitted */
+      /* auto-finish when everyone submitted — only host writes to avoid N redundant writes */
       const vals = Object.values(players) as PlayerData[];
       const count = vals.length;
-      if (count>=2 && vals.every(p=>p.score>=0) && data.status!=='finished') {
+      if (data.hostId===playerId.current && count>=2 && vals.every(p=>p.score>=0) && data.status!=='finished') {
         update(roomRef,{status:'finished'}).catch(()=>{});
       }
     });
@@ -387,16 +388,19 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void }> = ({ onBackToHub }) =
     if (code.length!==4){ setError('Código deve ter 4 caracteres.'); return; }
     setLoading(true); setError('');
     try {
-      const snap = await get(ref(db,`rooms/${code}`));
-      if (!snap.exists()){ setError('Sala não encontrada.'); setLoading(false); return; }
-      const data = snap.val();
-      if (data.status==='finished'){ setError('Esta sala já terminou.'); setLoading(false); return; }
-      const count = Object.keys(data.players||{}).length;
-      if (count>=(data.maxPlayers??2)){ setError(`Sala cheia (máx. ${data.maxPlayers??2} jogadores).`); setLoading(false); return; }
-      await update(ref(db,`rooms/${code}/players/${playerId.current}`),
-        { name:playerName.trim(), score:-1, submittedAt:0 });
+      let rejectionReason = '';
+      const { committed } = await runTransaction(ref(db,`rooms/${code}`), (data)=>{
+        if (!data){ rejectionReason='Sala não encontrada.'; return; }
+        if (data.status==='finished'){ rejectionReason='Esta sala já terminou.'; return; }
+        if (data.status==='playing'){ rejectionReason='A partida já começou.'; return; }
+        const count = Object.keys(data.players||{}).length;
+        if (count>=(data.maxPlayers??2)){ rejectionReason=`Sala cheia (máx. ${data.maxPlayers??2} jogadores).`; return; }
+        return { ...data, players:{ ...data.players, [playerId.current]:{ name:playerName.trim(), score:-1, submittedAt:0 } } };
+      });
+      if (!committed){ setError(rejectionReason||'Não foi possível entrar na sala.'); setLoading(false); return; }
       setRoomCode(code); setIsHost(false);
       subscribeRoom(code);
+      setView('lobby');
     } catch { setError('Erro ao entrar na sala.'); }
     setLoading(false);
   };
@@ -404,12 +408,14 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void }> = ({ onBackToHub }) =
   /* ── host starts battle ── */
   const hostStart = async ()=>{
     if (!roomCode) return;
-    const snap = await get(ref(db,`rooms/${roomCode}`));
-    const data = snap.val();
-    if (!data) return;
-    const count = Object.keys(data.players||{}).length;
-    if (count<2){ setError('Aguarde ao menos 2 jogadores.'); return; }
-    await update(ref(db,`rooms/${roomCode}`),{ status:'playing', startedAt: Date.now() });
+    try {
+      const snap = await get(ref(db,`rooms/${roomCode}`));
+      const data = snap.val();
+      if (!data) return;
+      const count = Object.keys(data.players||{}).length;
+      if (count<2){ setError('Aguarde ao menos 2 jogadores.'); return; }
+      await update(ref(db,`rooms/${roomCode}`),{ status:'playing', startedAt: Date.now() });
+    } catch { setError('Erro ao iniciar a batalha. Verifique a conexão.'); }
   };
 
   /* ── solo start ── */
@@ -636,11 +642,11 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void }> = ({ onBackToHub }) =
             </div>
 
             {/* Filled slots */}
-            {Object.values(allPlayers).map((p,i)=>(
-              <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',background:isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)',borderRadius:10,marginBottom:6}}>
+            {Object.entries(allPlayers).map(([id,p])=>(
+              <div key={id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',background:isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)',borderRadius:10,marginBottom:6}}>
                 <div style={{width:8,height:8,borderRadius:'50%',background:'#22c55e',flexShrink:0}}/>
                 <span style={{fontSize:13,fontWeight:600,color:text,flex:1}}>{p.name}</span>
-                {p.name===playerName && <span style={{fontSize:10,color:'#667eea',background:'rgba(102,126,234,0.12)',padding:'2px 8px',borderRadius:999}}>você</span>}
+                {id===playerId.current && <span style={{fontSize:10,color:'#667eea',background:'rgba(102,126,234,0.12)',padding:'2px 8px',borderRadius:999}}>você</span>}
               </div>
             ))}
 

@@ -587,16 +587,17 @@ function TutorialModal({ T, isDark, onClose }: {
 ════════════════════════════════════════════════════════════════════════ */
 function AuthModal({ T, isDark, users, onLogin, onRegister, onClose }: {
   T: ReturnType<typeof getTheme>; isDark: boolean; users: GameUser[];
-  onLogin: (name: string, pass: string) => 'ok' | 'wrong-password' | 'not-found';
-  onRegister: (name: string, avatar: string, pass: string) => void;
+  onLogin: (name: string, pass: string) => Promise<'ok' | 'wrong-password' | 'not-found'>;
+  onRegister: (name: string, avatar: string, pass: string) => Promise<string>;
   onClose: () => void;
 }) {
   const [mode, setMode] = useState<'login' | 'register'>(users.length > 0 ? 'login' : 'register');
-  const [name, setName]   = useState('');
-  const [pass, setPass]   = useState('');
-  const [pass2, setPass2] = useState('');
+  const [name, setName]     = useState('');
+  const [pass, setPass]     = useState('');
+  const [pass2, setPass2]   = useState('');
   const [avatar, setAvatar] = useState(AVATARS[0]);
   const [error, setError]   = useState('');
+  const [loading, setLoading] = useState(false);
 
   const inputStyle: React.CSSProperties = {
     width: '100%', boxSizing: 'border-box',
@@ -605,15 +606,17 @@ function AuthModal({ T, isDark, users, onLogin, onRegister, onClose }: {
     color: T.text, fontSize: 14, fontFamily: 'inherit', outline: 'none',
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!name.trim() || !pass) { setError('Preencha usuário e senha.'); return; }
-    const result = onLogin(name.trim(), pass);
+    setLoading(true); setError('');
+    const result = await onLogin(name.trim(), pass);
+    setLoading(false);
     if (result === 'not-found') { setError('Usuário não encontrado.'); return; }
     if (result === 'wrong-password') { setError('Senha incorreta. Tente novamente.'); return; }
     onClose();
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!name.trim()) { setError('Digite um nome de usuário.'); return; }
     if (name.trim().length < 3) { setError('Mínimo de 3 caracteres.'); return; }
     if (pass.length < 4) { setError('Senha com pelo menos 4 caracteres.'); return; }
@@ -621,7 +624,9 @@ function AuthModal({ T, isDark, users, onLogin, onRegister, onClose }: {
     if (users.some(u => u.name.toLowerCase() === name.trim().toLowerCase())) {
       setError('Esse nome já está em uso. Faça login.'); return;
     }
-    onRegister(name.trim(), avatar, pass);
+    setLoading(true); setError('');
+    await onRegister(name.trim(), avatar, pass);
+    setLoading(false);
     onClose();
   };
 
@@ -685,7 +690,7 @@ function AuthModal({ T, isDark, users, onLogin, onRegister, onClose }: {
                 style={inputStyle}
                 onFocus={e => (e.currentTarget.style.borderColor = T.accent)}
                 onBlur={e => (e.currentTarget.style.borderColor = T.inputBorder)}
-                onKeyDown={e => e.key === 'Enter' && (mode === 'login' ? handleLogin() : handleRegister())} />
+                onKeyDown={e => { if (e.key === 'Enter') mode === 'login' ? handleLogin() : handleRegister(); }} />
             </div>
           </div>
 
@@ -711,11 +716,11 @@ function AuthModal({ T, isDark, users, onLogin, onRegister, onClose }: {
             </div>
           )}
 
-          <button onClick={mode === 'login' ? handleLogin : handleRegister}
-            style={{ padding: '12px 20px', background: T.accent, border: 'none', color: '#fff', fontFamily: "'Press Start 2P', monospace", fontSize: 10, cursor: 'pointer', boxShadow: `4px 4px 0 ${T.accent}60`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'; }}
+          <button onClick={mode === 'login' ? handleLogin : handleRegister} disabled={loading}
+            style={{ padding: '12px 20px', background: loading ? T.textMut : T.accent, border: 'none', color: '#fff', fontFamily: "'Press Start 2P', monospace", fontSize: 10, cursor: loading ? 'not-allowed' : 'pointer', boxShadow: loading ? 'none' : `4px 4px 0 ${T.accent}60`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, opacity: loading ? 0.7 : 1 }}
+            onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'none'; }}>
-            {mode === 'login' ? <><LogIn size={14} /> ENTRAR</> : <><UserPlus size={14} /> CRIAR CONTA</>}
+            {loading ? 'AGUARDE...' : mode === 'login' ? <><LogIn size={14} /> ENTRAR</> : <><UserPlus size={14} /> CRIAR CONTA</>}
           </button>
         </div>
       </div>
@@ -1144,7 +1149,7 @@ function PowerupShop({ T, isDark, currentUser, onBuy }: {
 
   const handleBuy = (key: keyof Powerups, cost: number) => {
     const ok = onBuy(key, cost);
-    setFeedback({ msg: ok ? `${SHOP_ITEMS.find(i=>i.key===key)?.emoji} Comprado!` : '❌ Pontos insuficientes', ok });
+    setFeedback({ msg: ok ? `${SHOP_ITEMS.find(i=>i.key===key)?.emoji} Comprado!` : '❌ Moedas insuficientes', ok });
     setTimeout(() => setFeedback(null), 2200);
   };
 
@@ -1159,7 +1164,7 @@ function PowerupShop({ T, isDark, currentUser, onBuy }: {
           <span style={{ fontSize: 11, color: T.textSec }}>🛡 {currentUser.powerups.shield} &nbsp; 🔍 {currentUser.powerups.eliminate}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: T.accent }}>{currentUser.points} PTS</span>
+          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#f59e0b' }}>🪙 {currentUser.coins}</span>
           {open ? <ChevronUp size={16} color={T.textMut} /> : <ChevronDown size={16} color={T.textMut} />}
         </div>
       </button>
@@ -1168,7 +1173,7 @@ function PowerupShop({ T, isDark, currentUser, onBuy }: {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
           {SHOP_ITEMS.map((item, i) => {
             const owned    = currentUser.powerups[item.key];
-            const canBuy   = currentUser.points >= item.cost;
+            const canBuy   = currentUser.coins >= item.cost;
             return (
               <div key={item.key} style={{ padding: '18px 20px', borderLeft: i > 0 ? `2px solid ${T.topBorder}` : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
@@ -1185,7 +1190,7 @@ function PowerupShop({ T, isDark, currentUser, onBuy }: {
                   style={{ width: '100%', padding: '9px 12px', background: canBuy ? item.color : (isDark ? '#1e2a3a' : '#e5e7eb'), border: 'none', color: canBuy ? '#fff' : T.textMut, fontFamily: "'Press Start 2P', monospace", fontSize: 8, cursor: canBuy ? 'pointer' : 'not-allowed', boxShadow: canBuy ? `3px 3px 0 ${item.color}60` : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all .1s' }}
                   onMouseEnter={e => canBuy && ((e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)')}
                   onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.transform = '')}>
-                  {item.emoji} COMPRAR — {item.cost} PTS
+                  {item.emoji} COMPRAR — 🪙 {item.cost}
                 </button>
               </div>
             );
@@ -1221,7 +1226,7 @@ function CosmeticsShop({ T, isDark, currentUser, onBuy, onEquip }: {
     const ok = onBuy(c.id, c.cost); // buyCosmetic já equipa e salva na conta
     setFeedback(ok
       ? { msg: `${c.emoji} Comprado e equipado! O Hub está vestindo a Copa.`, ok: true }
-      : { msg: '❌ Pontos insuficientes', ok: false });
+      : { msg: '❌ Moedas insuficientes', ok: false });
     setTimeout(() => setFeedback(null), 3000);
   };
 
@@ -1254,7 +1259,7 @@ function CosmeticsShop({ T, isDark, currentUser, onBuy, onEquip }: {
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: T.accent }}>{currentUser.points} PTS</span>
+          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#f59e0b' }}>🪙 {currentUser.coins}</span>
           {open ? <ChevronUp size={16} color={T.textMut} /> : <ChevronDown size={16} color={T.textMut} />}
         </div>
       </button>
@@ -1264,7 +1269,7 @@ function CosmeticsShop({ T, isDark, currentUser, onBuy, onEquip }: {
           {COSMETICS.map((c, i) => {
             const owned    = currentUser.purchasedCosmetics.includes(c.id);
             const isActive = activeId === c.id;
-            const canBuy   = !owned && currentUser.points >= c.cost;
+            const canBuy   = !owned && currentUser.coins >= c.cost;
 
             return (
               <div key={c.id} style={{ padding: '18px 20px', borderLeft: i > 0 ? `2px solid ${T.topBorder}` : 'none' }}>
@@ -1960,6 +1965,7 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
               {[
                 { label: 'RANK',      value: rank.title.toUpperCase(),                        color: rank.color,  icon: <LIcon name={rank.icon} size={14} color={rank.color} /> },
                 { label: 'PONTOS',    value: `${currentUser.points}`,                          color: T.accent,    icon: <Trophy size={14} color={T.accent} /> },
+                { label: 'MOEDAS',    value: `🪙 ${currentUser.coins}`,                       color: '#f59e0b',   icon: <Star size={14} color="#f59e0b" /> },
                 { label: 'STREAK',    value: `${currentUser.streak}`,                          color: '#f59e0b',   icon: <Zap size={14} color="#f59e0b" /> },
                 { label: 'RESOLVIDOS',value: `${currentUser.solvedPuzzles.length}/${PUZZLES.length}`, color: '#22c55e', icon: <CheckCircle2 size={14} color="#22c55e" /> },
               ].map((s, i) => (
@@ -2023,32 +2029,80 @@ export default function DesafiosPage({ onBackToHub }: DesafiosPageProps) {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-              {/* Leaderboard colapsável */}
-              {users.length > 0 && (
+              {/* Leaderboard — sempre visível */}
+              {leaderboard.length > 0 && (
                 <div style={{ background: T.cardBg, border: `2px solid ${T.cardBorder}`, boxShadow: `4px 4px 0 ${T.cardShadow}`, marginBottom: 8 }}>
-                  <button onClick={() => setShowBoard(v => !v)}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', borderBottom: showBoard ? `2px solid ${T.topBorder}` : 'none' }}>
+                  {/* Cabeçalho */}
+                  <div style={{ padding: '14px 20px', borderBottom: `2px solid ${T.topBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <Trophy size={16} color={T.accent} />
-                      <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: T.text }}>PLACAR GERAL — {users.length} DETETIVE{users.length !== 1 ? 'S' : ''}</span>
+                      <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: T.text }}>PLACAR GERAL</span>
                     </div>
-                    {showBoard ? <ChevronUp size={16} color={T.textMut} /> : <ChevronDown size={16} color={T.textMut} />}
-                  </button>
-                  {showBoard && leaderboard.slice(0, 10).map((u, idx) => {
+                    <span style={{ fontSize: 11, color: T.textMut }}>{leaderboard.length} detetive{leaderboard.length !== 1 ? 's' : ''}</span>
+                  </div>
+
+                  {/* Pódio top-3 */}
+                  {leaderboard.length >= 1 && (
+                    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 8, padding: '20px 16px 12px', borderBottom: `1px solid ${T.divider}` }}>
+                      {/* 2º lugar */}
+                      {leaderboard[1] && (() => { const u = leaderboard[1]; const r = getRank(u.points); const isMe = u.id === currentUser?.id; return (
+                        <div style={{ textAlign: 'center', flex: 1 }}>
+                          <div style={{ fontSize: 22, marginBottom: 4 }}>{u.avatar}</div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: T.text, marginBottom: 2 }}>{u.name}{isMe && <span style={{ color: T.accent }}> ★</span>}</div>
+                          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: '#94a3b8' }}>🥈 {u.points}</div>
+                          <div style={{ height: 48, background: isDark ? 'rgba(148,163,184,0.12)' : 'rgba(148,163,184,0.2)', border: `2px solid #94a3b8`, marginTop: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 14, color: '#94a3b8' }}>2</span>
+                          </div>
+                        </div>
+                      ); })()}
+                      {/* 1º lugar */}
+                      {(() => { const u = leaderboard[0]; const r = getRank(u.points); const isMe = u.id === currentUser?.id; return (
+                        <div style={{ textAlign: 'center', flex: 1 }}>
+                          <div style={{ fontSize: 26, marginBottom: 4 }}>{u.avatar}</div>
+                          <div style={{ fontSize: 12, fontWeight: 900, color: T.text, marginBottom: 2 }}>{u.name}{isMe && <span style={{ color: T.accent }}> ★</span>}</div>
+                          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: '#fbbf24' }}>🥇 {u.points}</div>
+                          <div style={{ height: 72, background: isDark ? 'rgba(251,191,36,0.12)' : 'rgba(251,191,36,0.15)', border: `2px solid #fbbf24`, marginTop: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 18, color: '#fbbf24' }}>1</span>
+                          </div>
+                        </div>
+                      ); })()}
+                      {/* 3º lugar */}
+                      {leaderboard[2] && (() => { const u = leaderboard[2]; const r = getRank(u.points); const isMe = u.id === currentUser?.id; return (
+                        <div style={{ textAlign: 'center', flex: 1 }}>
+                          <div style={{ fontSize: 22, marginBottom: 4 }}>{u.avatar}</div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: T.text, marginBottom: 2 }}>{u.name}{isMe && <span style={{ color: T.accent }}> ★</span>}</div>
+                          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: '#d97706' }}>🥉 {u.points}</div>
+                          <div style={{ height: 36, background: isDark ? 'rgba(217,119,6,0.12)' : 'rgba(217,119,6,0.15)', border: `2px solid #d97706`, marginTop: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 12, color: '#d97706' }}>3</span>
+                          </div>
+                        </div>
+                      ); })()}
+                    </div>
+                  )}
+
+                  {/* Lista completa */}
+                  {leaderboard.map((u, idx) => {
                     const r = getRank(u.points);
                     const isMe = u.id === currentUser?.id;
                     const posColor = idx === 0 ? '#fbbf24' : idx === 1 ? '#94a3b8' : idx === 2 ? '#d97706' : T.textMut;
+                    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx+1}`;
                     return (
-                      <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 20px', background: isMe ? T.accentDim : 'transparent', borderBottom: `1px solid ${T.divider}` }}>
-                        <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: posColor, width: 24, textAlign: 'center' }}>#{idx + 1}</span>
-                        <span style={{ fontSize: 20 }}>{u.avatar}</span>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 14, fontWeight: 900, color: T.text }}>{u.name}{isMe && <span style={{ fontSize: 11, fontWeight: 400, color: T.accent, marginLeft: 8 }}>(você)</span>}</div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}><LIcon name={r.icon} size={12} color={r.color} /><span style={{ fontSize: 11, color: r.color }}>{r.title}</span></div>
+                      <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 20px', background: isMe ? T.accentDim : 'transparent', borderBottom: `1px solid ${T.divider}`, borderLeft: isMe ? `3px solid ${T.accent}` : '3px solid transparent' }}>
+                        <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: idx < 3 ? 13 : 9, color: posColor, width: 28, textAlign: 'center', flexShrink: 0 }}>{medal}</span>
+                        <span style={{ fontSize: idx < 3 ? 22 : 18, flexShrink: 0 }}>{u.avatar}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 900, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {u.name}{isMe && <span style={{ fontSize: 10, fontWeight: 400, color: T.accent, marginLeft: 6 }}>(você)</span>}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                            <LIcon name={r.icon} size={11} color={r.color} />
+                            <span style={{ fontSize: 10, color: r.color }}>{r.title}</span>
+                            <span style={{ fontSize: 10, color: T.textMut }}>· {u.solvedPuzzles.length} casos</span>
+                          </div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 11, color: r.color }}>{u.points}</div>
-                          <div style={{ fontSize: 11, color: T.textMut, marginTop: 2 }}>{u.solvedPuzzles.length} casos</div>
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: r.color }}>{u.points} pts</div>
+                          <div style={{ fontSize: 10, color: '#f59e0b', marginTop: 2 }}>🪙 {(u as any).coins ?? u.points}</div>
                         </div>
                       </div>
                     );

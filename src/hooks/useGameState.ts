@@ -1,4 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { ref, set, get, onValue } from 'firebase/database';
+import { db } from '../lib/firebase';
 import { setActiveCosmeticId } from '../data/cosmetics';
 
 export interface Powerups {
@@ -12,13 +14,14 @@ export interface GameUser {
   avatar: string;
   passwordHash: string;
   points: number;
+  coins: number;             // moeda separada — ganha junto com pts, gasta na loja
   solvedPuzzles: string[];
   hintsUsed: string[];
   streak: number;
-  wrongAttempts: Record<string, number>; // puzzleId → nº de erros
+  wrongAttempts: Record<string, number>;
   powerups: Powerups;
   purchasedCosmetics: string[];
-  activeCosmeticId: string | null; // cosmético equipado por este usuário
+  activeCosmeticId: string | null;
 }
 
 interface GameState {
@@ -28,6 +31,11 @@ interface GameState {
 
 const STORAGE_KEY = 'ctrlplay_desafios_v2';
 const ADMIN_ID    = 'u_admin';
+const FB_USERS    = 'desafios_users';
+
+function fbKey(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+}
 
 /** FNV-1a 32-bit hash */
 function hashPassword(s: string): string {
@@ -41,12 +49,14 @@ function hashPassword(s: string): string {
 
 /** Garante que usuários antigos (sem os novos campos) tenham defaults */
 function migrateUser(u: Partial<GameUser> & Pick<GameUser, 'id' | 'name'>): GameUser {
+  const pts = (u as any).points ?? 0;
   return {
     id:                 u.id,
     name:               u.name,
     avatar:             u.avatar             ?? '🕵',
     passwordHash:       u.passwordHash       ?? '',
-    points:             u.points             ?? 0,
+    points:             pts,
+    coins:              (u as any).coins     ?? pts,  // migração: começa com coins = pontos atuais
     solvedPuzzles:      u.solvedPuzzles      ?? [],
     hintsUsed:          u.hintsUsed          ?? [],
     streak:             u.streak             ?? 0,
@@ -59,16 +69,14 @@ function migrateUser(u: Partial<GameUser> & Pick<GameUser, 'id' | 'name'>): Game
 
 const ADMIN_MIN_POINTS = 9999;
 
-/** Garante que o usuário admin existe com credenciais padrão */
 function ensureAdmin(state: GameState): GameState {
   const exists = state.users.find(u => u.id === ADMIN_ID);
   if (exists) {
-    // Migração: garante pontos mínimos caso admin já exista
     if (exists.points < ADMIN_MIN_POINTS) {
       return {
         ...state,
         users: state.users.map(u =>
-          u.id === ADMIN_ID ? { ...u, points: ADMIN_MIN_POINTS } : u
+          u.id === ADMIN_ID ? { ...u, points: ADMIN_MIN_POINTS, coins: ADMIN_MIN_POINTS } : u
         ),
       };
     }
@@ -77,7 +85,8 @@ function ensureAdmin(state: GameState): GameState {
   const admin: GameUser = {
     id: ADMIN_ID, name: 'admin', avatar: '👑',
     passwordHash: hashPassword('Ctrl@2026'),
-    points: ADMIN_MIN_POINTS, solvedPuzzles: [], hintsUsed: [],
+    points: ADMIN_MIN_POINTS, coins: ADMIN_MIN_POINTS,
+    solvedPuzzles: [], hintsUsed: [],
     streak: 0, wrongAttempts: {}, powerups: { shield: 5, eliminate: 5 },
     purchasedCosmetics: [], activeCosmeticId: null,
   };
@@ -107,12 +116,25 @@ function saveState(state: GameState) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* ignore */ }
 }
 
+/* ── Firebase helpers ──────────────────────────────────────────────── */
+
+async function fbSaveUser(user: GameUser): Promise<void> {
+  try {
+    await set(ref(db, `${FB_USERS}/${fbKey(user.name)}`), user);
+  } catch { /* ignore — offline ou rules negaram */ }
+}
+
+async function fbLoadUser(name: string): Promise<GameUser | null> {
+  try {
+    const snap = await get(ref(db, `${FB_USERS}/${fbKey(name)}`));
+    return snap.exists() ? migrateUser(snap.val() as GameUser) : null;
+  } catch { return null; }
+}
+
+/* ── Tipos exportados ──────────────────────────────────────────────── */
+
 export type LoginResult = 'ok' | 'wrong-password' | 'not-found';
 
-/**
- * Calcula os pontos que serão ganhos ao acertar agora.
- * Exportado para que o PuzzleModal possa exibir o preview.
- */
 export function computeEarned(
   basePoints: number,
   hintUsed: boolean,
@@ -122,13 +144,30 @@ export function computeEarned(
   const base = Math.max(0, basePoints - hintPenalty);
   if (wrongCount === 0) return Math.max(1, base);
   if (wrongCount === 1) return Math.max(1, Math.floor(base * 0.5));
-  return 1; // 3ª+ tentativa: mínimo simbólico
+  return 1;
 }
+
+/* ── Hook principal ────────────────────────────────────────────────── */
 
 export function useGameState() {
   const [state, setState] = useState<GameState>(loadState);
+  const [fbLeaderboard, setFbLeaderboard] = useState<GameUser[]>([]);
 
   const currentUser = state.users.find(u => u.id === state.currentUserId) ?? null;
+
+  /* Leaderboard em tempo real via Firebase */
+  useEffect(() => {
+    const unsub = onValue(ref(db, FB_USERS), snap => {
+      const data = snap.val();
+      if (!data) return;
+      const ranked = (Object.values(data) as GameUser[])
+        .map(u => migrateUser(u))
+        .filter(u => u.id !== ADMIN_ID)
+        .sort((a, b) => b.points - a.points);
+      setFbLeaderboard(ranked);
+    }, () => { /* offline — ignora */ });
+    return () => unsub();
+  }, []);
 
   const persist = useCallback((next: GameState) => {
     setState(next);
@@ -137,54 +176,62 @@ export function useGameState() {
 
   const update = useCallback((updated: GameUser) => {
     persist({ ...state, users: state.users.map(u => u.id === updated.id ? updated : u) });
+    fbSaveUser(updated); // fire-and-forget
   }, [state, persist]);
 
   /* ── Auth ──────────────────────────────────────────────────────── */
 
-  const registerUser = useCallback((name: string, avatar: string, password: string): string => {
+  const registerUser = useCallback(async (name: string, avatar: string, password: string): Promise<string> => {
     const id = `u_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
     const newUser: GameUser = {
       id, name, avatar, passwordHash: hashPassword(password),
-      points: 0, solvedPuzzles: [], hintsUsed: [],
+      points: 0, coins: 0,
+      solvedPuzzles: [], hintsUsed: [],
       streak: 0, wrongAttempts: {}, powerups: { shield: 0, eliminate: 0 },
       purchasedCosmetics: [], activeCosmeticId: null,
     };
     persist({ users: [...state.users, newUser], currentUserId: id });
-    setActiveCosmeticId(null); // novo usuário sem cosmético
+    setActiveCosmeticId(null);
+    await fbSaveUser(newUser);
     return id;
   }, [state, persist]);
 
-  const login = useCallback((name: string, password: string): LoginResult => {
+  const login = useCallback(async (name: string, password: string): Promise<LoginResult> => {
+    // Tenta Firebase primeiro (suporte cross-device)
+    const fbUser = await fbLoadUser(name);
+    if (fbUser) {
+      if (fbUser.passwordHash !== hashPassword(password)) return 'wrong-password';
+      // Sincroniza dados do Firebase no estado local
+      const nextUsers = state.users.some(u => u.name.toLowerCase() === name.toLowerCase())
+        ? state.users.map(u => u.name.toLowerCase() === name.toLowerCase() ? fbUser : u)
+        : [...state.users, fbUser];
+      persist({ users: nextUsers, currentUserId: fbUser.id });
+      setActiveCosmeticId(fbUser.activeCosmeticId);
+      return 'ok';
+    }
+
+    // Fallback: dados locais (offline ou usuário ainda não migrado)
     const user = state.users.find(u => u.name.toLowerCase() === name.toLowerCase());
     if (!user) return 'not-found';
     if (user.passwordHash && user.passwordHash !== hashPassword(password)) return 'wrong-password';
 
-    let finalUser = user;
-    let nextUsers = state.users;
-
-    if (!user.passwordHash) {
-      finalUser = migrateUser({ ...user, passwordHash: hashPassword(password) });
-      nextUsers  = state.users.map(u => u.id === user.id ? finalUser : u);
-    }
-
+    const finalUser = !user.passwordHash
+      ? migrateUser({ ...user, passwordHash: hashPassword(password) })
+      : user;
+    const nextUsers = state.users.map(u => u.id === user.id ? finalUser : u);
     persist({ users: nextUsers, currentUserId: finalUser.id });
-    // Restaura o cosmético que o usuário tinha equipado
     setActiveCosmeticId(finalUser.activeCosmeticId);
+    fbSaveUser(finalUser); // migra para Firebase
     return 'ok';
   }, [state, persist]);
 
   const logout = useCallback(() => {
     persist({ ...state, currentUserId: null });
-    // Limpa o cosmético ao deslogar — sem conta logada, sem tema
     setActiveCosmeticId(null);
   }, [state, persist]);
 
   /* ── Dica ───────────────────────────────────────────────────────── */
 
-  /**
-   * FIX Bug 1: useHint apenas REGISTRA o uso da dica.
-   * O desconto de -5 pts acontece UMA ÚNICA vez em recordAnswer.
-   */
   const useHint = useCallback((puzzleId: string): boolean => {
     if (!currentUser) return false;
     if (currentUser.hintsUsed.includes(puzzleId)) return true;
@@ -194,9 +241,6 @@ export function useGameState() {
 
   /* ── Resposta ───────────────────────────────────────────────────── */
 
-  /**
-   * FIX Bug 2: penalidade progressiva por tentativas + integração com Escudo.
-   */
   const recordAnswer = useCallback((
     puzzleId: string,
     correct: boolean,
@@ -221,41 +265,42 @@ export function useGameState() {
 
     if (currentUser.solvedPuzzles.includes(puzzleId)) return { bonus: 0, shieldUsed: false };
 
-    const hintUsed = currentUser.hintsUsed.includes(puzzleId);
-    const earned   = computeEarned(puzzlePoints, hintUsed, wrongCount);
+    const hintUsed  = currentUser.hintsUsed.includes(puzzleId);
+    const earned    = computeEarned(puzzlePoints, hintUsed, wrongCount);
     const newStreak = currentUser.streak + 1;
-    const bonus    = newStreak % 5 === 0 ? 10 : 0;
+    const bonus     = newStreak % 5 === 0 ? 10 : 0;
+    const total     = earned + bonus;
 
     update({
       ...currentUser,
-      points: currentUser.points + earned + bonus,
+      points: currentUser.points + total,
+      coins:  currentUser.coins  + total,  // moedas ganhas na mesma proporção que pontos
       solvedPuzzles: [...currentUser.solvedPuzzles, puzzleId],
       streak: newStreak,
     });
     return { bonus, shieldUsed: false };
   }, [currentUser, update]);
 
-  /* ── Power-up: Loja ────────────────────────────────────────────── */
+  /* ── Power-up: Loja (usa moedas, não pontos) ───────────────────── */
 
   const buyPowerup = useCallback((key: keyof Powerups, cost: number): boolean => {
-    if (!currentUser || currentUser.points < cost) return false;
+    if (!currentUser || currentUser.coins < cost) return false;
     update({
       ...currentUser,
-      points: currentUser.points - cost,
+      coins: currentUser.coins - cost,
       powerups: { ...currentUser.powerups, [key]: currentUser.powerups[key] + 1 },
     });
     return true;
   }, [currentUser, update]);
 
-  /* ── Cosméticos ────────────────────────────────────────────────── */
+  /* ── Cosméticos (usa moedas, não pontos) ───────────────────────── */
 
-  /** Compra o cosmético e o equipa automaticamente */
   const buyCosmetic = useCallback((cosmeticId: string, cost: number): boolean => {
-    if (!currentUser || currentUser.points < cost) return false;
+    if (!currentUser || currentUser.coins < cost) return false;
     if (currentUser.purchasedCosmetics.includes(cosmeticId)) return false;
     const updated: GameUser = {
       ...currentUser,
-      points: currentUser.points - cost,
+      coins: currentUser.coins - cost,
       purchasedCosmetics: [...currentUser.purchasedCosmetics, cosmeticId],
       activeCosmeticId: cosmeticId,
     };
@@ -264,14 +309,13 @@ export function useGameState() {
     return true;
   }, [currentUser, update]);
 
-  /** Equipa ou desequipa um cosmético já comprado */
   const equipCosmetic = useCallback((cosmeticId: string | null): void => {
     if (!currentUser) return;
     update({ ...currentUser, activeCosmeticId: cosmeticId });
     setActiveCosmeticId(cosmeticId);
   }, [currentUser, update]);
 
-  /* ── Power-up: Usar Eliminar Errada (consome 1 unidade) ─────────── */
+  /* ── Power-up: Usar Eliminar Errada ─────────────────────────────── */
 
   const useEliminate = useCallback((): boolean => {
     if (!currentUser || currentUser.powerups.eliminate <= 0) return false;
@@ -282,7 +326,10 @@ export function useGameState() {
     return true;
   }, [currentUser, update]);
 
-  const leaderboard = [...state.users].sort((a, b) => b.points - a.points);
+  // Firebase tem prioridade no leaderboard (tempo real); fallback local
+  const leaderboard = fbLeaderboard.length > 0
+    ? fbLeaderboard
+    : state.users.filter(u => u.id !== ADMIN_ID).sort((a, b) => b.points - a.points);
 
   return {
     currentUser, users: state.users, leaderboard,
