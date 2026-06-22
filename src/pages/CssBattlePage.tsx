@@ -715,6 +715,11 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void }> = ({ onBackToHub }) =
     if (code.length!==4){ setError('Código deve ter 4 caracteres.'); return; }
     setLoading(true); setError('');
     try {
+      /* get() primeiro para carregar o room no cache local — sem isso o
+         runTransaction recebe data=null na primeira chamada e aborta */
+      const snap = await get(ref(db,`rooms/${code}`));
+      if (!snap.exists()){ setError('Sala não encontrada.'); setLoading(false); return; }
+
       let rejectionReason = '';
       const { committed } = await runTransaction(ref(db,`rooms/${code}`), (data)=>{
         if (!data){ rejectionReason='Sala não encontrada.'; return; }
