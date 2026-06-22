@@ -1577,6 +1577,10 @@ const App: React.FC = () => {
   const { mode: viewMode, toggleMode: toggleViewMode } = useViewMode();
 
   /* ── Página atual ────────────────────────────────────────────────────── */
+  const [initialJoinCode] = useState(() =>
+    new URLSearchParams(window.location.search).get('sala')?.toUpperCase() ?? ''
+  );
+
   const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'cssbattle'>(() => {
     if (window.location.hash === '#roadmaps')  return 'roadmaps';
     if (window.location.hash === '#suporte')   return 'suporte';
@@ -1584,6 +1588,7 @@ const App: React.FC = () => {
     if (window.location.hash === '#noticias')  return 'noticias';
     if (window.location.hash === '#desafios')  return 'desafios';
     if (window.location.hash === '#cssbattle') return 'cssbattle';
+    if (new URLSearchParams(window.location.search).get('sala'))  return 'cssbattle';
     // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
   });
@@ -1905,7 +1910,7 @@ const App: React.FC = () => {
 
   /* CSS Battle page */
   if (currentPage === 'cssbattle') {
-    return <CssBattlePage onBackToHub={() => setCurrentPage('hub')} />;
+    return <CssBattlePage onBackToHub={() => setCurrentPage('hub')} initialJoinCode={initialJoinCode} />;
   }
 
   return (

@@ -468,7 +468,7 @@ const HINT_COSTS: [number,number,number] = [0, 10, 20];
 
 /* ── Component ───────────────────────────────────────────────────────────── */
 
-const CssBattlePage: React.FC<{ onBackToHub: () => void }> = ({ onBackToHub }) => {
+const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: string }> = ({ onBackToHub, initialJoinCode }) => {
   const { isDark } = useTheme();
   const { currentUser, spendCoins } = useGameState();
 
@@ -549,6 +549,16 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void }> = ({ onBackToHub }) =
       targetRef.current.srcdoc = buildDoc(ch.targetHtml, ch.targetCss);
     }
   }, [challengeIdx, view]);
+
+  /* ── Auto-fill via link de convite ── */
+  useEffect(()=>{
+    if (initialJoinCode && initialJoinCode.length === 4) {
+      setMode('join');
+      setJoinCodeInput(initialJoinCode);
+      setView('setup');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* ── Cleanup ── */
   useEffect(()=>()=>{
@@ -792,7 +802,10 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void }> = ({ onBackToHub }) =
     setTimeout(()=>{ ta.selectionStart=ta.selectionEnd=s+2; },0);
   };
 
-  const copyCode = ()=>{ navigator.clipboard.writeText(roomCode).then(()=>{ setCopiedCode(true); setTimeout(()=>setCopiedCode(false),2000); }); };
+  const copyCode = ()=>{
+    const link = `${window.location.origin}${window.location.pathname}?sala=${roomCode}#cssbattle`;
+    navigator.clipboard.writeText(link).then(()=>{ setCopiedCode(true); setTimeout(()=>setCopiedCode(false),2000); });
+  };
   const fmtTime  = (s: number)=>`${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
 
   const challenge  = CHALLENGES[challengeIdx] ?? CHALLENGES[0];
@@ -1030,7 +1043,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void }> = ({ onBackToHub }) =
 
           <button onClick={copyCode}
             style={{display:'flex',alignItems:'center',gap:8,width:'100%',justifyContent:'center',marginBottom:20,background:copiedCode?'rgba(34,197,94,0.1)':'rgba(102,126,234,0.08)',border:`1px solid ${copiedCode?'rgba(34,197,94,0.3)':'rgba(102,126,234,0.25)'}`,color:copiedCode?'#22c55e':'#667eea',borderRadius:8,padding:'10px',cursor:'pointer',fontSize:13,fontWeight:600}}>
-            {copiedCode?<><Check size={14}/> Copiado!</>:<><Copy size={14}/> Copiar código</>}
+            {copiedCode?<><Check size={14}/> Link copiado!</>:<><Copy size={14}/> Copiar link de convite</>}
           </button>
 
           <div style={{marginBottom:20}}>
