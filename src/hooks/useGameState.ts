@@ -326,6 +326,12 @@ export function useGameState() {
     return true;
   }, [currentUser, update]);
 
+  const spendCoins = useCallback((amount: number): boolean => {
+    if (!currentUser || currentUser.coins < amount) return false;
+    update({ ...currentUser, coins: currentUser.coins - amount });
+    return true;
+  }, [currentUser, update]);
+
   // Firebase tem prioridade no leaderboard (tempo real); fallback local
   const leaderboard = fbLeaderboard.length > 0
     ? fbLeaderboard
@@ -335,6 +341,6 @@ export function useGameState() {
     currentUser, users: state.users, leaderboard,
     registerUser, login, logout,
     useHint, recordAnswer, buyPowerup, useEliminate,
-    buyCosmetic, equipCosmetic,
+    buyCosmetic, equipCosmetic, spendCoins,
   };
 }
