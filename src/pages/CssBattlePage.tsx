@@ -641,6 +641,386 @@ const CHALLENGES: Challenge[] = [
     targetCss: `.pagina { max-width: 500px; margin: 24px auto; padding: 28px; font-family: Georgia, serif; } h1 { color: #1e293b; font-size: 22px; margin: 0 0 14px; } p { color: #374151; line-height: 1.7; margin: 0 0 20px; } mark { background: #bbf7d0; color: #14532d; padding: 2px 5px; border-radius: 3px; } blockquote { margin: 0; padding: 16px 20px; background: #f8fafc; border-left: 5px solid #667eea; border-radius: 0 10px 10px 0; color: #475569; font-style: italic; font-size: 14px; line-height: 1.7; }`,
     starterCss: `.pagina {\n  max-width: 500px;\n  margin: 24px auto;\n  padding: 28px;\n}\nmark { /* background e padding */ }\nblockquote {\n  border-left: /* ? */;\n  padding: /* ? */;\n  background: /* ? */;\n}`,
   },
+
+  /* ── Básico extra ──────────────────────────────────────────────────── */
+  {
+    id: 40, title: 'Sublinhado Colorido', category: 'basico', Icon: AlignCenter, iconColor: '#e74c3c',
+    difficulty: 'Fácil', points: 80,
+    description: 'Adicione sublinhado ao texto e mude a cor para vermelho #e74c3c.',
+    hints: [
+      'text-decoration adiciona decorações ao texto: underline (abaixo), overline (acima) ou line-through (tachado).',
+      'text-decoration: underline; aplica o sublinhado. color: #e74c3c; muda a cor para vermelho.',
+      'Solução: .texto { text-decoration: underline; color: #e74c3c; font-size: 22px; font-family: sans-serif; }',
+    ],
+    htmlStructure: '<h2 class="texto">Aprenda CSS!</h2>',
+    targetHtml: '<h2 class="texto">Aprenda CSS!</h2>',
+    targetCss: `.texto { text-decoration: underline; color: #e74c3c; font-size: 22px; font-family: sans-serif; font-weight: 700; }`,
+    starterCss: `.texto {\n  font-size: 22px;\n  font-family: sans-serif;\n  text-decoration: /* ? */;\n  color: /* ? */;\n}`,
+  },
+  {
+    id: 41, title: 'Sombra Interna', category: 'basico', Icon: Square, iconColor: '#8b5cf6',
+    difficulty: 'Fácil', points: 120,
+    description: 'Adicione uma sombra interna escura à caixa usando box-shadow com a palavra-chave inset.',
+    hints: [
+      'box-shadow normalmente projeta sombra para fora. Com inset no início, a sombra vai para dentro.',
+      'box-shadow: inset 0 4px 12px rgba(0,0,0,0.35); — o inset cria o efeito de profundidade interno.',
+      'Solução: .caixa { width: 150px; height: 100px; background: #8b5cf6; border-radius: 10px; box-shadow: inset 0 4px 12px rgba(0,0,0,0.35); }',
+    ],
+    htmlStructure: '<div class="caixa"></div>',
+    targetHtml: '<div class="caixa"></div>',
+    targetCss: `.caixa { width: 150px; height: 100px; background: #8b5cf6; border-radius: 10px; box-shadow: inset 0 4px 12px rgba(0,0,0,0.35); }`,
+    starterCss: `.caixa {\n  width: 150px;\n  height: 100px;\n  background: #8b5cf6;\n  border-radius: 10px;\n  box-shadow: /* inset ... */;\n}`,
+  },
+  {
+    id: 42, title: 'Tags Coloridas', category: 'basico', Icon: Square, iconColor: '#06b6d4',
+    difficulty: 'Fácil', points: 100,
+    description: 'Estilize os spans como pílulas: fundo ciano #06b6d4, texto branco, bordas completamente arredondadas.',
+    hints: [
+      'span é inline por padrão, mas com display: inline-block você pode aplicar padding e border-radius.',
+      'border-radius: 999px cria cantos completamente arredondados em qualquer elemento.',
+      'Solução: .tag { display: inline-block; background: #06b6d4; color: white; padding: 4px 14px; border-radius: 999px; margin: 4px; font-family: sans-serif; }',
+    ],
+    htmlStructure: '<span class="tag">HTML</span>\n<span class="tag">CSS</span>\n<span class="tag">JS</span>',
+    targetHtml: '<span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JS</span>',
+    targetCss: `.tag { display: inline-block; background: #06b6d4; color: white; padding: 4px 14px; border-radius: 999px; margin: 4px; font-size: 14px; font-family: sans-serif; font-weight: 600; }`,
+    starterCss: `.tag {\n  display: /* inline-block */;\n  background: /* #06b6d4 */;\n  color: white;\n  padding: 4px 14px;\n  border-radius: /* ? */;\n  margin: 4px;\n  font-family: sans-serif;\n}`,
+  },
+  {
+    id: 43, title: 'Fundo Semi-transparente', category: 'basico', Icon: Palette, iconColor: '#f59e0b',
+    difficulty: 'Fácil', points: 110,
+    description: 'Use rgba() para criar um fundo laranja semi-transparente. Use rgba(243,156,18,0.5).',
+    hints: [
+      'rgba() aceita 4 valores: vermelho, verde, azul (0-255) e alfa (0 a 1, onde 1 é opaco e 0 transparente).',
+      'background: rgba(243, 156, 18, 0.5); — laranja com 50% de transparência.',
+      'Solução: .caixa { width: 150px; height: 100px; background: rgba(243,156,18,0.5); border-radius: 10px; }',
+    ],
+    htmlStructure: '<div class="caixa"></div>',
+    targetHtml: '<div class="caixa"></div>',
+    targetCss: `.caixa { width: 150px; height: 100px; background: rgba(243,156,18,0.5); border-radius: 10px; }`,
+    starterCss: `.caixa {\n  width: 150px;\n  height: 100px;\n  background: rgba(/* r,g,b,a */);\n  border-radius: 10px;\n}`,
+  },
+  {
+    id: 44, title: 'Texto Maiúsculo', category: 'basico', Icon: AlignCenter, iconColor: '#667eea',
+    difficulty: 'Fácil', points: 90,
+    description: 'Transforme o texto em maiúsculo com CSS e adicione espaçamento entre letras de 0.1em.',
+    hints: [
+      'text-transform muda a capitalização do texto: uppercase (tudo maiúsculo), lowercase (tudo minúsculo).',
+      'letter-spacing adiciona espaço entre cada caractere. Use valores em em para ser relativo ao tamanho da fonte.',
+      'Solução: .titulo { text-transform: uppercase; letter-spacing: 0.1em; color: #667eea; font-size: 22px; }',
+    ],
+    htmlStructure: '<h2 class="titulo">css battle</h2>',
+    targetHtml: '<h2 class="titulo">css battle</h2>',
+    targetCss: `.titulo { text-transform: uppercase; letter-spacing: 0.1em; color: #667eea; font-size: 22px; font-family: sans-serif; font-weight: 700; }`,
+    starterCss: `.titulo {\n  font-size: 22px;\n  font-family: sans-serif;\n  font-weight: 700;\n  text-transform: /* ? */;\n  letter-spacing: /* ? */;\n  color: #667eea;\n}`,
+  },
+  {
+    id: 45, title: 'Centralizar com Margem', category: 'basico', Icon: AlignCenter, iconColor: '#22c55e',
+    difficulty: 'Médio', points: 130,
+    description: 'Centralize a caixa horizontalmente na página usando margin: 0 auto. A caixa tem largura 160px.',
+    hints: [
+      'margin: auto no eixo horizontal divide o espaço disponível igualmente nos dois lados.',
+      'Para funcionar, o elemento precisa ter largura definida (width). margin: 0 auto define margens laterais automáticas.',
+      'Solução: .caixa { width: 160px; height: 70px; background: #22c55e; margin: 0 auto; border-radius: 8px; }',
+    ],
+    htmlStructure: '<div style="width:100%"><div class="caixa"></div></div>',
+    targetHtml: '<div style="width:100%"><div class="caixa"></div></div>',
+    targetCss: `.caixa { width: 160px; height: 70px; background: #22c55e; margin: 0 auto; border-radius: 8px; }`,
+    starterCss: `.caixa {\n  width: 160px;\n  height: 70px;\n  background: #22c55e;\n  border-radius: 8px;\n  margin: /* 0 auto */;\n}`,
+  },
+  {
+    id: 46, title: 'Texto Tachado', category: 'basico', Icon: AlignCenter, iconColor: '#94a3b8',
+    difficulty: 'Fácil', points: 90,
+    description: 'Estilize o preço antigo com texto tachado e cor cinza, e o preço atual em verde.',
+    hints: [
+      'text-decoration aceita line-through para traçar uma linha no meio do texto.',
+      'Combine text-decoration: line-through com color para deixar o preço antigo cinza apagado.',
+      'Solução: .antigo { text-decoration: line-through; color: #94a3b8; } .preco { color: #22c55e; font-weight: 700; }',
+    ],
+    htmlStructure: '<p class="preco"><span class="antigo">R$100</span>  R$60</p>',
+    targetHtml: '<p class="preco"><span class="antigo">R$100</span>  R$60</p>',
+    targetCss: `.preco { font-family: sans-serif; font-size: 20px; color: #22c55e; font-weight: 700; } .antigo { text-decoration: line-through; color: #94a3b8; font-size: 14px; margin-right: 8px; }`,
+    starterCss: `.preco {\n  font-family: sans-serif;\n  font-size: 20px;\n  font-weight: 700;\n  color: #22c55e;\n}\n.antigo {\n  text-decoration: /* line-through */;\n  color: /* cinza */;\n}`,
+  },
+  {
+    id: 47, title: 'Bordas Assimétricas', category: 'basico', Icon: Square, iconColor: '#f59e0b',
+    difficulty: 'Médio', points: 150,
+    description: 'Crie uma forma com border-radius diferente em cada canto: 40% 10% 40% 10%.',
+    hints: [
+      'border-radius aceita até 4 valores separados por espaço: top-left, top-right, bottom-right, bottom-left.',
+      'border-radius: 40% 10% 40% 10% — cantos opostos iguais criam formas orgânicas interessantes.',
+      'Solução: .card { width: 130px; height: 130px; background: linear-gradient(135deg,#f59e0b,#ef4444); border-radius: 40% 10% 40% 10%; }',
+    ],
+    htmlStructure: '<div class="card"></div>',
+    targetHtml: '<div class="card"></div>',
+    targetCss: `.card { width: 130px; height: 130px; background: linear-gradient(135deg, #f59e0b, #ef4444); border-radius: 40% 10% 40% 10%; }`,
+    starterCss: `.card {\n  width: 130px;\n  height: 130px;\n  background: linear-gradient(135deg, #f59e0b, #ef4444);\n  border-radius: /* 4 valores */;\n}`,
+  },
+
+  /* ── Intermediário extra ───────────────────────────────────────────── */
+  {
+    id: 48, title: 'Sobreposição Z-index', category: 'intermediario', Icon: LayoutGrid, iconColor: '#e74c3c',
+    difficulty: 'Médio', points: 230,
+    description: 'Faça .topo aparecer acima de .base usando position: absolute e z-index.',
+    hints: [
+      'z-index controla a ordem de empilhamento. Elemento com z-index maior fica na frente.',
+      'Para z-index funcionar, o elemento precisa ter position diferente de static (use absolute, relative, etc.).',
+      'Solução: .topo { position: absolute; z-index: 2; top: 20px; left: 30px; } — precisa do container com position: relative.',
+    ],
+    htmlStructure: '<div class="container">\n  <div class="base"></div>\n  <div class="topo"></div>\n</div>',
+    targetHtml: '<div class="container"><div class="base"></div><div class="topo"></div></div>',
+    targetCss: `.container { position: relative; width: 160px; height: 100px; } .base { position: absolute; width: 100px; height: 80px; background: #3498db; border-radius: 8px; top: 0; left: 0; z-index: 1; } .topo { position: absolute; width: 100px; height: 80px; background: #e74c3c; border-radius: 8px; top: 20px; left: 30px; z-index: 2; }`,
+    starterCss: `.container { position: relative; width: 160px; height: 100px; }\n.base {\n  position: absolute;\n  width: 100px; height: 80px;\n  background: #3498db;\n  border-radius: 8px;\n  top: 0; left: 0;\n  z-index: /* ? */;\n}\n.topo {\n  position: absolute;\n  width: 100px; height: 80px;\n  background: #e74c3c;\n  border-radius: 8px;\n  top: 20px; left: 30px;\n  z-index: /* ? */;\n}`,
+  },
+  {
+    id: 49, title: 'Aspect Ratio 16:9', category: 'intermediario', Icon: Layout, iconColor: '#1e293b',
+    difficulty: 'Médio', points: 220,
+    description: 'Crie um container com proporção de vídeo 16:9 usando a propriedade aspect-ratio.',
+    hints: [
+      'aspect-ratio define a relação entre largura e altura automaticamente. Ideal para manter proporções em telas diferentes.',
+      'aspect-ratio: 16 / 9 — o navegador calcula a altura a partir da largura automaticamente.',
+      'Solução: .video { width: 240px; aspect-ratio: 16 / 9; background: #2c3e50; border-radius: 10px; display: flex; align-items: center; justify-content: center; }',
+    ],
+    htmlStructure: '<div class="video"></div>',
+    targetHtml: '<div class="video"></div>',
+    targetCss: `.video { width: 240px; aspect-ratio: 16 / 9; background: #2c3e50; border-radius: 10px; display: flex; align-items: center; justify-content: center; }`,
+    starterCss: `.video {\n  width: 240px;\n  aspect-ratio: /* 16 / 9 */;\n  background: #2c3e50;\n  border-radius: 10px;\n}`,
+  },
+  {
+    id: 50, title: 'Gap no Flexbox', category: 'intermediario', Icon: LayoutGrid, iconColor: '#8b5cf6',
+    difficulty: 'Médio', points: 200,
+    description: 'Use a propriedade gap para adicionar 16px de espaçamento entre os itens do flex.',
+    hints: [
+      'gap funciona em containers flex e grid para adicionar espaço entre os itens sem precisar de margin em cada um.',
+      'No container flex: display: flex; gap: 16px; — cria espaço uniforme entre todos os filhos.',
+      'Solução: .row { display: flex; gap: 16px; align-items: center; } .item { width: 60px; height: 60px; background: #8b5cf6; border-radius: 8px; }',
+    ],
+    htmlStructure: '<div class="row">\n  <div class="item">A</div>\n  <div class="item">B</div>\n  <div class="item">C</div>\n</div>',
+    targetHtml: '<div class="row"><div class="item" style="display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;font-weight:700;font-size:18px;">A</div><div class="item" style="display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;font-weight:700;font-size:18px;">B</div><div class="item" style="display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;font-weight:700;font-size:18px;">C</div></div>',
+    targetCss: `.row { display: flex; gap: 16px; align-items: center; } .item { width: 60px; height: 60px; background: #8b5cf6; border-radius: 8px; }`,
+    starterCss: `.row {\n  display: flex;\n  gap: /* ? */;\n  align-items: center;\n}\n.item {\n  width: 60px;\n  height: 60px;\n  background: #8b5cf6;\n  border-radius: 8px;\n}`,
+  },
+  {
+    id: 51, title: 'Transição Suave', category: 'intermediario', Icon: RotateCw, iconColor: '#3498db',
+    difficulty: 'Médio', points: 220,
+    description: 'Adicione transição de 0.3s ao botão para que mudanças de estilo ocorram suavemente.',
+    hints: [
+      'transition define qual propriedade animar, quanto tempo dura e a função de timing.',
+      'transition: background-color 0.3s ease — anima apenas o background em 0.3 segundos.',
+      'Solução: .btn { transition: background-color 0.3s ease, transform 0.2s ease; background: #3498db; ... }',
+    ],
+    htmlStructure: '<button class="btn">Clique aqui!</button>',
+    targetHtml: '<button class="btn">Clique aqui!</button>',
+    targetCss: `.btn { background: #3498db; color: white; border: none; padding: 12px 28px; border-radius: 10px; font-size: 15px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; font-family: sans-serif; font-weight: 600; }`,
+    starterCss: `.btn {\n  background: #3498db;\n  color: white;\n  border: none;\n  padding: 12px 28px;\n  border-radius: 10px;\n  font-size: 15px;\n  cursor: pointer;\n  font-family: sans-serif;\n  transition: /* propriedade duração timing */;\n}`,
+  },
+  {
+    id: 52, title: 'Grid 2×2 com Gap', category: 'intermediario', Icon: LayoutGrid, iconColor: '#ef4444',
+    difficulty: 'Médio', points: 230,
+    description: 'Crie um grid 2×2 com colunas iguais e 12px de espaçamento entre células.',
+    hints: [
+      'display: grid ativa o CSS Grid. grid-template-columns define quantas colunas e seus tamanhos.',
+      'repeat(2, 1fr) cria 2 colunas com espaço igual. gap: 12px adiciona espaço entre linhas e colunas.',
+      'Solução: .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; } .item { height: 60px; background: #ef4444; border-radius: 6px; }',
+    ],
+    htmlStructure: '<div class="grid">\n  <div class="item"></div>\n  <div class="item"></div>\n  <div class="item"></div>\n  <div class="item"></div>\n</div>',
+    targetHtml: '<div class="grid"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div>',
+    targetCss: `.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 200px; } .item { height: 60px; background: #ef4444; border-radius: 6px; }`,
+    starterCss: `.grid {\n  width: 200px;\n  display: grid;\n  grid-template-columns: /* repeat(2, 1fr) */;\n  gap: /* ? */;\n}\n.item {\n  height: 60px;\n  background: #ef4444;\n  border-radius: 6px;\n}`,
+  },
+  {
+    id: 53, title: 'Max-width Responsivo', category: 'intermediario', Icon: Layout, iconColor: '#667eea',
+    difficulty: 'Médio', points: 200,
+    description: 'Limite a largura máxima do parágrafo a 280px e adicione a borda lateral azul.',
+    hints: [
+      'max-width define o limite máximo de largura. O elemento pode ser menor, mas nunca maior que esse valor.',
+      'Combine max-width com margin: 0 auto para centralizar e border-left para o destaque visual.',
+      'Solução: .texto { max-width: 280px; margin: 0 auto; padding: 16px; border-left: 4px solid #667eea; background: #f0f4ff; }',
+    ],
+    htmlStructure: '<p class="texto">Este parágrafo tem largura máxima definida por CSS.</p>',
+    targetHtml: '<p class="texto">Este parágrafo tem largura máxima definida por CSS.</p>',
+    targetCss: `.texto { max-width: 280px; margin: 0 auto; padding: 16px; border-left: 4px solid #667eea; background: #f0f4ff; border-radius: 0 8px 8px 0; font-family: sans-serif; color: #1e293b; font-size: 14px; line-height: 1.6; }`,
+    starterCss: `.texto {\n  max-width: /* 280px */;\n  margin: 0 auto;\n  padding: 16px;\n  border-left: /* 4px solid cor */;\n  background: #f0f4ff;\n  border-radius: 0 8px 8px 0;\n  font-family: sans-serif;\n}`,
+  },
+  {
+    id: 54, title: 'Sidebar com Flex-grow', category: 'intermediario', Icon: Layout, iconColor: '#1e293b',
+    difficulty: 'Médio', points: 240,
+    description: 'Crie um layout com sidebar fixa e conteúdo principal que ocupa o espaço restante com flex-grow.',
+    hints: [
+      'flex-grow define quanto um item flex cresce para preencher o espaço livre. Valor 1 = absorve tudo.',
+      'A sidebar tem width fixa. O .main com flex-grow: 1 preenche automaticamente o restante do container.',
+      'Solução: .container { display: flex; height: 120px; gap: 12px; } .main { flex-grow: 1; background: #f8fafc; }',
+    ],
+    htmlStructure: '<div class="container">\n  <div class="sidebar">Nav</div>\n  <div class="main">Conteúdo</div>\n</div>',
+    targetHtml: '<div class="container"><div class="sidebar" style="display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;">Nav</div><div class="main" style="display:flex;align-items:center;justify-content:center;font-family:sans-serif;color:#475569;">Conteúdo</div></div>',
+    targetCss: `.container { display: flex; height: 120px; gap: 8px; width: 280px; } .sidebar { background: #1e293b; width: 70px; border-radius: 8px 0 0 8px; flex-shrink: 0; } .main { flex-grow: 1; background: #f8fafc; border-radius: 0 8px 8px 0; padding: 16px; }`,
+    starterCss: `.container {\n  display: flex;\n  height: 120px;\n  gap: 8px;\n  width: 280px;\n}\n.sidebar {\n  background: #1e293b;\n  width: 70px;\n  border-radius: 8px 0 0 8px;\n  flex-shrink: 0;\n}\n.main {\n  flex-grow: /* ? */;\n  background: #f8fafc;\n  border-radius: 0 8px 8px 0;\n}`,
+  },
+  {
+    id: 55, title: 'Objeto Ajustado (Object Fit)', category: 'intermediario', Icon: Square, iconColor: '#22c55e',
+    difficulty: 'Médio', points: 220,
+    description: 'Faça a imagem preencher seu container 200×130px sem distorcer, usando object-fit: cover.',
+    hints: [
+      'Por padrão, img se distorce para caber nos tamanhos definidos. object-fit: cover mantém a proporção e corta o excesso.',
+      'object-fit: cover preenche o espaço completamente. object-fit: contain mantém tudo visível mas pode deixar espaço.',
+      'Solução: .foto { width: 200px; height: 130px; object-fit: cover; border-radius: 12px; display: block; }',
+    ],
+    htmlStructure: '<img class="foto" src="https://picsum.photos/seed/css/400/200" alt="foto">',
+    targetHtml: '<img class="foto" src="https://picsum.photos/seed/css/400/200" alt="foto">',
+    targetCss: `.foto { width: 200px; height: 130px; object-fit: cover; border-radius: 12px; display: block; }`,
+    starterCss: `.foto {\n  width: 200px;\n  height: 130px;\n  object-fit: /* cover */;\n  border-radius: 12px;\n  display: block;\n}`,
+  },
+
+  /* ── Avançado extra ────────────────────────────────────────────────── */
+  {
+    id: 56, title: 'Variáveis CSS', category: 'avancado', Icon: Code2, iconColor: '#667eea',
+    difficulty: 'Difícil', points: 320,
+    description: 'Use custom properties (variáveis CSS) com :root { --cor } e aplique com var(--cor).',
+    hints: [
+      'Variáveis CSS são declaradas com -- no :root e referenciadas com var(). Facilitam manutenção e consistência.',
+      ':root { --primary: #667eea; } — declaração. No elemento: background: var(--primary); — uso.',
+      'Solução: :root { --primary: #667eea; --radius: 12px; } .card { background: var(--primary); border-radius: var(--radius); }',
+    ],
+    htmlStructure: '<div class="card"><div class="titulo">Variáveis</div><div class="body">CSS moderno!</div></div>',
+    targetHtml: '<div class="card"><div class="titulo">Variáveis</div><div class="body">CSS moderno!</div></div>',
+    targetCss: `:root { --primary: #667eea; --radius: 12px; --pad: 20px; } .card { background: var(--primary); border-radius: var(--radius); padding: var(--pad); width: 180px; } .titulo { color: white; font-weight: 700; font-size: 17px; font-family: sans-serif; } .body { color: rgba(255,255,255,0.8); font-family: sans-serif; margin-top: 8px; font-size: 13px; }`,
+    starterCss: `:root {\n  --primary: /* #667eea */;\n  --radius: /* 12px */;\n}\n.card {\n  background: var(--primary);\n  border-radius: var(--radius);\n  padding: 20px;\n  width: 180px;\n}\n.titulo { color: white; font-weight: 700; font-family: sans-serif; }\n.body { color: rgba(255,255,255,0.8); font-family: sans-serif; margin-top: 8px; }`,
+  },
+  {
+    id: 57, title: 'Gradiente Cônico', category: 'avancado', Icon: Circle, iconColor: '#e74c3c',
+    difficulty: 'Difícil', points: 350,
+    description: 'Crie um gráfico de pizza com conic-gradient: vermelho 0%-30%, azul 30%-70%, verde 70%-100%.',
+    hints: [
+      'conic-gradient() cria gradiente em arco ao redor de um ponto central, ideal para gráficos de pizza.',
+      'background: conic-gradient(cor1 0% X%, cor2 X% Y%, cor3 Y% 100%) — cada fatia tem início e fim em %.',
+      'Solução: .grafico { background: conic-gradient(#e74c3c 0% 30%, #3498db 30% 70%, #2ecc71 70% 100%); border-radius: 50%; width: 140px; height: 140px; }',
+    ],
+    htmlStructure: '<div class="grafico"></div>',
+    targetHtml: '<div class="grafico"></div>',
+    targetCss: `.grafico { width: 140px; height: 140px; background: conic-gradient(#e74c3c 0% 30%, #3498db 30% 70%, #2ecc71 70% 100%); border-radius: 50%; }`,
+    starterCss: `.grafico {\n  width: 140px;\n  height: 140px;\n  border-radius: 50%;\n  background: conic-gradient(\n    #e74c3c 0% 30%,\n    #3498db 30% 70%,\n    #2ecc71 70% 100%\n  );\n}`,
+  },
+  {
+    id: 58, title: 'Mix Blend Mode', category: 'avancado', Icon: Palette, iconColor: '#3498db',
+    difficulty: 'Difícil', points: 360,
+    description: 'Sobreponha dois círculos coloridos com mix-blend-mode: multiply para misturar as cores.',
+    hints: [
+      'mix-blend-mode define como o pixel do elemento se mistura com o pixel do elemento abaixo.',
+      'multiply escurece a interseção multiplicando os valores de cor. Requer background claro no container pai.',
+      'Solução: .b { mix-blend-mode: multiply; } — aplique no círculo de cima para ver a mistura.',
+    ],
+    htmlStructure: '<div class="scene">\n  <div class="circle a"></div>\n  <div class="circle b"></div>\n</div>',
+    targetHtml: '<div class="scene"><div class="circle a"></div><div class="circle b"></div></div>',
+    targetCss: `.scene { position: relative; width: 160px; height: 110px; background: white; border-radius: 8px; } .circle { position: absolute; width: 90px; height: 90px; border-radius: 50%; top: 10px; } .a { background: #e74c3c; left: 10px; } .b { background: #3498db; left: 50px; mix-blend-mode: multiply; }`,
+    starterCss: `.scene { position: relative; width: 160px; height: 110px; background: white; border-radius: 8px; }\n.circle { position: absolute; width: 90px; height: 90px; border-radius: 50%; top: 10px; }\n.a { background: #e74c3c; left: 10px; }\n.b { background: #3498db; left: 50px; mix-blend-mode: /* ? */; }`,
+  },
+  {
+    id: 59, title: 'Filtros Combinados', category: 'avancado', Icon: Star, iconColor: '#a855f7',
+    difficulty: 'Difícil', points: 340,
+    description: 'Aplique brightness(1.3) e saturate(1.6) juntos no mesmo elemento usando filter.',
+    hints: [
+      'filter aceita múltiplas funções separadas por espaço, todas aplicadas em sequência ao elemento.',
+      'brightness(1.3) aumenta o brilho 30%. saturate(1.6) aumenta a saturação de cores 60%.',
+      'Solução: .imagem { filter: brightness(1.3) saturate(1.6); }',
+    ],
+    htmlStructure: '<div class="imagem"></div>',
+    targetHtml: '<div class="imagem"></div>',
+    targetCss: `.imagem { width: 170px; height: 110px; background: linear-gradient(135deg, #e74c3c, #f39c12); border-radius: 10px; filter: brightness(1.3) saturate(1.6); }`,
+    starterCss: `.imagem {\n  width: 170px;\n  height: 110px;\n  background: linear-gradient(135deg, #e74c3c, #f39c12);\n  border-radius: 10px;\n  filter: /* brightness() saturate() */;\n}`,
+  },
+  {
+    id: 60, title: 'Clip-path Hexágono', category: 'avancado', Icon: Circle, iconColor: '#8b5cf6',
+    difficulty: 'Difícil', points: 370,
+    description: 'Crie um hexágono usando clip-path: polygon() com 6 pontos.',
+    hints: [
+      'clip-path: polygon() define os pontos do polígono em coordenadas x y. Cada ponto é separado por vírgula.',
+      'Um hexágono regular tem 6 pontos: 50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%.',
+      'Solução: .forma { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }',
+    ],
+    htmlStructure: '<div class="forma"></div>',
+    targetHtml: '<div class="forma"></div>',
+    targetCss: `.forma { width: 120px; height: 120px; background: #8b5cf6; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }`,
+    starterCss: `.forma {\n  width: 120px;\n  height: 120px;\n  background: #8b5cf6;\n  clip-path: polygon(/* 6 pontos */);\n}`,
+  },
+  {
+    id: 61, title: 'Grid de Layout', category: 'avancado', Icon: LayoutGrid, iconColor: '#1e293b',
+    difficulty: 'Difícil', points: 390,
+    description: 'Crie um layout de página com grid-template-areas: header, sidebar+conteúdo, footer.',
+    hints: [
+      'grid-template-areas usa strings com nomes para definir o layout. Cada string é uma linha, cada nome uma área.',
+      'Defina as áreas no container e use grid-area: nome; em cada filho para posicioná-los.',
+      'Solução: grid-template-areas: "header header" "sidebar content" "footer footer" — 2 colunas, 3 linhas.',
+    ],
+    htmlStructure: '<div class="layout"><div class="header">Topo</div><div class="sidebar">Nav</div><div class="content">Principal</div><div class="footer">Rodapé</div></div>',
+    targetHtml: '<div class="layout"><div class="header">Topo</div><div class="sidebar">Nav</div><div class="content">Principal</div><div class="footer">Rodapé</div></div>',
+    targetCss: `.layout { display: grid; grid-template-areas: "header header" "sidebar content" "footer footer"; grid-template-columns: 70px 1fr; grid-template-rows: 36px 80px 30px; gap: 4px; width: 260px; font-family: sans-serif; font-size: 12px; } .header { grid-area: header; background: #1e293b; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px; } .sidebar { grid-area: sidebar; background: #334155; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px; } .content { grid-area: content; background: #f1f5f9; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: #475569; } .footer { grid-area: footer; background: #94a3b8; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: white; }`,
+    starterCss: `.layout {\n  display: grid;\n  grid-template-areas:\n    "header header"\n    "sidebar content"\n    "footer footer";\n  grid-template-columns: 70px 1fr;\n  grid-template-rows: 36px 80px 30px;\n  gap: 4px;\n  width: 260px;\n  font-family: sans-serif;\n  font-size: 12px;\n}\n.header   { grid-area: header;  background: #1e293b; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px; }\n.sidebar  { grid-area: sidebar; background: #334155; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px; }\n.content  { grid-area: content; background: #f1f5f9; display: flex; align-items: center; justify-content: center; border-radius: 4px; }\n.footer   { grid-area: footer;  background: #94a3b8; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px; }`,
+  },
+
+  /* ── Página Web extra ──────────────────────────────────────────────── */
+  {
+    id: 62, title: 'Formulário de Contato', category: 'pagina', Icon: User, iconColor: '#22c55e',
+    difficulty: 'Médio', points: 260,
+    description: 'Crie um formulário com: label + input para nome, label + input para e-mail e um button de enviar. Estilize com CSS.',
+    hints: [
+      'form é o container semântico. label + input para cada campo. button type="submit" para enviar.',
+      'Estilize os inputs com width: 100%, padding, border e border-radius. button com background colorido.',
+      'Estrutura: <form><label>Nome</label><input type="text"><label>Email</label><input type="email"><button>Enviar</button></form>',
+    ],
+    htmlStructure: 'form + label + input×2 + button',
+    htmlEditable: true,
+    starterHtml: `<form class="form">\n  <label>Nome</label>\n  <input type="text" placeholder="Seu nome">\n  <label>E-mail</label>\n  <input type="email" placeholder="seu@email.com">\n  <button type="submit">Enviar</button>\n</form>`,
+    targetHtml: `<form class="form"><label>Nome</label><input type="text" placeholder="Seu nome"><label>E-mail</label><input type="email" placeholder="seu@email.com"><button type="submit">Enviar</button></form>`,
+    targetCss: `.form { display: flex; flex-direction: column; gap: 10px; max-width: 300px; padding: 24px; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); font-family: sans-serif; } label { font-size: 13px; font-weight: 600; color: #374151; } input { padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; width: 100%; box-sizing: border-box; } button { padding: 11px; background: #22c55e; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }`,
+    starterCss: `.form {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  max-width: 300px;\n  padding: 24px;\n  /* background e border-radius */\n}\nlabel { font-size: 13px; font-weight: 600; font-family: sans-serif; }\ninput {\n  padding: 10px 12px;\n  border: 1px solid #e2e8f0;\n  border-radius: 8px;\n  width: 100%;\n  box-sizing: border-box;\n}\nbutton {\n  padding: 11px;\n  /* background, cor, border-none */\n  border-radius: 8px;\n  cursor: pointer;\n}`,
+  },
+  {
+    id: 63, title: 'Tabela de Dados', category: 'pagina', Icon: LayoutGrid, iconColor: '#3498db',
+    difficulty: 'Médio', points: 270,
+    description: 'Crie uma tabela com cabeçalho (th) e pelo menos 3 linhas de dados (td). Estilize com fundo alternado.',
+    hints: [
+      'table > thead > tr > th para o cabeçalho. table > tbody > tr > td para os dados.',
+      'border-collapse: collapse remove o espaço duplo entre bordas. tr:nth-child(even) cria linhas alternadas.',
+      'Estrutura: <table><thead><tr><th>Nome</th><th>Nota</th></tr></thead><tbody><tr><td>Ana</td><td>95</td></tr>...</tbody></table>',
+    ],
+    htmlStructure: 'table + thead/th + tbody/tr/td×3',
+    htmlEditable: true,
+    starterHtml: `<table>\n  <thead>\n    <tr>\n      <th>Nome</th>\n      <th>Matéria</th>\n      <th>Nota</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr><td>Ana</td><td>CSS</td><td>95</td></tr>\n    <tr><td>Carlos</td><td>HTML</td><td>88</td></tr>\n    <tr><td>Julia</td><td>JS</td><td>91</td></tr>\n  </tbody>\n</table>`,
+    targetHtml: `<table><thead><tr><th>Nome</th><th>Matéria</th><th>Nota</th></tr></thead><tbody><tr><td>Ana</td><td>CSS</td><td>95</td></tr><tr><td>Carlos</td><td>HTML</td><td>88</td></tr><tr><td>Julia</td><td>JS</td><td>91</td></tr></tbody></table>`,
+    targetCss: `table { border-collapse: collapse; width: 280px; font-family: sans-serif; font-size: 14px; } th { background: #1e293b; color: white; padding: 10px 14px; text-align: left; } td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; color: #374151; } tr:nth-child(even) td { background: #f8fafc; } tr:nth-child(odd) td { background: white; }`,
+    starterCss: `table {\n  border-collapse: collapse;\n  width: 280px;\n  font-family: sans-serif;\n}\nth {\n  background: #1e293b;\n  color: white;\n  padding: 10px 14px;\n  text-align: left;\n}\ntd {\n  padding: 9px 14px;\n  border-bottom: 1px solid #e2e8f0;\n}\ntr:nth-child(even) td { background: /* cor alternada */; }`,
+  },
+  {
+    id: 64, title: 'Menu de Navegação', category: 'pagina', Icon: AlignCenter, iconColor: '#667eea',
+    difficulty: 'Médio', points: 280,
+    description: 'Crie um menu horizontal com nav > ul > li > a. Use flex para deixar os itens lado a lado e estilize os links.',
+    hints: [
+      'nav contém a navegação. ul > li > a é a estrutura semântica. list-style: none remove as bolinhas.',
+      'Para horizontal: display: flex no ul. Para estilizar os links: a { text-decoration: none; padding: ...; }',
+      'Estrutura: <nav><ul><li><a href="#">Home</a></li><li><a href="#">Sobre</a></li>...</ul></nav>',
+    ],
+    htmlStructure: 'nav > ul > li×4 > a',
+    htmlEditable: true,
+    starterHtml: `<nav>\n  <ul>\n    <li><a href="#">Home</a></li>\n    <li><a href="#">Sobre</a></li>\n    <li><a href="#">Projetos</a></li>\n    <li><a href="#">Contato</a></li>\n  </ul>\n</nav>`,
+    targetHtml: `<nav><ul><li><a href="#">Home</a></li><li><a href="#">Sobre</a></li><li><a href="#">Projetos</a></li><li><a href="#">Contato</a></li></ul></nav>`,
+    targetCss: `nav { background: #1e293b; padding: 0 16px; border-radius: 10px; } ul { display: flex; list-style: none; padding: 0; margin: 0; gap: 4px; } a { display: block; color: #94a3b8; text-decoration: none; padding: 12px 16px; font-family: sans-serif; font-size: 14px; border-radius: 6px; } li:first-child a { color: white; background: #667eea; }`,
+    starterCss: `nav {\n  background: #1e293b;\n  padding: 0 16px;\n  border-radius: 10px;\n}\nul {\n  display: flex;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  gap: 4px;\n}\na {\n  display: block;\n  color: #94a3b8;\n  text-decoration: none;\n  padding: 12px 16px;\n  font-family: sans-serif;\n  font-size: 14px;\n}`,
+  },
+  {
+    id: 65, title: 'Layout com Header e Footer', category: 'pagina', Icon: Layout, iconColor: '#8b5cf6',
+    difficulty: 'Difícil', points: 300,
+    description: 'Crie uma página com header, main (conteúdo) e footer, cada um com fundo e estilo diferentes.',
+    hints: [
+      'header, main, footer são tags semânticas HTML5. Cada uma pode ter seu próprio background e padding.',
+      'Use display: flex + flex-direction: column na página para empilhar as seções.',
+      'Exemplo: <header>Título</header><main><p>Conteúdo</p></main><footer>Rodapé</footer>',
+    ],
+    htmlStructure: 'header + main + footer',
+    htmlEditable: true,
+    starterHtml: `<div class="pagina">\n  <header>\n    <h1>Meu Site</h1>\n  </header>\n  <main>\n    <p>Bem-vindo ao meu site! Aqui vai o conteúdo principal.</p>\n  </main>\n  <footer>\n    <p>© 2025 Meu Site</p>\n  </footer>\n</div>`,
+    targetHtml: `<div class="pagina"><header><h1>Meu Site</h1></header><main><p>Bem-vindo ao meu site!</p></main><footer><p>© 2025 Meu Site</p></footer></div>`,
+    targetCss: `.pagina { width: 300px; font-family: sans-serif; border-radius: 12px; overflow: hidden; } header { background: #667eea; color: white; padding: 20px 24px; } header h1 { margin: 0; font-size: 20px; } main { background: #f8fafc; padding: 20px 24px; min-height: 80px; } main p { color: #374151; margin: 0; font-size: 14px; line-height: 1.6; } footer { background: #1e293b; color: #94a3b8; padding: 12px 24px; font-size: 12px; text-align: center; } footer p { margin: 0; }`,
+    starterCss: `.pagina {\n  width: 300px;\n  font-family: sans-serif;\n  border-radius: 12px;\n  overflow: hidden;\n}\nheader {\n  background: /* cor do header */;\n  padding: 20px 24px;\n}\nmain {\n  background: #f8fafc;\n  padding: 20px 24px;\n}\nfooter {\n  background: /* cor escura */;\n  padding: 12px 24px;\n  text-align: center;\n}`,
+  },
 ];
 
 /* ── Scoring ─────────────────────────────────────────────────────────────── */
@@ -899,6 +1279,166 @@ function calcScore(cid: number, iframe: HTMLIFrameElement): { score: number; det
       add('blockquote com fundo', !!(bq && win.getComputedStyle(bq).backgroundColor !== 'rgba(0, 0, 0, 0)'), 10);
       break;
     }
+    /* ── Extra Básico ─────────────────────────────────── */
+    case 40:
+      add('text-decoration: underline', gs('.texto','text-decoration-line')==='underline'||gs('.texto','text-decoration').includes('underline'), 50);
+      add('cor vermelha', colorNear(gs('.texto','color'),231,76,60), 30);
+      add('font-size >= 16px', px(gs('.texto','font-size'))>=16, 20);
+      break;
+    case 41:
+      add('box-shadow inset', gs('.caixa','box-shadow').includes('inset'), 60);
+      add('background roxo', colorNear(gs('.caixa','background-color'),139,92,246), 25);
+      add('border-radius > 0', px(gs('.caixa','border-radius'))>0, 15);
+      break;
+    case 42:
+      add('display inline-block', gs('.tag','display')==='inline-block', 35);
+      add('border-radius > 40', px(gs('.tag','border-radius'))>40, 25);
+      add('background ciano', colorNear(gs('.tag','background-color'),6,182,212,60), 25);
+      add('cor branca no texto', colorNear(gs('.tag','color'),255,255,255,30), 15);
+      break;
+    case 43:
+      add('fundo com rgba (transparente)', gs('.caixa','background-color').startsWith('rgba'), 60);
+      add('cor laranja', colorNear(gs('.caixa','background-color'),243,156,18,60), 25);
+      add('border-radius > 0', px(gs('.caixa','border-radius'))>0, 15);
+      break;
+    case 44:
+      add('text-transform: uppercase', gs('.titulo','text-transform')==='uppercase', 55);
+      add('letter-spacing > 0', px(gs('.titulo','letter-spacing'))>0, 25);
+      add('cor #667eea', colorNear(gs('.titulo','color'),102,126,234), 20);
+      break;
+    case 45: {
+      const ml = px(gs('.caixa','margin-left'));
+      const mr = px(gs('.caixa','margin-right'));
+      add('centralizado (margens iguais)', ml > 0 && Math.abs(ml-mr) < 10, 50);
+      add('background verde', colorNear(gs('.caixa','background-color'),34,197,94), 30);
+      add('width >= 120px', px(gs('.caixa','width'))>=120, 20);
+      break;
+    }
+    case 46:
+      add('text-decoration: line-through', gs('.antigo','text-decoration-line')==='line-through'||gs('.antigo','text-decoration').includes('line-through'), 55);
+      add('cor cinza no antigo', colorNear(gs('.antigo','color'),148,163,184,60), 25);
+      add('cor verde no preço', colorNear(gs('.preco','color'),34,197,94,60), 20);
+      break;
+    case 47: {
+      const tl = px(gs('.card','border-top-left-radius'));
+      const tr2 = px(gs('.card','border-top-right-radius'));
+      add('border-radius assimétrico', tl !== tr2, 45);
+      add('background com gradiente', gs('.card','background-image').includes('gradient'), 35);
+      add('tamanho >= 80px', px(gs('.card','width'))>=80, 20);
+      break;
+    }
+    /* ── Extra Intermediário ──────────────────────────── */
+    case 48:
+      add('position absolute no .topo', gs('.topo','position')==='absolute', 30);
+      add('z-index >= 2 no .topo', parseInt(gs('.topo','z-index')||'0')>=2, 40);
+      add('background vermelho no .topo', colorNear(gs('.topo','background-color'),231,76,60), 30);
+      break;
+    case 49:
+      add('aspect-ratio definido', gs('.video','aspect-ratio')!==''&&gs('.video','aspect-ratio')!=='auto', 55);
+      add('background escuro', colorNear(gs('.video','background-color'),44,62,80,60), 25);
+      add('width >= 180px', px(gs('.video','width'))>=180, 20);
+      break;
+    case 50:
+      add('display flex no .row', hasFlex(gs('.row','display')), 30);
+      add('gap > 10px', px(gs('.row','gap'))>10, 40);
+      add('background no .item', colorNear(gs('.item','background-color'),139,92,246), 30);
+      break;
+    case 51:
+      add('transition definida', gs('.btn','transition-duration')!==''&&gs('.btn','transition-duration')!=='0s', 55);
+      add('background azul', colorNear(gs('.btn','background-color'),52,152,219), 25);
+      add('border-radius > 0', px(gs('.btn','border-radius'))>0, 20);
+      break;
+    case 52:
+      add('display grid', gs('.grid','display')==='grid', 30);
+      add('gap > 8px', px(gs('.grid','gap'))>8, 30);
+      add('2 colunas', gs('.grid','grid-template-columns').split(' ').filter(Boolean).length>=2, 25);
+      add('background vermelho no .item', colorNear(gs('.item','background-color'),239,68,68,60), 15);
+      break;
+    case 53:
+      add('max-width <= 340px', px(gs('.texto','max-width'))<=340&&px(gs('.texto','max-width'))>0, 35);
+      add('background azul claro', colorNear(gs('.texto','background-color'),240,244,255,80), 25);
+      add('border-left aplicada', px(gs('.texto','border-left-width'))>0, 25);
+      add('padding > 8px', px(gs('.texto','padding-left'))>8, 15);
+      break;
+    case 54:
+      add('display flex no .container', hasFlex(gs('.container','display')), 25);
+      add('flex-grow > 0 no .main', parseFloat(gs('.main','flex-grow')||'0')>0, 45);
+      add('background escuro no .sidebar', colorNear(gs('.sidebar','background-color'),30,41,59,60), 30);
+      break;
+    case 55:
+      add('object-fit: cover', gs('.foto','object-fit')==='cover', 55);
+      add('width >= 160px', px(gs('.foto','width'))>=160, 25);
+      add('border-radius > 0', px(gs('.foto','border-radius'))>0, 20);
+      break;
+    /* ── Extra Avançado ───────────────────────────────── */
+    case 56:
+      add('background roxo no .card', colorNear(gs('.card','background-color'),102,126,234,50), 45);
+      add('border-radius > 8px', px(gs('.card','border-radius'))>8, 30);
+      add('padding aplicado', px(gs('.card','padding-top'))>0, 25);
+      break;
+    case 57:
+      add('conic-gradient aplicado', gs('.grafico','background-image').includes('conic-gradient'), 65);
+      add('border-radius >= 50%', px(gs('.grafico','border-radius'))>=40, 25);
+      add('tamanho >= 100px', px(gs('.grafico','width'))>=100, 10);
+      break;
+    case 58:
+      add('mix-blend-mode aplicado', gs('.b','mix-blend-mode')!==''&&gs('.b','mix-blend-mode')!=='normal', 60);
+      add('position absolute nos círculos', gs('.a','position')==='absolute', 20);
+      add('background vermelho no .a', colorNear(gs('.a','background-color'),231,76,60), 20);
+      break;
+    case 59:
+      add('filter com brightness', gs('.imagem','filter').includes('brightness'), 35);
+      add('filter com saturate', gs('.imagem','filter').includes('saturate'), 35);
+      add('background com gradiente', gs('.imagem','background-image').includes('gradient'), 30);
+      break;
+    case 60:
+      add('clip-path polygon aplicado', gs('.forma','clip-path').includes('polygon'), 65);
+      add('background roxo', colorNear(gs('.forma','background-color'),139,92,246), 25);
+      add('tamanho >= 80px', px(gs('.forma','width'))>=80, 10);
+      break;
+    case 61:
+      add('display grid', gs('.layout','display')==='grid', 25);
+      add('grid-area no .header', gs('.header','grid-area')!==''&&gs('.header','grid-area')!=='auto', 30);
+      add('background escuro no .header', colorNear(gs('.header','background-color'),30,41,59,60), 25);
+      add('grid-area no .sidebar', gs('.sidebar','grid-area')!==''&&gs('.sidebar','grid-area')!=='auto', 20);
+      break;
+    /* ── Extra Página Web ─────────────────────────────── */
+    case 62: {
+      const inputs = doc.querySelectorAll('input');
+      add('tem form', !!doc.querySelector('form'), 20);
+      add('tem label', !!doc.querySelector('label'), 20);
+      add('tem 2+ inputs', inputs.length >= 2, 30);
+      add('tem button', !!doc.querySelector('button'), 20);
+      add('CSS aplicado (fundo/borda)', Array.from(doc.querySelectorAll('*')).some(el=>{ const bg=win.getComputedStyle(el).backgroundColor; return bg&&bg!=='rgba(0, 0, 0, 0)'; }), 10);
+      break;
+    }
+    case 63: {
+      const ths = doc.querySelectorAll('th');
+      const tds = doc.querySelectorAll('td');
+      add('tem table', !!doc.querySelector('table'), 20);
+      add('tem th (cabeçalho)', ths.length >= 2, 25);
+      add('tem td (dados) >= 3', tds.length >= 3, 30);
+      add('CSS em th (fundo)', !!(ths[0] && win.getComputedStyle(ths[0]).backgroundColor !== 'rgba(0, 0, 0, 0)'), 25);
+      break;
+    }
+    case 64: {
+      const lis = doc.querySelectorAll('li');
+      const as = doc.querySelectorAll('a');
+      add('tem nav', !!doc.querySelector('nav'), 20);
+      add('tem ul', !!doc.querySelector('ul'), 20);
+      add('3+ itens li', lis.length >= 3, 25);
+      add('tem links a', as.length >= 3, 20);
+      add('display flex no ul (horizontal)', !!(doc.querySelector('ul') && hasFlex(win.getComputedStyle(doc.querySelector('ul')!).display)), 15);
+      break;
+    }
+    case 65: {
+      add('tem header', !!doc.querySelector('header'), 20);
+      add('tem main', !!doc.querySelector('main'), 20);
+      add('tem footer', !!doc.querySelector('footer'), 20);
+      add('header com fundo', !!(doc.querySelector('header') && win.getComputedStyle(doc.querySelector('header')!).backgroundColor !== 'rgba(0, 0, 0, 0)'), 20);
+      add('footer com fundo', !!(doc.querySelector('footer') && win.getComputedStyle(doc.querySelector('footer')!).backgroundColor !== 'rgba(0, 0, 0, 0)'), 20);
+      break;
+    }
   }
   const total  = details.reduce((s,d)=>s+d.weight,0);
   const earned = details.reduce((s,d)=>s+(d.passed?d.weight:0),0);
@@ -948,6 +1488,32 @@ const PROPERTY_GUIDE: Record<number,string> = {
   37: 'Escreva HTML e CSS. ul (unordered list) cria uma lista. li são os itens. list-style: none remove os marcadores padrão (bolinhas). Cada li pode ter seu próprio estilo visual.',
   38: 'Escreva HTML e CSS. img exibe imagens — use src para definir a URL. border-radius: 50% torna qualquer elemento quadrado em círculo. object-fit: cover preenche sem distorcer.',
   39: 'Escreva HTML e CSS. blockquote é a tag semântica para citações. border-left cria uma barra lateral colorida. font-style: italic inclina o texto da citação.',
+  40: 'text-decoration — adiciona decorações visuais ao texto: underline (abaixo), overline (acima), line-through (tachado). Não afeta o layout ao redor.',
+  41: 'box-shadow com inset — a palavra-chave inset no início inverte a sombra para dentro do elemento, criando efeito de profundidade.',
+  42: 'display: inline-block — combina o comportamento inline (fica na mesma linha que outros elementos) com a capacidade de ter width, height e padding como block.',
+  43: 'rgba() — permite definir cores com canal de transparência alfa. rgba(r,g,b,a) onde a vai de 0 (transparente) a 1 (opaco).',
+  44: 'text-transform — altera a capitalização do texto via CSS sem mudar o HTML. uppercase = TUDO MAIÚSCULO, lowercase = tudo minúsculo, capitalize = Primeira Letra.',
+  45: 'margin: auto — quando aplicado horizontalmente em um elemento com width definido, divide o espaço disponível igualmente nos dois lados, centralizando o elemento.',
+  46: 'text-decoration: line-through — traça uma linha no meio do texto. Muito usado para mostrar preços originais riscados.',
+  47: 'border-radius com 4 valores — cada canto pode ter raio diferente: top-left, top-right, bottom-right, bottom-left. Valores diferentes criam formas orgânicas.',
+  48: 'z-index — controla a ordem de empilhamento de elementos posicionados (position diferente de static). Maior z-index = aparece na frente.',
+  49: 'aspect-ratio — mantém a proporção entre largura e altura automaticamente. aspect-ratio: 16/9 = proporção de vídeo widescreen.',
+  50: 'gap — define o espaçamento entre itens em flex e grid de forma unificada, sem precisar de margin em cada filho.',
+  51: 'transition — anima mudanças de propriedades CSS suavemente. Aceita: propriedade, duração, timing-function e delay.',
+  52: 'display: grid com repeat() e gap — repeat(n, tamanho) cria n colunas iguais. gap adiciona espaço entre todas as células uniformemente.',
+  53: 'max-width — limita a largura máxima. O elemento pode ser menor, mas nunca maior. Útil para textos que não devem ficar muito largos em telas grandes.',
+  54: 'flex-grow — define quanto um item flex cresce em relação aos outros para preencher o espaço disponível. flex-grow: 1 absorve todo o espaço livre.',
+  55: 'object-fit — controla como imagens e vídeos se ajustam ao seu container. cover preenche completamente (cortando o excesso). contain cabe todo o conteúdo (pode deixar espaço).',
+  56: 'Variáveis CSS (custom properties) — declaradas com -- no :root e usadas com var(). Facilitam manutenção: mude uma vez, reflete em todo o projeto.',
+  57: 'conic-gradient() — gradiente em forma de cone ao redor de um ponto. Cada fatia é definida com inicio% e fim%. Ideal para gráficos de pizza.',
+  58: 'mix-blend-mode — define como o elemento se mistura visualmente com o elemento abaixo. multiply escurece a interseção, screen clareia, overlay combina ambos.',
+  59: 'filter com múltiplas funções — brightness(), saturate(), contrast(), blur() etc. podem ser encadeados separados por espaço, todos aplicados em sequência.',
+  60: 'clip-path: polygon() — recorta o elemento em uma forma personalizada. Os pontos são pares x y em % ou px. 3 pontos = triângulo, 6 = hexágono.',
+  61: 'grid-template-areas — define o layout usando strings com nomes. Cada string é uma linha; cada nome, uma área. O filho usa grid-area: nome; para se posicionar.',
+  62: 'Formulário HTML: form é o container, label identifica cada campo, input recebe dados, button submete. Sempre associe label ao input para acessibilidade.',
+  63: 'Tabela HTML: table > thead > tr > th para cabeçalho; table > tbody > tr > td para dados. border-collapse: collapse remove bordas duplas.',
+  64: 'Navegação semântica: nav contém navegação. ul > li > a é a estrutura correta. list-style: none remove bolinhas. display: flex no ul deixa os itens horizontais.',
+  65: 'Tags semânticas HTML5: header (cabeçalho), main (conteúdo principal), footer (rodapé) dão significado à estrutura. Cada uma pode ter seu próprio estilo.',
 };
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
@@ -991,7 +1557,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const [playerName, setPlayerName]         = useState('');
   const [joinCodeInput, setJoinCodeInput]   = useState('');
   const [maxPlayers, setMaxPlayers]         = useState<2|3|4>(2);
-  const [totalRoundsSetup, setTotalRoundsSetup] = useState<1|3|5>(3);
+  const [totalRoundsSetup, setTotalRoundsSetup] = useState<1|3|5|7|10>(3);
   const [categorySetup, setCategorySetup]   = useState<CategoryFilter>('todos');
   const [error, setError]   = useState('');
   const [loading, setLoading] = useState(false);
@@ -1053,6 +1619,10 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const [memComplete, setMemComplete]     = useState(false);
   const memCheckRef  = useRef(false);
   const lastFlipRef  = useRef<number|null>(null);
+
+  /* submission timing */
+  const [timeTaken, setTimeTaken]           = useState(0);
+  const battleStartRef = useRef<number>(0);
 
   /* refs */
   const previewRef    = useRef<HTMLIFrameElement>(null);
@@ -1184,6 +1754,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   /* ── Timer ── */
   useEffect(()=>{
     if (view!=='battle') return;
+    battleStartRef.current = Date.now();
     submittedRef.current = false;
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(()=>{
@@ -1207,6 +1778,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
       setPlayerScore(score);
       setScoreDetails(details);
       setSubmitted(true);
+      setTimeTaken(Math.floor((Date.now() - battleStartRef.current) / 1000));
 
       /* score reveal animation */
       setScoreReveal({show:true, value:0, final:score});
@@ -1765,8 +2337,8 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
               {/* Rodadas */}
               <div style={{marginBottom:18}}>
                 <label style={{fontSize:14,color:dim,display:'block',marginBottom:10,fontWeight:500}}>Número de rodadas</label>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}>
-                  {([1,3,5] as (1|3|5)[]).map(n=>{
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr 1fr',gap:10}}>
+                  {([1,3,5,7,10] as (1|3|5|7|10)[]).map(n=>{
                     const active = totalRoundsSetup===n;
                     return (
                       <button key={n} onClick={()=>setTotalRoundsSetup(n)}
@@ -2187,14 +2759,26 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
               </button>
             </>
           ) : (
-            <div style={{display:'flex',alignItems:'center',gap:9,flexShrink:0}}>
-              <Check size={13} color="#22c55e"/>
-              <span style={{fontSize:12,color:'#22c55e',fontWeight:700}}>Enviado</span>
-              <span style={{fontSize:22,fontWeight:900,color:playerScore>=80?'#22c55e':playerScore>=50?'#f59e0b':'#ef4444'}}>{playerScore}%</span>
+            <div style={{display:'flex',alignItems:'center',gap:10,flexShrink:0,flexWrap:'wrap'}}>
+              {/* stat: score */}
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',background:playerScore>=80?'rgba(34,197,94,0.10)':playerScore>=50?'rgba(245,158,11,0.10)':'rgba(239,68,68,0.10)',borderRadius:10,padding:'5px 14px',border:`1px solid ${playerScore>=80?'rgba(34,197,94,0.25)':playerScore>=50?'rgba(245,158,11,0.25)':'rgba(239,68,68,0.25)'}`}}>
+                <span style={{fontSize:9,color:dim,fontWeight:600,letterSpacing:'0.08em',textTransform:'uppercase'}}>Acerto</span>
+                <span style={{fontSize:20,fontWeight:900,color:playerScore>=80?'#22c55e':playerScore>=50?'#f59e0b':'#ef4444',lineHeight:1.1}}>{playerScore}%</span>
+              </div>
+              {/* stat: time taken */}
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',background:'rgba(102,126,234,0.08)',borderRadius:10,padding:'5px 14px',border:'1px solid rgba(102,126,234,0.2)'}}>
+                <span style={{fontSize:9,color:dim,fontWeight:600,letterSpacing:'0.08em',textTransform:'uppercase'}}>Seu tempo</span>
+                <span style={{fontSize:16,fontWeight:800,color:'#667eea',lineHeight:1.2}}>{timeTaken<60?`${timeTaken}s`:`${Math.floor(timeTaken/60)}m ${timeTaken%60}s`}</span>
+              </div>
+              {/* stat: remaining */}
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',background:'rgba(148,163,184,0.08)',borderRadius:10,padding:'5px 14px',border:'1px solid rgba(148,163,184,0.2)'}}>
+                <span style={{fontSize:9,color:dim,fontWeight:600,letterSpacing:'0.08em',textTransform:'uppercase'}}>Sobrou</span>
+                <span style={{fontSize:16,fontWeight:800,color:timeLeft>90?'#22c55e':timeLeft>30?'#f59e0b':'#94a3b8',lineHeight:1.2}}>{timeLeft<60?`${timeLeft}s`:`${Math.floor(timeLeft/60)}m ${timeLeft%60}s`}</span>
+              </div>
               {mode!=='solo' && (
                 <button onClick={()=>{ if(!showMiniGame){initMemory();} setShowMiniGame(v=>!v); }}
-                  style={{marginLeft:8,display:'flex',alignItems:'center',gap:5,background:'rgba(139,92,246,0.12)',border:'1px solid rgba(139,92,246,0.3)',color:'#8b5cf6',borderRadius:8,padding:'6px 12px',cursor:'pointer',fontSize:12,fontWeight:600}}>
-                  <Gamepad size={13}/> {showMiniGame ? 'Fechar jogo' : 'Jogar enquanto espera'}
+                  style={{display:'flex',alignItems:'center',gap:5,background:'rgba(139,92,246,0.12)',border:'1px solid rgba(139,92,246,0.3)',color:'#8b5cf6',borderRadius:8,padding:'6px 12px',cursor:'pointer',fontSize:12,fontWeight:600,flexShrink:0}}>
+                  <Gamepad size={13}/> {showMiniGame ? 'Fechar' : 'Jogar'}
                 </button>
               )}
             </div>
