@@ -17,7 +17,7 @@ import { ref, set, update as dbUpdate, onValue, get } from 'firebase/database';
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
 
-type Category = 'basico' | 'intermediario' | 'avancado';
+type Category = 'basico' | 'intermediario' | 'avancado' | 'pagina';
 type CategoryFilter = Category | 'todos';
 type PageView = 'menu' | 'setup' | 'lobby' | 'battle' | 'results';
 type GameMode = 'create' | 'join' | 'solo';
@@ -36,6 +36,8 @@ interface Challenge {
   targetHtml: string;
   targetCss: string;
   starterCss: string;
+  htmlEditable?: boolean;
+  starterHtml?: string;
 }
 
 interface PlayerData {
@@ -557,6 +559,88 @@ const CHALLENGES: Challenge[] = [
     targetCss: `.caixa { border: 4px solid #27ae60; width: 120px; height: 120px; border-radius: 8px; background: transparent; }`,
     starterCss: `.caixa {\n  border: /* 4px solid <cor> */;\n  width: 120px;\n  height: 120px;\n  border-radius: 8px;\n}`,
   },
+
+  /* ── Página Web ────────────────────────────────────────────────────── */
+  {
+    id: 35, title: 'Cartão de Apresentação', category: 'pagina', Icon: User, iconColor: '#667eea',
+    difficulty: 'Fácil', points: 200,
+    description: 'Crie um cartão de apresentação com: nome em h1, uma frase em p com uma palavra destacada em mark. Aplique CSS para adicionar fundo, padding e bordas arredondadas.',
+    hints: [
+      'Use div.cartao como container, h1 para o nome e p para a frase. A tag mark serve para realçar palavras.',
+      'No CSS, dê fundo ao .cartao com background, padding interno e border-radius para arredondar.',
+      'Exemplo de estrutura: <div class="cartao"><h1>Nome</h1><p>Olá, sou <mark>dev</mark>!</p></div>',
+    ],
+    htmlStructure: 'div.cartao + h1 + p com mark',
+    htmlEditable: true,
+    starterHtml: `<div class="cartao">\n  <h1>Seu Nome</h1>\n  <p>Olá! Sou <mark>estudante</mark> de programação.</p>\n</div>`,
+    targetHtml: `<div class="cartao"><h1>Ana Silva</h1><p>Olá! Sou <mark>desenvolvedora</mark> web em formação.</p></div>`,
+    targetCss: `.cartao { background: #f0f4ff; padding: 32px; border-radius: 16px; max-width: 340px; margin: 20px auto; box-shadow: 0 4px 16px rgba(0,0,0,0.1); } h1 { color: #667eea; font-size: 26px; margin: 0 0 12px; font-family: sans-serif; } p { color: #475569; font-size: 15px; line-height: 1.6; font-family: sans-serif; } mark { background: #fef08a; color: #92400e; padding: 1px 6px; border-radius: 4px; }`,
+    starterCss: `.cartao {\n  /* adicione background, padding, border-radius */\n}\nh1 {\n  /* estilize o título */\n}\nmark {\n  /* estilize o destaque */\n}`,
+  },
+  {
+    id: 36, title: 'Artigo com Destaques', category: 'pagina', Icon: AlignCenter, iconColor: '#f59e0b',
+    difficulty: 'Fácil', points: 200,
+    description: 'Crie um artigo com: título h1, subtítulo h2, parágrafo p e use mark para destacar um trecho. Estilize com fundo e uma borda lateral colorida no article.',
+    hints: [
+      'Use a tag article como container semântico, h1 para título, h2 para subtítulo e mark para o destaque.',
+      'No CSS, aplique border-left no article para criar a borda lateral colorida. background e padding deixam mais visível.',
+      'Exemplo: article { border-left: 5px solid #f59e0b; padding: 20px; background: #fffbeb; }',
+    ],
+    htmlStructure: 'article + h1 + h2 + p com mark',
+    htmlEditable: true,
+    starterHtml: `<article>\n  <h1>Título do Artigo</h1>\n  <h2>Subtítulo aqui</h2>\n  <p>Escreva o texto. Use <mark>mark</mark> para destacar.</p>\n</article>`,
+    targetHtml: `<article><h1>CSS na Web</h1><h2>O que é e para que serve</h2><p>CSS é a linguagem que define o <mark>visual das páginas</mark> web, controlando cores, fontes e layouts.</p></article>`,
+    targetCss: `body { font-family: Georgia, serif; } article { max-width: 540px; margin: 20px auto; padding: 24px 28px; background: #fffbeb; border-left: 5px solid #f59e0b; border-radius: 0 12px 12px 0; } h1 { color: #92400e; font-size: 22px; margin: 0 0 6px; } h2 { color: #b45309; font-size: 15px; font-weight: 600; margin: 0 0 14px; } p { color: #374151; line-height: 1.8; margin: 0; } mark { background: #fde68a; padding: 2px 4px; border-radius: 3px; }`,
+    starterCss: `article {\n  /* border-left, padding, background */\n}\nh1 { /* cor e tamanho */ }\nh2 { /* cor e tamanho */ }\nmark { /* background e padding */ }`,
+  },
+  {
+    id: 37, title: 'Lista de Tarefas', category: 'pagina', Icon: LayoutGrid, iconColor: '#22c55e',
+    difficulty: 'Médio', points: 250,
+    description: 'Crie uma lista de tarefas com: título h1, uma lista ul com pelo menos 3 itens li. No CSS: remova os marcadores padrão, adicione fundo e estilize cada item.',
+    hints: [
+      'Use ul para lista não ordenada e li para cada item. h1 é o título da lista.',
+      'Para remover os bolinhas padrão: list-style: none; padding: 0 no ul. Cada li pode ter fundo e borda próprios.',
+      'Exemplo: li { background: #f8fafc; border-left: 4px solid #22c55e; padding: 12px; border-radius: 6px; margin-bottom: 8px; }',
+    ],
+    htmlStructure: 'div.lista + h1 + ul > li×3',
+    htmlEditable: true,
+    starterHtml: `<div class="lista">\n  <h1>Minhas Tarefas</h1>\n  <ul>\n    <li>Tarefa 1</li>\n    <li>Tarefa 2</li>\n    <li>Tarefa 3</li>\n  </ul>\n</div>`,
+    targetHtml: `<div class="lista"><h1>Minhas Tarefas</h1><ul><li>Estudar HTML</li><li>Praticar CSS</li><li>Criar uma página</li></ul></div>`,
+    targetCss: `.lista { background: white; max-width: 360px; margin: 20px auto; padding: 24px 28px; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); font-family: sans-serif; } h1 { font-size: 20px; color: #1e293b; margin: 0 0 16px; } ul { list-style: none; padding: 0; margin: 0; } li { padding: 12px 14px; margin-bottom: 8px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e; color: #15803d; font-size: 14px; font-weight: 500; }`,
+    starterCss: `.lista {\n  /* container: background, padding, border-radius */\n}\nul {\n  list-style: none;\n  padding: 0;\n}\nli {\n  /* cada item: background, border-left, padding */\n}`,
+  },
+  {
+    id: 38, title: 'Perfil com Foto', category: 'pagina', Icon: User, iconColor: '#8b5cf6',
+    difficulty: 'Médio', points: 280,
+    description: 'Crie um perfil com: foto circular usando img, nome em h1 e descrição em p. Centralize tudo e aplique border-radius 50% na imagem para ficar redonda.',
+    hints: [
+      'Use a tag img com src para a foto. Para uma imagem de exemplo, use: src="https://i.pravatar.cc/100"',
+      'Para centralizar: text-align: center no container. Para deixar a foto redonda: img { border-radius: 50%; }',
+      'Coloque h1 e p abaixo da img dentro de um div. O text-align: center no div centraliza tudo.',
+    ],
+    htmlStructure: 'div.perfil + img + h1 + p',
+    htmlEditable: true,
+    starterHtml: `<div class="perfil">\n  <img src="https://i.pravatar.cc/100" alt="Foto">\n  <h1>Seu Nome</h1>\n  <p>Sua descrição aqui.</p>\n</div>`,
+    targetHtml: `<div class="perfil"><img src="https://i.pravatar.cc/100" alt="Avatar"><h1>Carlos Dev</h1><p>Desenvolvedor front-end apaixonado por CSS.</p></div>`,
+    targetCss: `.perfil { text-align: center; max-width: 280px; margin: 30px auto; padding: 32px 20px; background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); font-family: sans-serif; } img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #8b5cf6; margin-bottom: 14px; } h1 { color: #1e293b; font-size: 20px; margin: 0 0 8px; } p { color: #64748b; font-size: 13px; line-height: 1.6; margin: 0; }`,
+    starterCss: `.perfil {\n  text-align: center;\n  /* max-width, padding, background */\n}\nimg {\n  width: 100px;\n  height: 100px;\n  border-radius: /* ? */;\n  /* borda e espaçamento */\n}\nh1 { /* estilize o nome */ }\np { /* estilize a bio */ }`,
+  },
+  {
+    id: 39, title: 'Página com Citação', category: 'pagina', Icon: AlignCenter, iconColor: '#ef4444',
+    difficulty: 'Difícil', points: 320,
+    description: 'Crie uma página com: título h1, parágrafo p com uma palavra em mark e uma citação usando blockquote. Estilize a blockquote com borda lateral e fundo diferente.',
+    hints: [
+      'Use a tag blockquote para citações. Ela é semanticamente correta para textos citados de outra fonte.',
+      'Dê ao blockquote: border-left com cor, padding interno e um background diferente do restante da página.',
+      'Exemplo: blockquote { border-left: 5px solid #667eea; padding: 16px; background: #f8fafc; border-radius: 0 8px 8px 0; }',
+    ],
+    htmlStructure: 'div + h1 + p com mark + blockquote',
+    htmlEditable: true,
+    starterHtml: `<div class="pagina">\n  <h1>Frase Favorita</h1>\n  <p>A <mark>prática</mark> leva à perfeição.</p>\n  <blockquote>\n    Escreva uma citação famosa aqui.\n  </blockquote>\n</div>`,
+    targetHtml: `<div class="pagina"><h1>Frase Favorita</h1><p>A <mark>prática constante</mark> leva à perfeição.</p><blockquote>A simplicidade é o último grau da sofisticação. — Leonardo da Vinci</blockquote></div>`,
+    targetCss: `.pagina { max-width: 500px; margin: 24px auto; padding: 28px; font-family: Georgia, serif; } h1 { color: #1e293b; font-size: 22px; margin: 0 0 14px; } p { color: #374151; line-height: 1.7; margin: 0 0 20px; } mark { background: #bbf7d0; color: #14532d; padding: 2px 5px; border-radius: 3px; } blockquote { margin: 0; padding: 16px 20px; background: #f8fafc; border-left: 5px solid #667eea; border-radius: 0 10px 10px 0; color: #475569; font-style: italic; font-size: 14px; line-height: 1.7; }`,
+    starterCss: `.pagina {\n  max-width: 500px;\n  margin: 24px auto;\n  padding: 28px;\n}\nmark { /* background e padding */ }\nblockquote {\n  border-left: /* ? */;\n  padding: /* ? */;\n  background: /* ? */;\n}`,
+  },
 ];
 
 /* ── Scoring ─────────────────────────────────────────────────────────────── */
@@ -763,6 +847,58 @@ function calcScore(cid: number, iframe: HTMLIFrameElement): { score: number; det
       add('transform 3D no .cartao', gs('.cartao','transform')!=='none', 45);
       add('background com gradiente', gs('.cartao','background-image').includes('gradient'), 20);
       break;
+    case 35: {
+      const hasAnyBg = Array.from(doc.querySelectorAll('*')).some(el=>{
+        const bg = win.getComputedStyle(el).backgroundColor;
+        return bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent';
+      });
+      add('tem h1 com nome', !!doc.querySelector('h1')?.textContent?.trim(), 30);
+      add('tem parágrafo p', !!doc.querySelector('p'), 25);
+      add('tem destaque mark', !!doc.querySelector('mark'), 25);
+      add('fundo colorido (CSS)', hasAnyBg, 20);
+      break;
+    }
+    case 36: {
+      const hasAnyBg36 = Array.from(doc.querySelectorAll('*')).some(el=>{
+        const bg = win.getComputedStyle(el).backgroundColor;
+        return bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent';
+      });
+      add('tem h1 (título)', !!doc.querySelector('h1'), 20);
+      add('tem h2 (subtítulo)', !!doc.querySelector('h2'), 20);
+      add('tem parágrafo p', !!doc.querySelector('p'), 20);
+      add('tem destaque mark', !!doc.querySelector('mark'), 20);
+      add('CSS aplicado', hasAnyBg36, 20);
+      break;
+    }
+    case 37: {
+      const liCount = doc.querySelectorAll('li').length;
+      const ul = doc.querySelector('ul,ol');
+      const li = doc.querySelector('li');
+      add('tem h1', !!doc.querySelector('h1'), 20);
+      add('tem lista ul ou ol', !!ul, 20);
+      add('pelo menos 3 itens li', liCount >= 3, 30);
+      add('list-style removido', !!(li && win.getComputedStyle(li).listStyleType === 'none'), 15);
+      add('CSS no li (fundo ou borda)', !!(li && (win.getComputedStyle(li).backgroundColor !== 'rgba(0, 0, 0, 0)' || win.getComputedStyle(li).borderLeftStyle !== 'none')), 15);
+      break;
+    }
+    case 38: {
+      const img = doc.querySelector('img');
+      add('tem img (foto)', !!img, 30);
+      add('tem h1 (nome)', !!doc.querySelector('h1'), 25);
+      add('tem p (descrição)', !!doc.querySelector('p'), 20);
+      add('img com border-radius (circular)', !!(img && px(win.getComputedStyle(img).borderRadius) >= 40), 15);
+      add('container centralizado', Array.from(doc.querySelectorAll('*')).some(el=>win.getComputedStyle(el).textAlign==='center'), 10);
+      break;
+    }
+    case 39: {
+      const bq = doc.querySelector('blockquote');
+      add('tem h1', !!doc.querySelector('h1'), 20);
+      add('tem mark', !!doc.querySelector('mark'), 20);
+      add('tem blockquote', !!bq, 30);
+      add('blockquote com borda lateral', !!(bq && px(win.getComputedStyle(bq).borderLeftWidth) > 0), 20);
+      add('blockquote com fundo', !!(bq && win.getComputedStyle(bq).backgroundColor !== 'rgba(0, 0, 0, 0)'), 10);
+      break;
+    }
   }
   const total  = details.reduce((s,d)=>s+d.weight,0);
   const earned = details.reduce((s,d)=>s+(d.passed?d.weight:0),0);
@@ -807,6 +943,11 @@ const PROPERTY_GUIDE: Record<number,string> = {
   32: 'box-shadow múltiplo — múltiplas sombras separadas por vírgula criam camadas de brilho ao redor do elemento.',
   33: 'filter: blur() — aplica desfoque gaussiano no elemento. O valor em px define a intensidade.',
   34: 'perspective e rotateX/Y — perspective cria profundidade 3D no elemento pai. rotateX/Y gira em torno dos eixos.',
+  35: 'Neste desafio você escreve HTML e CSS. Use h1 para o título, p para o texto, mark para destaque. No CSS, background colore o container, padding cria espaço interno, border-radius arredonda.',
+  36: 'Escreva HTML e CSS. article é uma tag semântica para conteúdo independente. h1 = título principal, h2 = subtítulo. border-left cria uma borda lateral em qualquer elemento.',
+  37: 'Escreva HTML e CSS. ul (unordered list) cria uma lista. li são os itens. list-style: none remove os marcadores padrão (bolinhas). Cada li pode ter seu próprio estilo visual.',
+  38: 'Escreva HTML e CSS. img exibe imagens — use src para definir a URL. border-radius: 50% torna qualquer elemento quadrado em círculo. object-fit: cover preenche sem distorcer.',
+  39: 'Escreva HTML e CSS. blockquote é a tag semântica para citações. border-left cria uma barra lateral colorida. font-style: italic inclina o texto da citação.',
 };
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
@@ -831,8 +972,8 @@ function pickChallenges(cat: CategoryFilter, count: number): number[] {
 }
 
 const DIFF_COLOR: Record<string,string> = { Fácil:'#22c55e', Médio:'#f59e0b', Difícil:'#ef4444' };
-const CAT_LABEL:  Record<CategoryFilter,string> = { todos:'Todos', basico:'Básico', intermediario:'Intermediário', avancado:'Avançado' };
-const CAT_COLOR:  Record<CategoryFilter,string> = { todos:'#667eea', basico:'#3b82f6', intermediario:'#8b5cf6', avancado:'#ef4444' };
+const CAT_LABEL:  Record<CategoryFilter,string> = { todos:'Todos', basico:'Básico', intermediario:'Intermediário', avancado:'Avançado', pagina:'Página Web' };
+const CAT_COLOR:  Record<CategoryFilter,string> = { todos:'#667eea', basico:'#3b82f6', intermediario:'#8b5cf6', avancado:'#ef4444', pagina:'#06b6d4' };
 const BATTLE_DURATION = 180;
 const HINT_COSTS: [number,number,number] = [0, 10, 20];
 
@@ -866,6 +1007,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const [roomMaxPlayers, setRoomMaxPlayers] = useState(2);
   const [allPlayers, setAllPlayers]     = useState<Record<string,PlayerData>>({});
   const [playerCode, setPlayerCode]     = useState('');
+  const [playerHtml, setPlayerHtml]     = useState('');
   const [timeLeft, setTimeLeft]         = useState(BATTLE_DURATION);
   const [playerScore, setPlayerScore]   = useState(-1);
   const [scoreDetails, setScoreDetails] = useState<ScoreDetail[]>([]);
@@ -939,11 +1081,14 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   /* ── Preview ── */
   useEffect(()=>{
     const t = setTimeout(()=>{
-      if (previewRef.current)
-        previewRef.current.srcdoc = buildDoc(CHALLENGES[challengeIdx].targetHtml, playerCode);
+      if (previewRef.current) {
+        const ch = CHALLENGES[challengeIdx];
+        const html = ch.htmlEditable ? playerHtml : ch.targetHtml;
+        previewRef.current.srcdoc = buildDoc(html, playerCode);
+      }
     }, 250);
     return ()=>clearTimeout(t);
-  }, [playerCode, challengeIdx]);
+  }, [playerCode, playerHtml, challengeIdx]);
 
   useEffect(()=>{
     if (targetRef.current && view==='battle') {
@@ -1097,9 +1242,11 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     const nextRound = currentRound + 1;
     if (nextRound >= totalRounds) { setView('results'); return; }
     const nextIdx = challengeIndices[nextRound];
+    const nextCh = CHALLENGES[nextIdx];
     setCurrentRound(nextRound);
     setChallengeIdx(nextIdx);
-    setPlayerCode(CHALLENGES[nextIdx].starterCss);
+    setPlayerCode(nextCh.starterCss);
+    setPlayerHtml(nextCh.starterHtml ?? '');
     setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
     setHintLevel(0); setHintMsg(''); setShowHints(false);
     setTimeLeft(BATTLE_DURATION);
@@ -1173,9 +1320,11 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
           /* round avançou → mostra transição e reseta */
           setRoundTransition(true);
           setTimeout(()=>{
+            const nCh = CHALLENGES[cIdx];
             setCurrentRound(cRound);
             setChallengeIdx(cIdx);
-            setPlayerCode(CHALLENGES[cIdx].starterCss);
+            setPlayerCode(nCh.starterCss);
+            setPlayerHtml(nCh.starterHtml ?? '');
             setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
             setHintLevel(0); setHintMsg(''); setShowHints(false);
             submittedRef.current = false;
@@ -1185,10 +1334,12 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
           }, 3000);
         } else if (prevRoundRef.current < 0) {
           /* primeira entrada */
+          const nCh = CHALLENGES[cIdx];
           setCurrentRound(cRound);
           setChallengeIdx(cIdx);
           const elapsed = data.startedAt ? Math.floor((Date.now()-data.startedAt)/1000) : 0;
-          setPlayerCode(CHALLENGES[cIdx].starterCss);
+          setPlayerCode(nCh.starterCss);
+          setPlayerHtml(nCh.starterHtml ?? '');
           setTimeLeft(Math.max(0, BATTLE_DURATION - elapsed));
           setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
           setView('battle');
@@ -1301,8 +1452,10 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     setCurrentRound(0);
     roundScoresRef.current = {};
     const idx = indices[0];
+    const startCh = CHALLENGES[idx];
     setChallengeIdx(idx);
-    setPlayerCode(CHALLENGES[idx].starterCss);
+    setPlayerCode(startCh.starterCss);
+    setPlayerHtml(startCh.starterHtml ?? '');
     setTimeLeft(BATTLE_DURATION);
     setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
     setRoundResults([]);
@@ -1399,7 +1552,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const timerPct   = (timeLeft/BATTLE_DURATION)*100;
   const timerColor = timeLeft>120 ? '#22c55e' : timeLeft>60 ? '#f59e0b' : '#ef4444';
   const catChallenges = catFilter==='todos' ? CHALLENGES : CHALLENGES.filter(c=>c.category===catFilter);
-  const categories: CategoryFilter[] = ['todos','basico','intermediario','avancado'];
+  const categories: CategoryFilter[] = ['todos','basico','intermediario','avancado','pagina'];
 
   /* ══════════════════════════════════════════════════════════
       MENU
@@ -1906,14 +2059,38 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
         {/* Three panels */}
         <div style={{flex:1,display:'flex',minHeight:0,overflow:'hidden'}}>
           {/* Editor */}
-          <div style={{width:'38%',minWidth:200,display:'flex',flexDirection:'column',borderRight:`1px solid ${border}`,minHeight:0}}>
-            <div style={{padding:'8px 14px',fontSize:12,color:'#94a3b8',background:'#1e1e2e',borderBottom:'2px solid #667eea',flexShrink:0,letterSpacing:'0.06em',display:'flex',alignItems:'center',gap:7,fontWeight:600}}>
-              <Code2 size={13} color="#667eea"/> <span style={{color:'#c7d2fe'}}>EDITOR CSS</span>
-              {submitted && <span style={{color:'#22c55e',marginLeft:'auto',display:'flex',alignItems:'center',gap:4,fontWeight:700}}><Check size={12}/> Enviado</span>}
-            </div>
-            <textarea value={playerCode} onChange={e=>{ if(!submitted) setPlayerCode(e.target.value); }}
-              onKeyDown={handleTab} disabled={submitted} spellCheck={false} autoCorrect="off" autoCapitalize="off"
-              style={{flex:1,minHeight:0,background:'#1e1e2e',color:'#cdd6f4',fontFamily:'monospace',fontSize:13,padding:14,border:'none',outline:'none',resize:'none',lineHeight:1.7,opacity:submitted?0.6:1}}/>
+          <div style={{width:'40%',minWidth:220,display:'flex',flexDirection:'column',borderRight:`1px solid ${border}`,minHeight:0}}>
+            {challenge.htmlEditable ? (
+              <>
+                {/* HTML editor */}
+                <div style={{padding:'7px 14px',fontSize:11,color:'#94a3b8',background:'#1e1e2e',borderBottom:'2px solid #06b6d4',flexShrink:0,letterSpacing:'0.06em',display:'flex',alignItems:'center',gap:7,fontWeight:600}}>
+                  <Code2 size={12} color="#06b6d4"/> <span style={{color:'#a5f3fc'}}>HTML</span>
+                  <span style={{marginLeft:'auto',fontSize:9,color:'#64748b',background:'rgba(6,182,212,0.08)',padding:'2px 6px',borderRadius:4,fontWeight:500}}>escreva as tags</span>
+                </div>
+                <textarea value={playerHtml} onChange={e=>{ if(!submitted) setPlayerHtml(e.target.value); }}
+                  disabled={submitted} spellCheck={false} autoCorrect="off" autoCapitalize="off"
+                  style={{flex:'0 0 40%',minHeight:0,background:'#0d1b2a',color:'#a5f3fc',fontFamily:'monospace',fontSize:12,padding:12,border:'none',outline:'none',resize:'none',lineHeight:1.65,opacity:submitted?0.6:1,borderBottom:'1px solid rgba(6,182,212,0.15)'}}/>
+                {/* CSS editor */}
+                <div style={{padding:'7px 14px',fontSize:11,color:'#94a3b8',background:'#1e1e2e',borderBottom:'2px solid #667eea',flexShrink:0,letterSpacing:'0.06em',display:'flex',alignItems:'center',gap:7,fontWeight:600}}>
+                  <Palette size={12} color="#667eea"/> <span style={{color:'#c7d2fe'}}>CSS</span>
+                  <span style={{marginLeft:'auto',fontSize:9,color:'#64748b',background:'rgba(102,126,234,0.08)',padding:'2px 6px',borderRadius:4,fontWeight:500}}>estilize com CSS</span>
+                  {submitted && <span style={{color:'#22c55e',display:'flex',alignItems:'center',gap:3,fontWeight:700}}><Check size={10}/> Enviado</span>}
+                </div>
+                <textarea value={playerCode} onChange={e=>{ if(!submitted) setPlayerCode(e.target.value); }}
+                  onKeyDown={handleTab} disabled={submitted} spellCheck={false} autoCorrect="off" autoCapitalize="off"
+                  style={{flex:1,minHeight:0,background:'#1e1e2e',color:'#cdd6f4',fontFamily:'monospace',fontSize:12,padding:12,border:'none',outline:'none',resize:'none',lineHeight:1.65,opacity:submitted?0.6:1}}/>
+              </>
+            ) : (
+              <>
+                <div style={{padding:'8px 14px',fontSize:12,color:'#94a3b8',background:'#1e1e2e',borderBottom:'2px solid #667eea',flexShrink:0,letterSpacing:'0.06em',display:'flex',alignItems:'center',gap:7,fontWeight:600}}>
+                  <Code2 size={13} color="#667eea"/> <span style={{color:'#c7d2fe'}}>EDITOR CSS</span>
+                  {submitted && <span style={{color:'#22c55e',marginLeft:'auto',display:'flex',alignItems:'center',gap:4,fontWeight:700}}><Check size={12}/> Enviado</span>}
+                </div>
+                <textarea value={playerCode} onChange={e=>{ if(!submitted) setPlayerCode(e.target.value); }}
+                  onKeyDown={handleTab} disabled={submitted} spellCheck={false} autoCorrect="off" autoCapitalize="off"
+                  style={{flex:1,minHeight:0,background:'#1e1e2e',color:'#cdd6f4',fontFamily:'monospace',fontSize:13,padding:14,border:'none',outline:'none',resize:'none',lineHeight:1.7,opacity:submitted?0.6:1}}/>
+              </>
+            )}
           </div>
 
           {/* Student preview */}
