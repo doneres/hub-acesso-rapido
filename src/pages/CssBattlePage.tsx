@@ -4,7 +4,7 @@ import {
   Lightbulb, Play, Swords, Home, Link, Gamepad2, Crown, Eye, Code2,
   Circle, Square, Palette, AlignCenter, MousePointer, User, LayoutGrid,
   RotateCw, Users, Star, X, TrendingUp, ChevronDown, ChevronUp,
-  ChevronRight, Layout, type LucideIcon
+  ChevronRight, Layout, Smile, UserMinus, type LucideIcon
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useGameState } from '../hooks/useGameState';
@@ -308,6 +308,208 @@ const CHALLENGES: Challenge[] = [
     targetCss: `.title { font-family: sans-serif; font-size: 32px; font-weight: 900; margin: 0; background: linear-gradient(135deg, #667eea, #f093fb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }`,
     starterCss: `.title {\n  font-family: sans-serif;\n  font-size: 32px;\n  font-weight: 900;\n  margin: 0;\n  background: linear-gradient(/* ? */);\n  -webkit-background-clip: /* ? */;\n  -webkit-text-fill-color: /* ? */;\n  background-clip: /* ? */;\n}`,
   },
+  /* ── Básico extra ────────────────────────────────────────────────── */
+  {
+    id: 21, title: 'Espaçamento Interno', category: 'basico', Icon: Square, iconColor: '#2c3e50',
+    difficulty: 'Fácil', points: 80,
+    description: 'Adicione padding de 24px dentro da caixa e defina fundo escuro. Cor: #2c3e50.',
+    hints: [
+      'Padding cria espaço entre o conteúdo e a borda. Aplica em todos os lados.',
+      'padding: 24px aplica igual nos 4 lados. background-color: #2c3e50 define o fundo escuro.',
+      'Solução: .caixa { padding: 24px; background-color: #2c3e50; border-radius: 10px; display: inline-block; }',
+    ],
+    htmlStructure: '<div class="caixa"><p class="txt">Olá, CSS!</p></div>',
+    targetHtml: '<div class="caixa"><p class="txt">Olá, CSS!</p></div>',
+    targetCss: `.caixa { padding: 24px; background-color: #2c3e50; border-radius: 10px; display: inline-block; } .txt { color: white; font-family: sans-serif; margin: 0; font-size: 18px; }`,
+    starterCss: `.caixa {\n  padding: /* ? */;\n  background-color: /* use #2c3e50 */;\n  border-radius: 10px;\n  display: inline-block;\n}\n.txt {\n  color: white;\n  font-family: sans-serif;\n  margin: 0;\n  font-size: 18px;\n}`,
+  },
+  {
+    id: 22, title: 'Meia Opacidade', category: 'basico', Icon: Circle, iconColor: '#9b59b6',
+    difficulty: 'Fácil', points: 80,
+    description: 'Deixe o elemento com 50% de opacidade. Cor de fundo: #9b59b6.',
+    hints: [
+      'A propriedade opacity aceita valores de 0 (invisível) a 1 (totalmente visível).',
+      'opacity: 0.5 deixa o elemento com 50% de transparência.',
+      'Solução: .bloco { background-color: #9b59b6; opacity: 0.5; width: 120px; height: 120px; border-radius: 12px; }',
+    ],
+    htmlStructure: '<div class="bloco"></div>',
+    targetHtml: '<div class="bloco"></div>',
+    targetCss: `.bloco { background-color: #9b59b6; opacity: 0.5; width: 120px; height: 120px; border-radius: 12px; }`,
+    starterCss: `.bloco {\n  background-color: /* use #9b59b6 */;\n  opacity: /* ? */;\n  width: 120px;\n  height: 120px;\n  border-radius: 12px;\n}`,
+  },
+  {
+    id: 23, title: 'Texto Itálico', category: 'basico', Icon: AlignCenter, iconColor: '#6366f1',
+    difficulty: 'Fácil', points: 80,
+    description: 'Deixe o texto em itálico e mude a cor para roxo. Cor: #6366f1.',
+    hints: [
+      'font-style: italic inclina o texto. color define a cor do texto.',
+      'Use font-style: italic e color: #6366f1 no parágrafo.',
+      'Solução: .texto { font-style: italic; color: #6366f1; font-size: 20px; font-family: sans-serif; }',
+    ],
+    htmlStructure: '<p class="texto">Aprendendo CSS!</p>',
+    targetHtml: '<p class="texto">Aprendendo CSS!</p>',
+    targetCss: `.texto { font-style: italic; color: #6366f1; font-size: 20px; font-family: sans-serif; margin: 0; }`,
+    starterCss: `.texto {\n  font-style: /* ? */;\n  color: /* use #6366f1 */;\n  font-size: 20px;\n  font-family: sans-serif;\n  margin: 0;\n}`,
+  },
+  {
+    id: 24, title: 'Borda Pontilhada', category: 'basico', Icon: Square, iconColor: '#f39c12',
+    difficulty: 'Fácil', points: 80,
+    description: 'Adicione uma borda pontilhada laranja de 3px. Cor: #f39c12.',
+    hints: [
+      'border-style pode ser: solid (sólida), dashed (tracejada) ou dotted (pontilhada).',
+      'border: 3px dashed #f39c12 — 3px, tracejada, cor laranja.',
+      'Solução: .caixa { border: 3px dashed #f39c12; width: 130px; height: 130px; border-radius: 8px; }',
+    ],
+    htmlStructure: '<div class="caixa"></div>',
+    targetHtml: '<div class="caixa"></div>',
+    targetCss: `.caixa { border: 3px dashed #f39c12; width: 130px; height: 130px; border-radius: 8px; background: transparent; }`,
+    starterCss: `.caixa {\n  border: /* 3px dashed <cor> */;\n  width: 130px;\n  height: 130px;\n  border-radius: 8px;\n}`,
+  },
+  {
+    id: 25, title: 'Sombra no Texto', category: 'basico', Icon: AlignCenter, iconColor: '#e74c3c',
+    difficulty: 'Médio', points: 130,
+    description: 'Adicione sombra escura ao título: text-shadow: 3px 3px 6px rgba(0,0,0,0.5).',
+    hints: [
+      'text-shadow aplica sombra diretamente nas letras, similar ao box-shadow para caixas.',
+      'text-shadow: deslocX deslocY blur cor. Ex: 3px 3px 6px rgba(0,0,0,0.5).',
+      'Solução: .titulo { text-shadow: 3px 3px 6px rgba(0,0,0,0.5); font-size: 28px; font-family: sans-serif; }',
+    ],
+    htmlStructure: '<h1 class="titulo">Sombra!</h1>',
+    targetHtml: '<h1 class="titulo">Sombra!</h1>',
+    targetCss: `.titulo { text-shadow: 3px 3px 6px rgba(0,0,0,0.5); font-size: 28px; font-family: sans-serif; font-weight: bold; margin: 0; }`,
+    starterCss: `.titulo {\n  text-shadow: /* 3px 3px 6px rgba(0,0,0,0.5) */;\n  font-size: 28px;\n  font-family: sans-serif;\n  font-weight: bold;\n  margin: 0;\n}`,
+  },
+
+  /* ── Intermediário extra ──────────────────────────────────────────── */
+  {
+    id: 26, title: 'Posição Absoluta', category: 'intermediario', Icon: Layout, iconColor: '#e67e22',
+    difficulty: 'Médio', points: 220,
+    description: 'Posicione o ponto verde no canto inferior direito do container. Cor: #22c55e.',
+    hints: [
+      'Para posicionar um filho em relação ao pai, o pai precisa de position: relative.',
+      'O filho recebe position: absolute e bottom/right para definir o canto.',
+      'Solução: .container { position: relative; } .ponto { position: absolute; bottom: 10px; right: 10px; }',
+    ],
+    htmlStructure: '<div class="container">\n  <div class="ponto"></div>\n</div>',
+    targetHtml: '<div class="container"><div class="ponto"></div></div>',
+    targetCss: `.container { width: 180px; height: 180px; background: #1e293b; border-radius: 12px; position: relative; } .ponto { width: 22px; height: 22px; background: #22c55e; border-radius: 50%; position: absolute; bottom: 10px; right: 10px; }`,
+    starterCss: `.container {\n  width: 180px;\n  height: 180px;\n  background: #1e293b;\n  border-radius: 12px;\n  position: /* ? */;\n}\n.ponto {\n  width: 22px;\n  height: 22px;\n  background: #22c55e;\n  border-radius: 50%;\n  position: /* ? */;\n  bottom: /* ? */;\n  right: /* ? */;\n}`,
+  },
+  {
+    id: 27, title: 'Rotação', category: 'intermediario', Icon: RotateCw, iconColor: '#3498db',
+    difficulty: 'Médio', points: 220,
+    description: 'Gire o quadrado 45 graus usando transform. Cor: #3498db.',
+    hints: [
+      'transform permite rotacionar, escalar e mover elementos sem afetar o layout ao redor.',
+      'transform: rotate(45deg) gira o elemento 45 graus no sentido horário.',
+      'Solução: .caixa { transform: rotate(45deg); background: #3498db; width: 80px; height: 80px; }',
+    ],
+    htmlStructure: '<div class="caixa"></div>',
+    targetHtml: '<div class="caixa"></div>',
+    targetCss: `.caixa { width: 80px; height: 80px; background: #3498db; transform: rotate(45deg); }`,
+    starterCss: `.caixa {\n  width: 80px;\n  height: 80px;\n  background: #3498db;\n  transform: /* rotate(?) */;\n}`,
+  },
+  {
+    id: 28, title: 'Cortar Conteúdo', category: 'intermediario', Icon: Square, iconColor: '#16a34a',
+    difficulty: 'Médio', points: 220,
+    description: 'Corte o conteúdo que ultrapassa o container com overflow hidden.',
+    hints: [
+      'Por padrão, conteúdo maior que o container "transborda". overflow: hidden corta o excesso.',
+      'Adicione overflow: hidden no .container para que o elemento filho seja cortado.',
+      'Solução: .container { overflow: hidden; width: 160px; height: 100px; border-radius: 12px; }',
+    ],
+    htmlStructure: '<div class="container">\n  <div class="conteudo"></div>\n</div>',
+    targetHtml: '<div class="container"><div class="conteudo"></div></div>',
+    targetCss: `.container { width: 160px; height: 100px; background: #1e293b; border-radius: 12px; overflow: hidden; position: relative; } .conteudo { width: 220px; height: 220px; background: linear-gradient(135deg, #667eea, #f093fb); border-radius: 50%; }`,
+    starterCss: `.container {\n  width: 160px;\n  height: 100px;\n  background: #1e293b;\n  border-radius: 12px;\n  overflow: /* ? */;\n  position: relative;\n}\n.conteudo {\n  width: 220px;\n  height: 220px;\n  background: linear-gradient(135deg, #667eea, #f093fb);\n  border-radius: 50%;\n}`,
+  },
+  {
+    id: 29, title: 'Flex Grow', category: 'intermediario', Icon: TrendingUp, iconColor: '#f59e0b',
+    difficulty: 'Médio', points: 250,
+    description: 'Faça o item central ocupar todo o espaço restante do container flex.',
+    hints: [
+      'Em um container flex, flex-grow define quanto um item cresce em relação aos outros.',
+      'flex: 1 (ou flex-grow: 1) faz o item ocupar todo o espaço disponível.',
+      'Solução: .principal { flex: 1; background: #22c55e; border-radius: 8px; }',
+    ],
+    htmlStructure: '<div class="container">\n  <div class="lateral" style="background:#667eea"></div>\n  <div class="principal"></div>\n  <div class="lateral" style="background:#667eea"></div>\n</div>',
+    targetHtml: '<div class="container"><div class="lateral" style="background:#667eea"></div><div class="principal"></div><div class="lateral" style="background:#667eea"></div></div>',
+    targetCss: `.container { display: flex; gap: 8px; width: 280px; height: 80px; } .lateral { width: 50px; flex-shrink: 0; border-radius: 8px; } .principal { flex: 1; background: #22c55e; border-radius: 8px; }`,
+    starterCss: `.container {\n  display: flex;\n  gap: 8px;\n  width: 280px;\n  height: 80px;\n}\n.lateral {\n  width: 50px;\n  flex-shrink: 0;\n  border-radius: 8px;\n}\n.principal {\n  flex: /* ? */;\n  background: #22c55e;\n  border-radius: 8px;\n}`,
+  },
+  {
+    id: 30, title: 'Espaço entre Letras', category: 'intermediario', Icon: AlignCenter, iconColor: '#14b8a6',
+    difficulty: 'Fácil', points: 180,
+    description: 'Aumente o espaçamento entre as letras do título usando letter-spacing.',
+    hints: [
+      'letter-spacing controla o espaço entre cada caractere do texto.',
+      'letter-spacing: 0.2em define o espaço proporcional ao tamanho da fonte.',
+      'Solução: .titulo { letter-spacing: 0.2em; text-transform: uppercase; font-family: sans-serif; }',
+    ],
+    htmlStructure: '<h2 class="titulo">CSS BATTLE</h2>',
+    targetHtml: '<h2 class="titulo">CSS BATTLE</h2>',
+    targetCss: `.titulo { letter-spacing: 0.2em; text-transform: uppercase; font-family: sans-serif; font-weight: 700; font-size: 22px; margin: 0; color: #667eea; }`,
+    starterCss: `.titulo {\n  letter-spacing: /* ? */;\n  text-transform: uppercase;\n  font-family: sans-serif;\n  font-weight: 700;\n  font-size: 22px;\n  margin: 0;\n  color: #667eea;\n}`,
+  },
+
+  /* ── Avançado extra ────────────────────────────────────────────────── */
+  {
+    id: 31, title: 'Triângulo CSS', category: 'avancado', Icon: TrendingUp, iconColor: '#ef4444',
+    difficulty: 'Difícil', points: 350,
+    description: 'Crie um triângulo usando clip-path: polygon. Cor: #ef4444.',
+    hints: [
+      'clip-path: polygon() recorta o elemento seguindo coordenadas de cada vértice.',
+      'Um triângulo apontando para cima tem 3 pontos: polygon(50% 0%, 0% 100%, 100% 100%).',
+      'Solução: .triangulo { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background: #ef4444; }',
+    ],
+    htmlStructure: '<div class="triangulo"></div>',
+    targetHtml: '<div class="triangulo"></div>',
+    targetCss: `.triangulo { width: 120px; height: 120px; background: #ef4444; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }`,
+    starterCss: `.triangulo {\n  width: 120px;\n  height: 120px;\n  background: #ef4444;\n  clip-path: /* polygon(...) */;\n}`,
+  },
+  {
+    id: 32, title: 'Neon Glow', category: 'avancado', Icon: Star, iconColor: '#00d4ff',
+    difficulty: 'Difícil', points: 350,
+    description: 'Crie efeito de brilho neon azul com box-shadow múltiplo. Cor: #00d4ff.',
+    hints: [
+      'box-shadow aceita múltiplas sombras separadas por vírgula, criando camadas de brilho.',
+      'Empilhe sombras crescentes: 0 0 5px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #00d4ff.',
+      'Solução: .neon { box-shadow: 0 0 5px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #00d4ff; border: 2px solid #00d4ff; }',
+    ],
+    htmlStructure: '<div class="neon"></div>',
+    targetHtml: '<div class="neon"></div>',
+    targetCss: `.neon { width: 100px; height: 100px; background: #050510; border: 2px solid #00d4ff; border-radius: 50%; box-shadow: 0 0 5px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #00d4ff; }`,
+    starterCss: `.neon {\n  width: 100px;\n  height: 100px;\n  background: #050510;\n  border: 2px solid #00d4ff;\n  border-radius: 50%;\n  box-shadow: /* múltiplas sombras neon */;\n}`,
+  },
+  {
+    id: 33, title: 'Desfoque Gaussiano', category: 'avancado', Icon: Circle, iconColor: '#a855f7',
+    difficulty: 'Médio', points: 280,
+    description: 'Aplique desfoque gaussiano de 6px no elemento usando filter.',
+    hints: [
+      'filter: blur() aplica desfoque gaussiano no elemento inteiro.',
+      'filter: blur(6px) — quanto maior o valor, maior o desfoque visual.',
+      'Solução: .item { filter: blur(6px); }',
+    ],
+    htmlStructure: '<div class="item"></div>',
+    targetHtml: '<div class="item"></div>',
+    targetCss: `.item { width: 120px; height: 120px; background: linear-gradient(135deg, #a855f7, #ec4899); border-radius: 12px; filter: blur(6px); }`,
+    starterCss: `.item {\n  width: 120px;\n  height: 120px;\n  background: linear-gradient(135deg, #a855f7, #ec4899);\n  border-radius: 12px;\n  filter: /* blur(?) */;\n}`,
+  },
+  {
+    id: 34, title: 'Inclinação 3D', category: 'avancado', Icon: Layout, iconColor: '#f59e0b',
+    difficulty: 'Difícil', points: 380,
+    description: 'Incline o cartão em 3D usando perspective no pai e rotateX/Y no filho.',
+    hints: [
+      'Transform 3D precisa de perspective no elemento pai para criar profundidade visual.',
+      'No pai: perspective: 600px. No filho: transform: rotateX(20deg) rotateY(-15deg).',
+      'Solução: .cena { perspective: 600px; } .cartao { transform: rotateX(20deg) rotateY(-15deg); }',
+    ],
+    htmlStructure: '<div class="cena">\n  <div class="cartao"></div>\n</div>',
+    targetHtml: '<div class="cena"><div class="cartao"></div></div>',
+    targetCss: `.cena { width: 220px; height: 160px; perspective: 600px; display: flex; align-items: center; justify-content: center; } .cartao { width: 160px; height: 100px; background: linear-gradient(135deg, #f59e0b, #ef4444); border-radius: 12px; transform: rotateX(20deg) rotateY(-15deg); box-shadow: 0 20px 40px rgba(0,0,0,0.35); }`,
+    starterCss: `.cena {\n  width: 220px;\n  height: 160px;\n  perspective: /* ? */;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.cartao {\n  width: 160px;\n  height: 100px;\n  background: linear-gradient(135deg, #f59e0b, #ef4444);\n  border-radius: 12px;\n  transform: /* rotateX(...) rotateY(...) */;\n  box-shadow: 0 20px 40px rgba(0,0,0,0.35);\n}`,
+  },
+
   /* ── Novos Básicos ────────────────────────────────────────────────── */
   {
     id: 18, title: 'Caixa Colorida', category: 'basico', Icon: Square, iconColor: '#3498db',
@@ -490,6 +692,72 @@ function calcScore(cid: number, iframe: HTMLIFrameElement): { score: number; det
       add('borda verde (#27ae60)', colorNear(gs('.caixa','border-top-color'),39,174,96), 50);
       add('border-style solid', gs('.caixa','border-top-style')==='solid', 30);
       add('border-width >= 2px', px(gs('.caixa','border-top-width'))>=2, 20);
+      break;
+    case 21:
+      add('padding > 10px', px(gs('.caixa','padding-top'))>10, 40);
+      add('background escuro #2c3e50', colorNear(gs('.caixa','background-color'),44,62,80), 40);
+      add('texto visível', gs('.txt','color')!=='', 20);
+      break;
+    case 22:
+      add('opacity <= 0.7', parseFloat(gs('.bloco','opacity')||'1')<=0.7, 60);
+      add('background roxo', colorNear(gs('.bloco','background-color'),155,89,182), 30);
+      add('opacity > 0', parseFloat(gs('.bloco','opacity')||'1')>0, 10);
+      break;
+    case 23:
+      add('font-style: italic', gs('.texto','font-style')==='italic', 50);
+      add('cor roxa #6366f1', colorNear(gs('.texto','color'),99,102,241), 30);
+      add('font-size >= 14px', px(gs('.texto','font-size'))>=14, 20);
+      break;
+    case 24:
+      add('border-style: dashed', gs('.caixa','border-top-style')==='dashed', 45);
+      add('cor laranja #f39c12', colorNear(gs('.caixa','border-top-color'),243,156,18), 35);
+      add('border-width >= 2px', px(gs('.caixa','border-top-width'))>=2, 20);
+      break;
+    case 25:
+      add('text-shadow aplicado', gs('.titulo','text-shadow')!=='none', 70);
+      add('font-size >= 20px', px(gs('.titulo','font-size'))>=20, 30);
+      break;
+    case 26:
+      add('position: relative no container', gs('.container','position')==='relative', 30);
+      add('position: absolute no ponto', gs('.ponto','position')==='absolute', 50);
+      add('.ponto com cor verde', colorNear(gs('.ponto','background-color'),34,197,94), 20);
+      break;
+    case 27:
+      add('transform aplicado', gs('.caixa','transform')!=='none', 60);
+      add('background azul #3498db', colorNear(gs('.caixa','background-color'),52,152,219), 20);
+      add('width >= 40px', px(gs('.caixa','width'))>=40, 20);
+      break;
+    case 28:
+      add('overflow: hidden', gs('.container','overflow')==='hidden', 70);
+      add('border-radius > 0', px(gs('.container','border-radius'))>0, 30);
+      break;
+    case 29:
+      add('display: flex no container', hasFlex(gs('.container','display')), 30);
+      add('flex-grow > 0 no .principal', parseFloat(gs('.principal','flex-grow')||'0')>0, 50);
+      add('background verde no .principal', colorNear(gs('.principal','background-color'),34,197,94), 20);
+      break;
+    case 30:
+      add('letter-spacing > 1px', px(gs('.titulo','letter-spacing'))>1, 60);
+      add('color #667eea', colorNear(gs('.titulo','color'),102,126,234), 25);
+      add('text-transform uppercase', gs('.titulo','text-transform')==='uppercase', 15);
+      break;
+    case 31:
+      add('clip-path aplicado', gs('.triangulo','clip-path')!=='none', 70);
+      add('background vermelho', colorNear(gs('.triangulo','background-color'),239,68,68), 30);
+      break;
+    case 32:
+      add('box-shadow com brilho', gs('.neon','box-shadow')!=='none', 50);
+      add('border-radius circular', px(gs('.neon','border-radius'))>=40, 25);
+      add('borda aplicada', gs('.neon','border-top-style')!=='none', 25);
+      break;
+    case 33:
+      add('filter: blur aplicado', gs('.item','filter').includes('blur'), 70);
+      add('background com gradiente', gs('.item','background-image').includes('gradient'), 30);
+      break;
+    case 34:
+      add('perspective no .cena', gs('.cena','perspective')!==''&&gs('.cena','perspective')!=='none', 35);
+      add('transform 3D no .cartao', gs('.cartao','transform')!=='none', 45);
+      add('background com gradiente', gs('.cartao','background-image').includes('gradient'), 20);
       break;
   }
   const total  = details.reduce((s,d)=>s+d.weight,0);
@@ -1057,32 +1325,43 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
           </div>
         )}
 
-        {/* Tutorial banner */}
+        {/* Tutorial modal overlay */}
         {showTutorial && (
-          <div style={{background:isDark?'rgba(102,126,234,0.08)':'rgba(102,126,234,0.06)',border:`1px solid rgba(102,126,234,0.25)`,borderRadius:16,padding:'20px 24px',marginBottom:32,position:'relative'}}>
-            <button onClick={()=>{ setShowTutorial(false); localStorage.setItem('cssbattle_tutorial_dismissed','1'); }}
-              style={{position:'absolute',top:12,right:12,background:'none',border:'none',color:dim,cursor:'pointer',padding:4,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:6}}>
-              <X size={16}/>
-            </button>
-            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14}}>
-              <div style={{width:32,height:32,background:'rgba(102,126,234,0.15)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                <Eye size={16} color="#667eea"/>
-              </div>
-              <span style={{fontSize:15,fontWeight:700,color:text}}>Como funciona esta tela?</span>
-            </div>
-            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:12}}>
-              {[
-                {icon:'🏠', title:'Criar Sala', desc:'Você vira o host. Define categoria de desafios, número de rodadas e capacidade. Compartilhe o código de 4 letras com os colegas.'},
-                {icon:'🔗', title:'Entrar em Sala', desc:'Alguém já criou uma sala? Digite o código de 4 letras que o host compartilhou e entre diretamente na partida.'},
-                {icon:'🎮', title:'Praticar Solo', desc:'Treine no seu próprio ritmo sem adversários. Todas as dicas ficam disponíveis (com custo de moedas) para aprender.'},
-                {icon:'⚡', title:'Como é a batalha?', desc:'Cada rodada mostra um layout-alvo. Você escreve CSS para replicá-lo. Quanto mais critérios bater, maior sua pontuação!'},
-              ].map(item=>(
-                <div key={item.title} style={{background:isDark?'rgba(255,255,255,0.03)':'rgba(0,0,0,0.03)',borderRadius:10,padding:'12px 14px'}}>
-                  <div style={{fontSize:20,marginBottom:6}}>{item.icon}</div>
-                  <div style={{fontSize:13,fontWeight:700,color:text,marginBottom:4}}>{item.title}</div>
-                  <div style={{fontSize:12,color:dim,lineHeight:1.7}}>{item.desc}</div>
+          <div style={{position:'fixed',inset:0,zIndex:200,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}} onClick={()=>{ setShowTutorial(false); localStorage.setItem('cssbattle_tutorial_dismissed','1'); }}>
+            <div style={{background:card,border:`1px solid ${border}`,borderRadius:20,padding:'32px 28px',width:'100%',maxWidth:620,position:'relative',boxShadow:'0 24px 60px rgba(0,0,0,0.4)'}} onClick={e=>e.stopPropagation()}>
+              <button onClick={()=>{ setShowTutorial(false); localStorage.setItem('cssbattle_tutorial_dismissed','1'); }}
+                style={{position:'absolute',top:16,right:16,background:'none',border:`1px solid ${border}`,color:dim,cursor:'pointer',padding:6,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:8}}>
+                <X size={16}/>
+              </button>
+              <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:22}}>
+                <div style={{width:40,height:40,background:'rgba(102,126,234,0.15)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  <Eye size={20} color="#667eea"/>
                 </div>
-              ))}
+                <div>
+                  <div style={{fontSize:17,fontWeight:700,color:text}}>Como funciona o CSS Battle?</div>
+                  <div style={{fontSize:13,color:dim,marginTop:2}}>Leia antes de comecar sua primeira partida</div>
+                </div>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12,marginBottom:24}}>
+                {([
+                  {Icon:Home,    color:'#667eea', title:'Criar Sala',      desc:'Voce vira o host. Define nivel, rodadas e capacidade maxima. Compartilhe o codigo de 4 letras com os colegas.'},
+                  {Icon:Link,    color:'#3b82f6', title:'Entrar em Sala',  desc:'Alguem ja criou uma sala? Digite o codigo de 4 letras que o host compartilhou e entre diretamente.'},
+                  {Icon:Gamepad2,color:'#22c55e', title:'Praticar Solo',   desc:'Treine no seu proprio ritmo sem adversarios. Dicas disponiveis (com custo de moedas) para aprender.'},
+                  {Icon:Zap,     color:'#f59e0b', title:'A Batalha',       desc:'Cada rodada exibe um layout-alvo. Voce escreve CSS para replica-lo. Quanto mais criterios bater, maior a pontuacao!'},
+                ] as {Icon:LucideIcon, color:string, title:string, desc:string}[]).map(item=>(
+                  <div key={item.title} style={{background:isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)',borderRadius:12,padding:'14px 16px',border:`1px solid ${isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)'}`}}>
+                    <div style={{width:32,height:32,background:`${item.color}18`,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:10,border:`1px solid ${item.color}28`}}>
+                      <item.Icon size={16} color={item.color}/>
+                    </div>
+                    <div style={{fontSize:14,fontWeight:700,color:text,marginBottom:5}}>{item.title}</div>
+                    <div style={{fontSize:13,color:dim,lineHeight:1.7}}>{item.desc}</div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={()=>{ setShowTutorial(false); localStorage.setItem('cssbattle_tutorial_dismissed','1'); }}
+                style={{width:'100%',background:'linear-gradient(135deg,#667eea,#764ba2)',color:'white',border:'none',borderRadius:12,padding:'13px',fontSize:15,fontWeight:700,cursor:'pointer'}}>
+                Entendido, vamos comecar!
+              </button>
             </div>
           </div>
         )}
@@ -1310,9 +1589,9 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
                   {isSelf && <span style={{fontSize:10,color:'#667eea',background:'rgba(102,126,234,0.12)',padding:'2px 8px',borderRadius:999}}>você</span>}
                   {!isSelf && (
                     <button onClick={()=>voteKick(id)} disabled={alreadyVoted}
-                      title={alreadyVoted?'Você já votou':'Votar para remover'}
-                      style={{background:alreadyVoted?'rgba(239,68,68,0.08)':'none',border:`1px solid ${alreadyVoted?'rgba(239,68,68,0.3)':border}`,color:alreadyVoted?'#ef4444':dim,borderRadius:6,padding:'3px 8px',cursor:alreadyVoted?'default':'pointer',fontSize:11,display:'flex',alignItems:'center',gap:4}}>
-                      🚫 {myVoteCount>0?`${myVoteCount} voto${myVoteCount>1?'s':''}`:alreadyVoted?'votado':'remover'}
+                      title={alreadyVoted?'Voce ja votou':'Votar para remover'}
+                      style={{background:alreadyVoted?'rgba(239,68,68,0.08)':'none',border:`1px solid ${alreadyVoted?'rgba(239,68,68,0.3)':border}`,color:alreadyVoted?'#ef4444':dim,borderRadius:6,padding:'4px 9px',cursor:alreadyVoted?'default':'pointer',fontSize:11,display:'flex',alignItems:'center',gap:4}}>
+                      <UserMinus size={11}/> {myVoteCount>0?`${myVoteCount} voto${myVoteCount>1?'s':''}`:alreadyVoted?'votado':'remover'}
                     </button>
                   )}
                 </div>
@@ -1428,9 +1707,9 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
                   {s>=0 ? <span style={{fontSize:10,color:'#667eea',fontWeight:700}}>{s}%</span>
                         : <span style={{fontSize:9,color:dim}}>jogando</span>}
                   <button onClick={()=>voteKick(id)} disabled={alreadyVotedKick}
-                    title={alreadyVotedKick?'Já votou':'Votar para remover'}
-                    style={{background:'none',border:'none',cursor:alreadyVotedKick?'default':'pointer',padding:'0 2px',fontSize:10,color:alreadyVotedKick?'#ef4444':dim,opacity:alreadyVotedKick?1:0.6}}>
-                    🚫{kickCount>0?kickCount:''}
+                    title={alreadyVotedKick?'Ja votou':'Votar para remover'}
+                    style={{background:'none',border:'none',cursor:alreadyVotedKick?'default':'pointer',padding:'0 2px',display:'flex',alignItems:'center',gap:2,color:alreadyVotedKick?'#ef4444':dim,opacity:alreadyVotedKick?1:0.6}}>
+                    <UserMinus size={9}/>{kickCount>0?<span style={{fontSize:9}}>{kickCount}</span>:null}
                   </button>
                 </div>
               );
@@ -1440,8 +1719,8 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
           {/* Emoji button */}
           {mode !== 'solo' && (
             <button onClick={()=>setShowEmojiPicker(v=>!v)}
-              style={{background:showEmojiPicker?'rgba(102,126,234,0.15)':'none',border:`1px solid ${showEmojiPicker?'rgba(102,126,234,0.4)':border}`,borderRadius:6,padding:'4px 8px',cursor:'pointer',fontSize:16,lineHeight:1}}>
-              😊
+              style={{background:showEmojiPicker?'rgba(102,126,234,0.15)':'none',border:`1px solid ${showEmojiPicker?'rgba(102,126,234,0.4)':border}`,borderRadius:6,padding:'4px 8px',cursor:'pointer',display:'flex',alignItems:'center',color:showEmojiPicker?'#667eea':dim}}>
+              <Smile size={14}/>
             </button>
           )}
 
