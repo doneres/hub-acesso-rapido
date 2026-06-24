@@ -1554,15 +1554,32 @@ function earnCoinsForScore(score: number, difficulty: Challenge['difficulty']): 
   if (score >= 40) return Math.floor(base * 0.25);
   return 0;
 }
+/** Fisher-Yates — embaralhamento uniforme sem viés */
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 function pickChallenges(cat: CategoryFilter, count: number): number[] {
   const pool = cat === 'todos' ? CHALLENGES.map(c=>c.id)
     : CHALLENGES.filter(c=>c.category===cat).map(c=>c.id);
-  if (pool.length === 0) return CHALLENGES.slice(0,count).map(c=>c.id);
-  const shuffled = [...pool].sort(()=>Math.random()-0.5);
+  if (pool.length === 0) return shuffle(CHALLENGES.map(c=>c.id)).slice(0, count);
+  if (count <= pool.length) return shuffle(pool).slice(0, count);
+  // mais rodadas que questões: cicla em batches embaralhadas separadamente
   const result: number[] = [];
-  for (let i=0; i<count; i++) result.push(shuffled[i % shuffled.length]);
+  while (result.length < count) result.push(...shuffle(pool).slice(0, count - result.length));
   return result;
 }
+
+const ALL_MEM_SYMBOLS = [
+  'flex','grid','margin','padding','color','border',
+  'transform','animation','position','display','overflow',
+  'opacity','z-index','cursor','filter','background',
+  'transition','width','height','font-size','gap','radius',
+];
 
 const DIFF_COLOR: Record<string,string> = { Fácil:'#22c55e', Médio:'#f59e0b', Difícil:'#ef4444' };
 const CAT_LABEL:  Record<CategoryFilter,string> = { todos:'Todos', basico:'Básico', intermediario:'Intermediário', avancado:'Avançado', pagina:'Página Web' };
@@ -1591,7 +1608,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   /* form */
   const [playerName, setPlayerName]         = useState('');
   const [joinCodeInput, setJoinCodeInput]   = useState('');
-  const [maxPlayers, setMaxPlayers]         = useState<2|3|4>(2);
+  const [maxPlayers, setMaxPlayers]         = useState(4);
   const [totalRoundsSetup, setTotalRoundsSetup] = useState<1|3|5|7|10>(3);
   const [categorySetup, setCategorySetup]   = useState<CategoryFilter>('todos');
   const [error, setError]   = useState('');
@@ -1747,11 +1764,10 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   }, []);
 
   /* ── Memory game ── */
-  const MEM_SYMBOLS = ['flex','grid','margin','padding','color','border','transform','animation'];
   const initMemory = () => {
-    const pairs = [...MEM_SYMBOLS, ...MEM_SYMBOLS];
-    const shuffled = pairs.sort(()=>Math.random()-0.5);
-    setMemCards(shuffled.map((s,i)=>({uid:i, symbol:s, flipped:false, matched:false})));
+    const chosen = shuffle([...ALL_MEM_SYMBOLS]).slice(0, 8);
+    const pairs   = shuffle([...chosen, ...chosen]);
+    setMemCards(pairs.map((s,i)=>({uid:i, symbol:s, flipped:false, matched:false})));
     setMemMoves(0);
     setMemComplete(false);
     memCheckRef.current = false;
@@ -2440,15 +2456,18 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
               {/* Jogadores (só no create) */}
               {mode==='create' && (
                 <div style={{marginBottom:18}}>
-                  <label style={{fontSize:14,color:dim,display:'block',marginBottom:10,fontWeight:500}}>Máximo de jogadores</label>
-                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}>
-                    {([2,3,4] as (2|3|4)[]).map(n=>{
+                  <label style={{fontSize:14,color:dim,display:'block',marginBottom:10,fontWeight:500}}>
+                    Máximo de jogadores <span style={{fontWeight:700,color:'#667eea'}}>{maxPlayers}</span>
+                  </label>
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:8}}>
+                    {[2,3,4,5,6,7,8,9,10].map(n=>{
                       const active = maxPlayers===n;
+                      const label = n<=2?'Dupla':n<=3?'Trio':n<=4?'Grupo':n<=6?'Time':'Turma';
                       return (
                         <button key={n} onClick={()=>setMaxPlayers(n)}
-                          style={{padding:'16px 10px',borderRadius:12,border:`2px solid ${active?'#667eea':border}`,background:active?'rgba(102,126,234,0.12)':'transparent',cursor:'pointer',color:active?'#667eea':dim,fontWeight:700,fontSize:26,display:'flex',flexDirection:'column',alignItems:'center',gap:5,transition:'all 0.12s',boxShadow:active?'0 0 0 4px rgba(102,126,234,0.12)':'none'}}>
+                          style={{padding:'10px 4px',borderRadius:10,border:`2px solid ${active?'#667eea':border}`,background:active?'rgba(102,126,234,0.12)':'transparent',cursor:'pointer',color:active?'#667eea':dim,fontWeight:700,fontSize:18,display:'flex',flexDirection:'column',alignItems:'center',gap:2,transition:'all 0.12s',boxShadow:active?'0 0 0 3px rgba(102,126,234,0.12)':'none'}}>
                           {n}
-                          <span style={{fontSize:12,fontWeight:500,color:active?'#667eea':dim}}>{n===2?'Duo':n===3?'Trio':'Squad'}</span>
+                          <span style={{fontSize:9,fontWeight:500,color:active?'#667eea':dim}}>{label}</span>
                         </button>
                       );
                     })}
