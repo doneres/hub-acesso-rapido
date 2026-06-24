@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Trophy, Swords, Search, LogIn, UserPlus, LogOut,
-  Crown, Medal, Lock, User, Zap, ChevronLeft, Star, Users, Shield,
+  Crown, Medal, Lock, User, Zap, ChevronLeft, Star, Users, Shield, X,
 } from 'lucide-react';
 import { useGameState, LoginResult } from '../hooks/useGameState';
 
