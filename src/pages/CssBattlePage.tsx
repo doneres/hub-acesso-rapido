@@ -1527,6 +1527,33 @@ function buildDoc(html: string, css: string) {
   const safeCss = css.replace(/<\//g, '<\\/');
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{box-sizing:border-box;}body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;}${safeCss}</style></head><body>${html}</body></html>`;
 }
+function getChallengeTime(ch: Challenge): number {
+  const base: Record<Challenge['difficulty'],number> = {'Fácil':120,'Médio':180,'Difícil':240};
+  return base[ch.difficulty] + (ch.category === 'pagina' ? 60 : 0);
+}
+function _sh(s: string): string {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = (h * 33 ^ s.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+function buildObfuscatedDoc(html: string, css: string, seed: string): string {
+  const all = new Set<string>();
+  css.replace(/\.([a-zA-Z_][a-zA-Z0-9_-]*)/g, (_, c) => { all.add(c); return ''; });
+  html.replace(/class="([^"]*)"/g, (_, cs) => { cs.split(/\s+/).forEach((c:string)=>c&&all.add(c)); return ''; });
+  const map = new Map<string,string>();
+  all.forEach(c => map.set(c, `_${_sh(seed+c)}`));
+  const oCss = css.replace(/\.([a-zA-Z_][a-zA-Z0-9_-]*)/g, (_,c) => `.${map.get(c)??c}`);
+  const oHtml = html.replace(/class="([^"]*)"/g, (_,cs) =>
+    `class="${cs.split(/\s+/).map((c:string)=>c?(map.get(c)??c):'').join(' ').trim()}"`);
+  return buildDoc(oHtml, oCss + ' body *{user-select:none!important;pointer-events:none!important;}');
+}
+function earnCoinsForScore(score: number, difficulty: Challenge['difficulty']): number {
+  const base = difficulty === 'Fácil' ? 10 : difficulty === 'Médio' ? 18 : 28;
+  if (score >= 80) return base;
+  if (score >= 60) return Math.floor(base * 0.5);
+  if (score >= 40) return Math.floor(base * 0.25);
+  return 0;
+}
 function pickChallenges(cat: CategoryFilter, count: number): number[] {
   const pool = cat === 'todos' ? CHALLENGES.map(c=>c.id)
     : CHALLENGES.filter(c=>c.category===cat).map(c=>c.id);
@@ -1540,14 +1567,21 @@ function pickChallenges(cat: CategoryFilter, count: number): number[] {
 const DIFF_COLOR: Record<string,string> = { Fácil:'#22c55e', Médio:'#f59e0b', Difícil:'#ef4444' };
 const CAT_LABEL:  Record<CategoryFilter,string> = { todos:'Todos', basico:'Básico', intermediario:'Intermediário', avancado:'Avançado', pagina:'Página Web' };
 const CAT_COLOR:  Record<CategoryFilter,string> = { todos:'#667eea', basico:'#3b82f6', intermediario:'#8b5cf6', avancado:'#ef4444', pagina:'#06b6d4' };
-const BATTLE_DURATION = 180;
 const HINT_COSTS: [number,number,number] = [0, 10, 20];
+const TEMP_COINS_KEY = 'cssbattle_temp_coins';
 
 /* ── Component ───────────────────────────────────────────────────────────── */
 
 const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: string }> = ({ onBackToHub, initialJoinCode }) => {
   const { isDark } = useTheme();
-  const { currentUser, spendCoins } = useGameState();
+  const { currentUser, spendCoins, addCoins } = useGameState();
+  const [tempCoins, setTempCoins] = useState<number>(()=>{
+    const s = localStorage.getItem(TEMP_COINS_KEY);
+    return s ? Math.max(0, parseInt(s,10)) : 50;
+  });
+  const [coinsEarned, setCoinsEarned] = useState(0);
+  const [devToolsOpen, setDevToolsOpen] = useState(false);
+  const obfSeedRef = useRef(genId());
 
   /* view */
   const [view, setView]   = useState<PageView>('menu');
@@ -1574,7 +1608,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const [allPlayers, setAllPlayers]     = useState<Record<string,PlayerData>>({});
   const [playerCode, setPlayerCode]     = useState('');
   const [playerHtml, setPlayerHtml]     = useState('');
-  const [timeLeft, setTimeLeft]         = useState(BATTLE_DURATION);
+  const [timeLeft, setTimeLeft]         = useState(180);
   const [playerScore, setPlayerScore]   = useState(-1);
   const [scoreDetails, setScoreDetails] = useState<ScoreDetail[]>([]);
   const [submitted, setSubmitted]       = useState(false);
@@ -1663,7 +1697,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   useEffect(()=>{
     if (targetRef.current && view==='battle') {
       const ch = CHALLENGES[challengeIdx];
-      targetRef.current.srcdoc = buildDoc(ch.targetHtml, ch.targetCss);
+      targetRef.current.srcdoc = buildObfuscatedDoc(ch.targetHtml, ch.targetCss, obfSeedRef.current);
     }
   }, [challengeIdx, view]);
 
@@ -1767,6 +1801,18 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view, currentRound]);
 
+  /* ── DevTools detection ── */
+  useEffect(()=>{
+    if (view !== 'battle') { setDevToolsOpen(false); return; }
+    const check = () => {
+      const wD = window.outerWidth - window.innerWidth;
+      const hD = window.outerHeight - window.innerHeight;
+      setDevToolsOpen(wD > 250 || hD > 250);
+    };
+    const iv = setInterval(check, 1000);
+    return () => clearInterval(iv);
+  }, [view]);
+
   /* ── Submit ── */
   const handleSubmit = useCallback(()=>{
     if (submittedRef.current) return;
@@ -1779,6 +1825,15 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
       setScoreDetails(details);
       setSubmitted(true);
       setTimeTaken(Math.floor((Date.now() - battleStartRef.current) / 1000));
+
+      /* award coins */
+      const earned = earnCoinsForScore(score, CHALLENGES[challengeIdx].difficulty);
+      if (earned > 0) {
+        if (currentUser) { addCoins(earned); }
+        else { setTempCoins(prev => { const n = prev+earned; localStorage.setItem(TEMP_COINS_KEY, String(n)); return n; }); }
+        setCoinsEarned(earned);
+        setTimeout(() => setCoinsEarned(0), 3200);
+      }
 
       /* score reveal animation */
       setScoreReveal({show:true, value:0, final:score});
@@ -1821,7 +1876,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     setPlayerHtml(nextCh.starterHtml ?? '');
     setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
     setHintLevel(0); setHintMsg(''); setShowHints(false);
-    setTimeLeft(BATTLE_DURATION);
+    setTimeLeft(getChallengeTime(nextCh));
     submittedRef.current = false;
   }, [currentRound, totalRounds, challengeIndices]);
 
@@ -1901,7 +1956,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
             setHintLevel(0); setHintMsg(''); setShowHints(false);
             submittedRef.current = false;
             const elapsed = data.startedAt ? Math.floor((Date.now()-data.startedAt)/1000) : 0;
-            setTimeLeft(Math.max(0, BATTLE_DURATION - elapsed));
+            setTimeLeft(Math.max(0, getChallengeTime(CHALLENGES[cIdx]) - elapsed));
             setRoundTransition(false);
           }, 3000);
         } else if (prevRoundRef.current < 0) {
@@ -1912,7 +1967,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
           const elapsed = data.startedAt ? Math.floor((Date.now()-data.startedAt)/1000) : 0;
           setPlayerCode(nCh.starterCss);
           setPlayerHtml(nCh.starterHtml ?? '');
-          setTimeLeft(Math.max(0, BATTLE_DURATION - elapsed));
+          setTimeLeft(Math.max(0, getChallengeTime(CHALLENGES[cIdx]) - elapsed));
           setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
           setView('battle');
         }
@@ -2028,7 +2083,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     setChallengeIdx(idx);
     setPlayerCode(startCh.starterCss);
     setPlayerHtml(startCh.starterHtml ?? '');
-    setTimeLeft(BATTLE_DURATION);
+    setTimeLeft(getChallengeTime(startCh));
     setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
     setRoundResults([]);
     setHintLevel(0); setHintMsg(''); setShowHints(false);
@@ -2090,13 +2145,20 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     setShowEmojiPicker(false);
   };
 
+  /* ── Temp coins (visitantes) ── */
+  const spendTempCoins = (amount: number): boolean => {
+    if (tempCoins < amount) return false;
+    setTempCoins(prev => { const n = prev - amount; localStorage.setItem(TEMP_COINS_KEY, String(n)); return n; });
+    return true;
+  };
+
   /* ── Hint unlock ── */
   const unlockHint = (level: 1|2|3)=>{
     if (hintLevel >= level) return;
     const cost = HINT_COSTS[level-1];
     if (cost > 0) {
-      if (!currentUser){ setHintMsg('Faça login no Desafios para usar dicas com moedas.'); return; }
-      if (!spendCoins(cost)){ setHintMsg(`Moedas insuficientes. Esta dica custa ${cost} moedas.`); return; }
+      const ok = currentUser ? spendCoins(cost) : spendTempCoins(cost);
+      if (!ok){ setHintMsg(`Moedas insuficientes — esta dica custa ${cost} moedas.`); return; }
     }
     setHintLevel(level);
     setHintMsg('');
@@ -2121,7 +2183,8 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const challenge  = CHALLENGES[challengeIdx] ?? CHALLENGES[0];
   const myEntry    = allPlayers[playerId.current];
   const opponents  = Object.entries(allPlayers).filter(([id])=>id!==playerId.current);
-  const timerPct   = (timeLeft/BATTLE_DURATION)*100;
+  const challengeMaxTime = CHALLENGES[challengeIdx] ? getChallengeTime(CHALLENGES[challengeIdx]) : 180;
+  const timerPct   = (timeLeft/challengeMaxTime)*100;
   const timerColor = timeLeft>120 ? '#22c55e' : timeLeft>60 ? '#f59e0b' : '#ef4444';
   const catChallenges = catFilter==='todos' ? CHALLENGES : CHALLENGES.filter(c=>c.category===catFilter);
   const categories: CategoryFilter[] = ['todos','basico','intermediario','avancado','pagina'];
@@ -2490,7 +2553,25 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     const myRoundScore = (myEntry?.scores?.[String(currentRound)] ?? -1);
 
     return (
-      <div style={{height:'100vh',display:'flex',flexDirection:'column',background:bg,overflow:'hidden',position:'relative'}}>
+      <div onContextMenu={e=>e.preventDefault()} style={{height:'100vh',display:'flex',flexDirection:'column',background:bg,overflow:'hidden',position:'relative'}}>
+
+        {/* Coin earned toast */}
+        {coinsEarned > 0 && (
+          <div style={{position:'fixed',bottom:90,right:24,zIndex:300,background:'linear-gradient(135deg,#f59e0b,#d97706)',color:'white',padding:'10px 18px',borderRadius:12,fontSize:13,fontWeight:700,display:'flex',alignItems:'center',gap:8,boxShadow:'0 4px 20px rgba(245,158,11,0.4)',animation:'floatUp 0.4s ease-out',pointerEvents:'none'}}>
+            <CoinIcon size={16}/> +{coinsEarned} moedas ganhas!
+          </div>
+        )}
+
+        {/* DevTools warning */}
+        {devToolsOpen && (
+          <div style={{position:'fixed',inset:0,zIndex:280,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',backdropFilter:'blur(4px)'}}>
+            <div style={{background:card,border:`1px solid ${border}`,borderRadius:16,padding:'32px 40px',textAlign:'center',maxWidth:360}}>
+              <div style={{fontSize:32,marginBottom:12}}>🔒</div>
+              <div style={{fontSize:16,fontWeight:700,color:text,marginBottom:8}}>Inspecionar detectado</div>
+              <div style={{fontSize:13,color:dim,lineHeight:1.6}}>Feche o painel de desenvolvedor para continuar o desafio.</div>
+            </div>
+          </div>
+        )}
 
         {/* Floating emoji reactions */}
         {floatingEmojis.map(f=>(
@@ -2751,7 +2832,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
             <>
               <button onClick={()=>{ setShowInstr(true); setShowHints(true); }}
                 style={{display:'flex',alignItems:'center',gap:5,background:'none',border:`1px solid ${border}`,color:dim,borderRadius:7,padding:'7px 12px',cursor:'pointer',fontSize:12}}>
-                <Lightbulb size={13}/> Dicas{currentUser ? <> · <CoinIcon size={11}/> {currentUser.coins}</> : ''}
+                <Lightbulb size={13}/> Dicas · <CoinIcon size={11}/> {currentUser ? currentUser.coins : tempCoins}
               </button>
               <button onClick={handleSubmit}
                 style={{background:'linear-gradient(135deg,#22c55e,#16a34a)',color:'white',border:'none',borderRadius:8,padding:'9px 20px',fontSize:13,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',gap:7}}>
