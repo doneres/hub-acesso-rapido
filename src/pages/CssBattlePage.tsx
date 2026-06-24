@@ -4,8 +4,12 @@ import {
   Lightbulb, Play, Swords, Home, Link, Gamepad2, Crown, Eye, Code2,
   Circle, Square, Palette, AlignCenter, MousePointer, User, LayoutGrid,
   RotateCw, Users, Star, X, TrendingUp, ChevronDown, ChevronUp,
-  ChevronRight, Layout, Smile, UserMinus, type LucideIcon
+  ChevronRight, Layout, Smile, UserMinus, Gamepad, type LucideIcon
 } from 'lucide-react';
+
+const CoinIcon = ({size=13}:{size?:number}) => (
+  <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:size,height:size,background:'#f59e0b',borderRadius:'50%',fontSize:Math.round(size*0.55),fontWeight:900,color:'white',flexShrink:0,lineHeight:1,fontFamily:'monospace'}}>C</span>
+);
 import { useTheme } from '../hooks/useTheme';
 import { useGameState } from '../hooks/useGameState';
 import { db } from '../lib/firebase';
@@ -765,6 +769,46 @@ function calcScore(cid: number, iframe: HTMLIFrameElement): { score: number; det
   return { score: total>0 ? Math.round((earned/total)*100) : 0, details };
 }
 
+/* ── Property Guide ─────────────────────────────────────────────────────── */
+
+const PROPERTY_GUIDE: Record<number,string> = {
+  0:  'border-radius — arredonda cantos de um elemento. Aceita valores em px ou %. Use 50% para criar formas circulares.',
+  1:  'box-shadow — projeta sombra ao redor do elemento. Os valores definem: deslocamento-X, deslocamento-Y, blur e cor.',
+  2:  'background com linear-gradient() — o background aceita gradientes. linear-gradient() cria transição entre duas ou mais cores em uma direção.',
+  3:  'display: flex — ativa Flexbox. justify-content distribui espaço no eixo principal; align-items alinha no eixo cruzado.',
+  4:  'background-color, color, border, border-radius — propriedades visuais básicas. border: none remove bordas padrão de botões.',
+  5:  'flex-direction: column — muda o eixo principal do flex para vertical, empilhando os itens. align-items: center centraliza horizontalmente.',
+  6:  'display: grid com grid-template-columns — organiza elementos em colunas. Cada valor define o tamanho de uma coluna.',
+  7:  '@keyframes e animation — @keyframes define os estados da animação. A propriedade animation aplica esse efeito com duração e repetição.',
+  8:  'display: flex com justify-content — Flexbox organiza itens em linha. justify-content controla como o espaço é distribuído.',
+  9:  'justify-content: space-between — empurra itens para as extremidades, distribuindo o espaço restante entre eles.',
+  10: 'flex-direction: column — por padrão flex organiza em linha. column muda para empilhamento vertical.',
+  11: 'flex-wrap: wrap — por padrão, flex comprime tudo em uma linha. wrap permite quebrar para a próxima linha.',
+  12: 'grid-template-columns: repeat() — cria colunas iguais de forma concisa. repeat(3, 1fr) divide o espaço em 3 colunas iguais.',
+  13: 'grid-template-columns com valores mistos — grid aceita colunas com tamanhos fixos (px) e proporcionais (fr) juntos.',
+  14: 'transform: scale() em animation — animações de escala usam transform: scale(). @keyframes alterna entre dois tamanhos.',
+  15: 'animation-direction: alternate — faz a animação ir e voltar automaticamente, sem precisar inverter os estados.',
+  16: 'backdrop-filter: blur() — aplica filtros no conteúdo atrás do elemento. Requer background semi-transparente.',
+  17: 'background-clip: text — faz o gradiente aparecer apenas nas áreas do texto. Requer -webkit-text-fill-color: transparent.',
+  18: 'background-color — define a cor de fundo sólida. Aceita hex (#rrggbb), rgb() ou nomes de cor.',
+  19: 'color e font-size — color define a cor do texto. font-size controla o tamanho das letras em px ou outras unidades.',
+  20: 'border — define borda com três valores: espessura, estilo (solid/dashed/dotted) e cor.',
+  21: 'padding — cria espaço interno entre o conteúdo e a borda do elemento. Diferente de margin, que cria espaço externo.',
+  22: 'opacity — controla a transparência do elemento inteiro. Vai de 0 (invisível) a 1 (totalmente opaco).',
+  23: 'font-style: italic — inclina o texto visualmente. Não altera o layout ao redor.',
+  24: 'border-style — define o padrão visual da borda: solid (linha contínua), dashed (tracejada), dotted (pontilhada).',
+  25: 'text-shadow — adiciona sombra nas letras com: deslocamento-X, deslocamento-Y, blur e cor.',
+  26: 'position: absolute — remove o elemento do fluxo e o posiciona em relação ao ancestral com position: relative.',
+  27: 'transform: rotate() — gira o elemento visualmente sem afetar o espaço ao redor. O valor é em graus (deg).',
+  28: 'overflow — controla o que acontece com conteúdo que ultrapassa o container. hidden corta o excesso visualmente.',
+  29: 'flex-grow — define quanto um item flex cresce para preencher o espaço disponível. Valor 1 absorve todo o espaço livre.',
+  30: 'letter-spacing — controla o espaçamento entre cada caractere. Aceita valores em px ou em.',
+  31: 'clip-path: polygon() — recorta o elemento em uma forma geométrica. polygon() aceita pontos x y separados por vírgulas.',
+  32: 'box-shadow múltiplo — múltiplas sombras separadas por vírgula criam camadas de brilho ao redor do elemento.',
+  33: 'filter: blur() — aplica desfoque gaussiano no elemento. O valor em px define a intensidade.',
+  34: 'perspective e rotateX/Y — perspective cria profundidade 3D no elemento pai. rotateX/Y gira em torno dos eixos.',
+};
+
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 
 function genId()   { return Math.random().toString(36).slice(2,10); }
@@ -851,6 +895,23 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const spamWindowStart   = useRef(0);
   const [cooldownLeft, setCooldownLeft]       = useState(0);
 
+  /* score reveal animation */
+  const [scoreReveal, setScoreReveal] = useState<{show:boolean, value:number, final:number}>({show:false,value:0,final:0});
+
+  /* opponent finished stamps */
+  interface OpponentStamp { uid:string; name:string; score:number; }
+  const [opponentStamps, setOpponentStamps] = useState<OpponentStamp[]>([]);
+  const prevSubmittedRef = useRef<Set<string>>(new Set());
+
+  /* mini-game */
+  interface MemCard { uid:number; symbol:string; flipped:boolean; matched:boolean; }
+  const [showMiniGame, setShowMiniGame]   = useState(false);
+  const [memCards, setMemCards]           = useState<MemCard[]>([]);
+  const [memMoves, setMemMoves]           = useState(0);
+  const [memComplete, setMemComplete]     = useState(false);
+  const memCheckRef  = useRef(false);
+  const lastFlipRef  = useRef<number|null>(null);
+
   /* refs */
   const previewRef    = useRef<HTMLIFrameElement>(null);
   const targetRef     = useRef<HTMLIFrameElement>(null);
@@ -935,6 +996,46 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     return ()=>clearInterval(iv);
   }, []);
 
+  /* ── Memory game ── */
+  const MEM_SYMBOLS = ['flex','grid','margin','padding','color','border','transform','animation'];
+  const initMemory = () => {
+    const pairs = [...MEM_SYMBOLS, ...MEM_SYMBOLS];
+    const shuffled = pairs.sort(()=>Math.random()-0.5);
+    setMemCards(shuffled.map((s,i)=>({uid:i, symbol:s, flipped:false, matched:false})));
+    setMemMoves(0);
+    setMemComplete(false);
+    memCheckRef.current = false;
+    lastFlipRef.current = null;
+  };
+  const flipMemCard = (uid: number) => {
+    if (memCheckRef.current) return;
+    setMemCards(prev => {
+      const card = prev.find(c=>c.uid===uid);
+      if (!card || card.flipped || card.matched) return prev;
+      const updated = prev.map(c=>c.uid===uid ? {...c, flipped:true} : c);
+      if (lastFlipRef.current === null) {
+        lastFlipRef.current = uid;
+        return updated;
+      }
+      const lastUid = lastFlipRef.current;
+      lastFlipRef.current = null;
+      setMemMoves(m=>m+1);
+      memCheckRef.current = true;
+      const lastCard = prev.find(c=>c.uid===lastUid)!;
+      if (lastCard.symbol === card.symbol) {
+        const matched = updated.map(c=>c.uid===lastUid||c.uid===uid ? {...c,matched:true} : c);
+        memCheckRef.current = false;
+        setTimeout(()=>{ if (matched.every(c=>c.matched)) setMemComplete(true); }, 100);
+        return matched;
+      }
+      setTimeout(()=>{
+        setMemCards(cs=>cs.map(c=>c.uid===lastUid||c.uid===uid ? {...c,flipped:false} : c));
+        memCheckRef.current = false;
+      }, 900);
+      return updated;
+    });
+  };
+
   /* ── Timer ── */
   useEffect(()=>{
     if (view!=='battle') return;
@@ -961,6 +1062,20 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
       setPlayerScore(score);
       setScoreDetails(details);
       setSubmitted(true);
+
+      /* score reveal animation */
+      setScoreReveal({show:true, value:0, final:score});
+      const startTs = performance.now();
+      const dur = 1800;
+      const tick = (now: number) => {
+        const elapsed = now - startTs;
+        const t = Math.min(elapsed / dur, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        setScoreReveal(prev => ({...prev, value: Math.round(eased * score)}));
+        if (t < 1) requestAnimationFrame(tick);
+        else setTimeout(() => setScoreReveal(prev => ({...prev, show:false})), 1400);
+      };
+      requestAnimationFrame(tick);
 
       const newResult: RoundResult = { challengeIdx, score, details };
       setRoundResults(prev => { const next = [...prev, newResult]; return next; });
@@ -1032,10 +1147,23 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
         setTimeout(()=>setFloatingEmojis(prev=>prev.filter(f=>f.id!==id)), 3500);
       });
 
+      /* opponent finished stamps */
       const indices: number[] = data.challengeIndices ?? [data.challengeIndex ?? 0];
       const cRound: number    = data.currentRound ?? 0;
       const cTotal: number    = data.totalRounds  ?? 1;
       const cIdx   = indices[cRound] ?? 0;
+
+      Object.entries(players).forEach(([id, p])=>{
+        if (id === playerId.current) return;
+        const key = `${id}-${cRound}`;
+        const sc = (p.scores as Record<string,number>|undefined)?.[String(cRound)] ?? -1;
+        if (sc >= 0 && !prevSubmittedRef.current.has(key)) {
+          prevSubmittedRef.current.add(key);
+          const stampId = genId();
+          setOpponentStamps(prev=>[...prev, {uid:stampId, name:p.name, score:sc}]);
+          setTimeout(()=>setOpponentStamps(prev=>prev.filter(s=>s.uid!==stampId)), 3800);
+        }
+      });
 
       if (data.status==='playing') {
         setChallengeIndices(indices);
@@ -1243,7 +1371,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     const cost = HINT_COSTS[level-1];
     if (cost > 0) {
       if (!currentUser){ setHintMsg('Faça login no Desafios para usar dicas com moedas.'); return; }
-      if (!spendCoins(cost)){ setHintMsg(`Moedas insuficientes. Esta dica custa 🪙 ${cost}.`); return; }
+      if (!spendCoins(cost)){ setHintMsg(`Moedas insuficientes. Esta dica custa ${cost} moedas.`); return; }
     }
     setHintLevel(level);
     setHintMsg('');
@@ -1736,6 +1864,12 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
             <div>
               <div style={{fontSize:10,color:dim,letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:5,display:'flex',alignItems:'center',gap:4}}><Eye size={10}/> Objetivo</div>
               <p style={{fontSize:12,color:text,margin:'0 0 8px',lineHeight:1.6}}>{challenge.description}</p>
+              {PROPERTY_GUIDE[challengeIdx] && (
+                <div style={{background:isDark?'rgba(102,126,234,0.08)':'rgba(102,126,234,0.06)',border:`1px solid rgba(102,126,234,0.18)`,borderRadius:8,padding:'8px 10px',marginBottom:8}}>
+                  <div style={{fontSize:10,color:'#667eea',letterSpacing:'0.08em',fontWeight:700,marginBottom:4,display:'flex',alignItems:'center',gap:4}}><Lightbulb size={10} color="#667eea"/> PROPRIEDADE CSS</div>
+                  <p style={{fontSize:11,color:isDark?'#a5b4fc':'#4f46e5',margin:0,lineHeight:1.6}}>{PROPERTY_GUIDE[challengeIdx]}</p>
+                </div>
+              )}
               <div style={{fontSize:10,color:dim,letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:5,display:'flex',alignItems:'center',gap:4}}><Code2 size={10}/> HTML disponível</div>
               <pre style={{fontSize:11,color:'#667eea',margin:0,background:isDark?'rgba(102,126,234,0.08)':'rgba(102,126,234,0.06)',padding:'7px',borderRadius:6,overflowX:'auto',lineHeight:1.5}}>
                 {challenge.htmlStructure}
@@ -1757,7 +1891,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
                       <button onClick={()=>unlockHint(level)} style={{background:'none',border:'none',cursor:'pointer',display:'flex',alignItems:'center',gap:6,padding:0,width:'100%'}}>
                         <Lightbulb size={11} color={cost===0?'#22c55e':'#f59e0b'}/>
                         <span style={{fontSize:11,color:cost===0?'#22c55e':'#f59e0b',fontWeight:600}}>
-                          Dica {level} — {cost===0 ? 'grátis' : `🪙 ${cost} moedas`}
+                          Dica {level} — {cost===0 ? 'grátis' : <>{cost} moedas <CoinIcon size={11}/></>}
                         </span>
                       </button>
                     )}
@@ -1772,10 +1906,10 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
         {/* Three panels */}
         <div style={{flex:1,display:'flex',minHeight:0,overflow:'hidden'}}>
           {/* Editor */}
-          <div style={{width:'38%',minWidth:180,display:'flex',flexDirection:'column',borderRight:`1px solid ${border}`,minHeight:0}}>
-            <div style={{padding:'5px 12px',fontSize:10,color:dim,background:'#1e1e2e',borderBottom:'1px solid rgba(255,255,255,0.05)',flexShrink:0,letterSpacing:'0.08em',display:'flex',alignItems:'center',gap:6}}>
-              <Code2 size={10}/> EDITOR CSS
-              {submitted && <span style={{color:'#22c55e',marginLeft:'auto',display:'flex',alignItems:'center',gap:3}}><Check size={10}/> enviado</span>}
+          <div style={{width:'38%',minWidth:200,display:'flex',flexDirection:'column',borderRight:`1px solid ${border}`,minHeight:0}}>
+            <div style={{padding:'8px 14px',fontSize:12,color:'#94a3b8',background:'#1e1e2e',borderBottom:'2px solid #667eea',flexShrink:0,letterSpacing:'0.06em',display:'flex',alignItems:'center',gap:7,fontWeight:600}}>
+              <Code2 size={13} color="#667eea"/> <span style={{color:'#c7d2fe'}}>EDITOR CSS</span>
+              {submitted && <span style={{color:'#22c55e',marginLeft:'auto',display:'flex',alignItems:'center',gap:4,fontWeight:700}}><Check size={12}/> Enviado</span>}
             </div>
             <textarea value={playerCode} onChange={e=>{ if(!submitted) setPlayerCode(e.target.value); }}
               onKeyDown={handleTab} disabled={submitted} spellCheck={false} autoCorrect="off" autoCapitalize="off"
@@ -1784,28 +1918,62 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
 
           {/* Student preview */}
           <div style={{flex:1,display:'flex',flexDirection:'column',borderRight:`1px solid ${border}`,minHeight:0,minWidth:0}}>
-            <div style={{padding:'5px 12px',fontSize:10,color:dim,background:card,borderBottom:`1px solid ${border}`,flexShrink:0,letterSpacing:'0.08em',display:'flex',alignItems:'center',gap:6}}>
-              <Eye size={10}/> SEU PREVIEW
-              <span style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:3,fontSize:9,color:'#22c55e',background:'rgba(34,197,94,0.10)',padding:'1px 6px',borderRadius:999}}>● AO VIVO</span>
-              {submitted && playerScore>=0 && (
-                <span style={{color:playerScore>=80?'#22c55e':playerScore>=50?'#f59e0b':'#ef4444',fontWeight:700,fontSize:13}}>{playerScore}%</span>
-              )}
+            <div style={{padding:'8px 14px',fontSize:12,color:text,background:card,borderBottom:`2px solid #3b82f6`,flexShrink:0,letterSpacing:'0.06em',display:'flex',alignItems:'center',gap:7,fontWeight:600}}>
+              <Eye size={13} color="#3b82f6"/> <span>SEU PREVIEW</span>
+              {!submitted
+                ? <span style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:4,fontSize:10,color:'#22c55e',background:'rgba(34,197,94,0.12)',padding:'2px 8px',borderRadius:999,fontWeight:600}}>● AO VIVO</span>
+                : playerScore>=0 && <span style={{marginLeft:'auto',fontWeight:800,fontSize:15,color:playerScore>=80?'#22c55e':playerScore>=50?'#f59e0b':'#ef4444'}}>{playerScore}%</span>
+              }
             </div>
             <div style={{flex:1,position:'relative',minHeight:0}}>
               <iframe ref={previewRef} title="preview" style={{position:'absolute',inset:0,width:'100%',height:'100%',border:'none'}}/>
+              {/* score reveal overlay */}
+              {scoreReveal.show && (
+                <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,0.82)',zIndex:10}}>
+                  <div style={{fontSize:72,fontWeight:900,lineHeight:1,color:scoreReveal.final>=80?'#22c55e':scoreReveal.final>=50?'#f59e0b':'#ef4444',animation:'scoreRevealPop 0.4s ease-out'}}>
+                    {scoreReveal.value}%
+                  </div>
+                  <div style={{marginTop:12,fontSize:13,color:'#94a3b8',fontWeight:600,letterSpacing:'0.1em'}}>
+                    {scoreReveal.final>=80?'EXCELENTE!':scoreReveal.final>=60?'BOM TRABALHO!':scoreReveal.final>=40?'CONTINUE PRATICANDO':'TENTE NOVAMENTE'}
+                  </div>
+                  {scoreReveal.final>=80 && (
+                    <div style={{position:'absolute',inset:0,pointerEvents:'none',overflow:'hidden'}}>
+                      {Array.from({length:12}).map((_,i)=>(
+                        <div key={i} style={{position:'absolute',top:'-10%',left:`${(i+1)*8-4}%`,width:8,height:8,borderRadius:'50%',background:['#22c55e','#3b82f6','#f59e0b','#ef4444','#8b5cf6'][i%5],animation:`confettiFall ${1.2+Math.random()*0.8}s ${Math.random()*0.5}s ease-in forwards`}}/>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
           {/* Target */}
           <div style={{flex:1,display:'flex',flexDirection:'column',minHeight:0,minWidth:0}}>
-            <div style={{padding:'5px 12px',fontSize:10,color:dim,background:card,borderBottom:`1px solid ${border}`,flexShrink:0,letterSpacing:'0.08em',display:'flex',alignItems:'center',gap:6}}>
-              <ChIcon size={10} color={challenge.iconColor}/>
-              <span style={{color:challenge.iconColor}}>ALVO — {challenge.title}</span>
+            <div style={{padding:'8px 14px',fontSize:12,color:text,background:card,borderBottom:`2px solid ${challenge.iconColor}`,flexShrink:0,letterSpacing:'0.06em',display:'flex',alignItems:'center',gap:7,fontWeight:600}}>
+              <ChIcon size={13} color={challenge.iconColor}/>
+              <span style={{color:challenge.iconColor,fontWeight:700}}>ALVO</span>
+              <span style={{color:dim,fontWeight:500}}>— {challenge.title}</span>
             </div>
             <div style={{flex:1,position:'relative',minHeight:0}}>
               <iframe ref={targetRef} title="target" style={{position:'absolute',inset:0,width:'100%',height:'100%',border:'none'}}/>
             </div>
           </div>
+        </div>
+
+        {/* Opponent finished stamps */}
+        <div style={{position:'fixed',bottom:80,right:20,display:'flex',flexDirection:'column',gap:8,zIndex:120,pointerEvents:'none'}}>
+          {opponentStamps.map(stamp=>(
+            <div key={stamp.uid} style={{display:'flex',alignItems:'center',gap:10,background:card,border:`1px solid rgba(34,197,94,0.4)`,borderLeft:'4px solid #22c55e',borderRadius:12,padding:'10px 16px',boxShadow:'0 4px 20px rgba(0,0,0,0.3)',animation:'stampIn 0.5s cubic-bezier(0.34,1.56,0.64,1)',minWidth:200}}>
+              <div style={{width:32,height:32,borderRadius:'50%',background:'rgba(34,197,94,0.15)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <Check size={16} color="#22c55e" strokeWidth={3}/>
+              </div>
+              <div>
+                <div style={{fontWeight:700,fontSize:13,color:text}}>{stamp.name}</div>
+                <div style={{fontSize:11,color:'#22c55e',fontWeight:600}}>Terminou! {stamp.score}%</div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Bottom bar */}
@@ -1834,7 +2002,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
             <>
               <button onClick={()=>{ setShowInstr(true); setShowHints(true); }}
                 style={{display:'flex',alignItems:'center',gap:5,background:'none',border:`1px solid ${border}`,color:dim,borderRadius:7,padding:'7px 12px',cursor:'pointer',fontSize:12}}>
-                <Lightbulb size={13}/> Dicas{currentUser ? ` · 🪙${currentUser.coins}` : ''}
+                <Lightbulb size={13}/> Dicas{currentUser ? <> · <CoinIcon size={11}/> {currentUser.coins}</> : ''}
               </button>
               <button onClick={handleSubmit}
                 style={{background:'linear-gradient(135deg,#22c55e,#16a34a)',color:'white',border:'none',borderRadius:8,padding:'9px 20px',fontSize:13,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',gap:7}}>
@@ -1846,6 +2014,12 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
               <Check size={13} color="#22c55e"/>
               <span style={{fontSize:12,color:'#22c55e',fontWeight:700}}>Enviado</span>
               <span style={{fontSize:22,fontWeight:900,color:playerScore>=80?'#22c55e':playerScore>=50?'#f59e0b':'#ef4444'}}>{playerScore}%</span>
+              {mode!=='solo' && (
+                <button onClick={()=>{ if(!showMiniGame){initMemory();} setShowMiniGame(v=>!v); }}
+                  style={{marginLeft:8,display:'flex',alignItems:'center',gap:5,background:'rgba(139,92,246,0.12)',border:'1px solid rgba(139,92,246,0.3)',color:'#8b5cf6',borderRadius:8,padding:'6px 12px',cursor:'pointer',fontSize:12,fontWeight:600}}>
+                  <Gamepad size={13}/> {showMiniGame ? 'Fechar jogo' : 'Jogar enquanto espera'}
+                </button>
+              )}
             </div>
           )}
 
@@ -1873,6 +2047,49 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
             </button>
           )}
         </div>
+      {/* Mini-game overlay */}
+      {showMiniGame && (
+        <div style={{position:'fixed',inset:0,zIndex:150,background:'rgba(0,0,0,0.75)',display:'flex',alignItems:'center',justifyContent:'center',padding:16}}>
+          <div style={{background:card,border:`1px solid ${border}`,borderRadius:20,padding:'24px 20px',width:'100%',maxWidth:480,boxShadow:'0 20px 60px rgba(0,0,0,0.5)'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+              <div>
+                <div style={{fontSize:16,fontWeight:700,color:text}}>Jogo da Memoria</div>
+                <div style={{fontSize:11,color:dim,marginTop:2}}>Encontre os pares de propriedades CSS · {memMoves} movimentos</div>
+              </div>
+              <div style={{display:'flex',gap:8}}>
+                <button onClick={initMemory} style={{background:'rgba(102,126,234,0.1)',border:'1px solid rgba(102,126,234,0.25)',color:'#667eea',borderRadius:8,padding:'5px 10px',cursor:'pointer',fontSize:11,fontWeight:600,display:'flex',alignItems:'center',gap:4}}>
+                  <RefreshCw size={11}/> Reiniciar
+                </button>
+                <button onClick={()=>setShowMiniGame(false)} style={{background:'none',border:`1px solid ${border}`,color:dim,borderRadius:8,padding:'5px 10px',cursor:'pointer',fontSize:11}}>
+                  Fechar
+                </button>
+              </div>
+            </div>
+
+            {memComplete ? (
+              <div style={{textAlign:'center',padding:'32px 0'}}>
+                <Trophy size={40} color="#f59e0b" style={{margin:'0 auto 12px'}}/>
+                <div style={{fontSize:18,fontWeight:800,color:text,marginBottom:6}}>Parabens!</div>
+                <div style={{fontSize:13,color:dim}}>Completou em {memMoves} movimentos</div>
+                <button onClick={initMemory} style={{marginTop:16,background:'linear-gradient(135deg,#667eea,#764ba2)',color:'white',border:'none',borderRadius:10,padding:'10px 24px',cursor:'pointer',fontSize:13,fontWeight:700}}>
+                  Jogar novamente
+                </button>
+              </div>
+            ) : (
+              <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8}}>
+                {memCards.map(card=>(
+                  <button key={card.uid} onClick={()=>flipMemCard(card.uid)}
+                    style={{aspectRatio:'1',border:`2px solid ${card.matched?'#22c55e':card.flipped?'#667eea':border}`,borderRadius:12,cursor:card.matched||card.flipped?'default':'pointer',background:card.matched?'rgba(34,197,94,0.1)':card.flipped?'rgba(102,126,234,0.12)':isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.04)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:card.flipped||card.matched?9:0,fontWeight:700,color:card.matched?'#22c55e':'#667eea',fontFamily:'monospace',transition:'all 0.2s',padding:4,wordBreak:'break-word',lineHeight:1.2,letterSpacing:'-0.02em',textAlign:'center',overflow:'hidden'}}>
+                    {(card.flipped||card.matched) ? card.symbol : (
+                      <div style={{width:18,height:18,borderRadius:4,background:isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.08)'}}/>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       </div>
     );
   }
