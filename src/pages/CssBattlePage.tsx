@@ -94,7 +94,7 @@ const CHALLENGES: Challenge[] = [
     htmlStructure: '<div class="card"></div>',
     targetHtml: '<div class="card"></div>',
     targetCss: `.card { width: 200px; height: 100px; background: linear-gradient(135deg, #f39c12, #e74c3c); border-radius: 12px; }`,
-    starterCss: `.card {\n  width: 200px;\n  height: 100px;\n  border-radius: 12px;\n  background: linear-gradient(/* ângulo */, /* cor1 */, /* cor2 */);\n}`,
+    starterCss: `.card {\n  width: 200px;\n  height: 100px;\n  border-radius: /* 12px */;\n  background: linear-gradient(/* ângulo */, /* cor1 */, /* cor2 */);\n}`,
   },
   {
     id: 3, title: 'Texto Centralizado', category: 'intermediario', Icon: AlignCenter, iconColor: '#8b5cf6',
@@ -797,7 +797,7 @@ const CHALLENGES: Challenge[] = [
     htmlStructure: '<div class="row">\n  <div class="item">A</div>\n  <div class="item">B</div>\n  <div class="item">C</div>\n</div>',
     targetHtml: '<div class="row"><div class="item" style="display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;font-weight:700;font-size:18px;">A</div><div class="item" style="display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;font-weight:700;font-size:18px;">B</div><div class="item" style="display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;font-weight:700;font-size:18px;">C</div></div>',
     targetCss: `.row { display: flex; gap: 16px; align-items: center; } .item { width: 60px; height: 60px; background: #8b5cf6; border-radius: 8px; }`,
-    starterCss: `.row {\n  display: flex;\n  gap: /* ? */;\n  align-items: center;\n}\n.item {\n  width: 60px;\n  height: 60px;\n  background: #8b5cf6;\n  border-radius: 8px;\n}`,
+    starterCss: `.row {\n  display: /* flex */;\n  gap: /* ? */;\n  align-items: center;\n}\n.item {\n  width: 60px;\n  height: 60px;\n  background: /* #8b5cf6 */;\n  border-radius: 8px;\n}`,
   },
   {
     id: 51, title: 'Transição Suave', category: 'intermediario', Icon: RotateCw, iconColor: '#3498db',
@@ -811,7 +811,7 @@ const CHALLENGES: Challenge[] = [
     htmlStructure: '<button class="btn">Clique aqui!</button>',
     targetHtml: '<button class="btn">Clique aqui!</button>',
     targetCss: `.btn { background: #3498db; color: white; border: none; padding: 12px 28px; border-radius: 10px; font-size: 15px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; font-family: sans-serif; font-weight: 600; }`,
-    starterCss: `.btn {\n  background: #3498db;\n  color: white;\n  border: none;\n  padding: 12px 28px;\n  border-radius: 10px;\n  font-size: 15px;\n  cursor: pointer;\n  font-family: sans-serif;\n  transition: /* propriedade duração timing */;\n}`,
+    starterCss: `.btn {\n  background: /* #3498db */;\n  color: white;\n  border: none;\n  padding: 12px 28px;\n  border-radius: /* 10px */;\n  font-size: 15px;\n  cursor: pointer;\n  font-family: sans-serif;\n  transition: /* propriedade duração timing */;\n}`,
   },
   {
     id: 52, title: 'Grid 2×2 com Gap', category: 'intermediario', Icon: LayoutGrid, iconColor: '#ef4444',
@@ -825,7 +825,7 @@ const CHALLENGES: Challenge[] = [
     htmlStructure: '<div class="grid">\n  <div class="item"></div>\n  <div class="item"></div>\n  <div class="item"></div>\n  <div class="item"></div>\n</div>',
     targetHtml: '<div class="grid"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div>',
     targetCss: `.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 200px; } .item { height: 60px; background: #ef4444; border-radius: 6px; }`,
-    starterCss: `.grid {\n  width: 200px;\n  display: grid;\n  grid-template-columns: /* repeat(2, 1fr) */;\n  gap: /* ? */;\n}\n.item {\n  height: 60px;\n  background: #ef4444;\n  border-radius: 6px;\n}`,
+    starterCss: `.grid {\n  width: 200px;\n  display: /* grid */;\n  grid-template-columns: /* repeat(2, 1fr) */;\n  gap: /* ? */;\n}\n.item {\n  height: 60px;\n  background: /* #ef4444 */;\n  border-radius: 6px;\n}`,
   },
   {
     id: 53, title: 'Max-width Responsivo', category: 'intermediario', Icon: Layout, iconColor: '#667eea',
@@ -853,7 +853,7 @@ const CHALLENGES: Challenge[] = [
     htmlStructure: '<div class="container">\n  <div class="sidebar">Nav</div>\n  <div class="main">Conteúdo</div>\n</div>',
     targetHtml: '<div class="container"><div class="sidebar" style="display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;">Nav</div><div class="main" style="display:flex;align-items:center;justify-content:center;font-family:sans-serif;color:#475569;">Conteúdo</div></div>',
     targetCss: `.container { display: flex; height: 120px; gap: 8px; width: 280px; } .sidebar { background: #1e293b; width: 70px; border-radius: 8px 0 0 8px; flex-shrink: 0; } .main { flex-grow: 1; background: #f8fafc; border-radius: 0 8px 8px 0; padding: 16px; }`,
-    starterCss: `.container {\n  display: flex;\n  height: 120px;\n  gap: 8px;\n  width: 280px;\n}\n.sidebar {\n  background: #1e293b;\n  width: 70px;\n  border-radius: 8px 0 0 8px;\n  flex-shrink: 0;\n}\n.main {\n  flex-grow: /* ? */;\n  background: #f8fafc;\n  border-radius: 0 8px 8px 0;\n}`,
+    starterCss: `.container {\n  display: /* flex */;\n  height: 120px;\n  gap: 8px;\n  width: 280px;\n}\n.sidebar {\n  background: /* #1e293b */;\n  width: 70px;\n  border-radius: 8px 0 0 8px;\n  flex-shrink: 0;\n}\n.main {\n  flex-grow: /* ? */;\n  background: #f8fafc;\n  border-radius: 0 8px 8px 0;\n}`,
   },
   {
     id: 55, title: 'Objeto Ajustado (Object Fit)', category: 'intermediario', Icon: Square, iconColor: '#22c55e',
@@ -867,7 +867,7 @@ const CHALLENGES: Challenge[] = [
     htmlStructure: '<img class="foto" src="https://picsum.photos/seed/css/400/200" alt="foto">',
     targetHtml: '<img class="foto" src="https://picsum.photos/seed/css/400/200" alt="foto">',
     targetCss: `.foto { width: 200px; height: 130px; object-fit: cover; border-radius: 12px; display: block; }`,
-    starterCss: `.foto {\n  width: 200px;\n  height: 130px;\n  object-fit: /* cover */;\n  border-radius: 12px;\n  display: block;\n}`,
+    starterCss: `.foto {\n  width: 200px;\n  height: 130px;\n  object-fit: /* cover */;\n  border-radius: /* 12px */;\n  display: block;\n}`,
   },
 
   /* ── Avançado extra ────────────────────────────────────────────────── */
@@ -897,7 +897,7 @@ const CHALLENGES: Challenge[] = [
     htmlStructure: '<div class="grafico"></div>',
     targetHtml: '<div class="grafico"></div>',
     targetCss: `.grafico { width: 140px; height: 140px; background: conic-gradient(#e74c3c 0% 30%, #3498db 30% 70%, #2ecc71 70% 100%); border-radius: 50%; }`,
-    starterCss: `.grafico {\n  width: 140px;\n  height: 140px;\n  border-radius: 50%;\n  background: conic-gradient(\n    #e74c3c 0% 30%,\n    #3498db 30% 70%,\n    #2ecc71 70% 100%\n  );\n}`,
+    starterCss: `.grafico {\n  width: 140px;\n  height: 140px;\n  border-radius: 50%;\n  background: conic-gradient(\n    /* cor1 */ 0% /* % */,\n    /* cor2 */ /* % */ /* % */,\n    /* cor3 */ /* % */ 100%\n  );\n}`,
   },
   {
     id: 58, title: 'Mix Blend Mode', category: 'avancado', Icon: Palette, iconColor: '#3498db',
@@ -968,7 +968,7 @@ const CHALLENGES: Challenge[] = [
     ],
     htmlStructure: 'form + label + input×2 + button',
     htmlEditable: true,
-    starterHtml: `<form class="form">\n  <label>Nome</label>\n  <input type="text" placeholder="Seu nome">\n  <label>E-mail</label>\n  <input type="email" placeholder="seu@email.com">\n  <button type="submit">Enviar</button>\n</form>`,
+    starterHtml: `<!-- Crie o formulário aqui -->\n<!-- Use: <form>, <label>, <input type="text">, <input type="email">, <button> -->`,
     targetHtml: `<form class="form"><label>Nome</label><input type="text" placeholder="Seu nome"><label>E-mail</label><input type="email" placeholder="seu@email.com"><button type="submit">Enviar</button></form>`,
     targetCss: `.form { display: flex; flex-direction: column; gap: 10px; max-width: 300px; padding: 24px; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); font-family: sans-serif; } label { font-size: 13px; font-weight: 600; color: #374151; } input { padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; width: 100%; box-sizing: border-box; } button { padding: 11px; background: #22c55e; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }`,
     starterCss: `.form {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  max-width: 300px;\n  padding: 24px;\n  /* background e border-radius */\n}\nlabel { font-size: 13px; font-weight: 600; font-family: sans-serif; }\ninput {\n  padding: 10px 12px;\n  border: 1px solid #e2e8f0;\n  border-radius: 8px;\n  width: 100%;\n  box-sizing: border-box;\n}\nbutton {\n  padding: 11px;\n  /* background, cor, border-none */\n  border-radius: 8px;\n  cursor: pointer;\n}`,
@@ -984,10 +984,10 @@ const CHALLENGES: Challenge[] = [
     ],
     htmlStructure: 'table + thead/th + tbody/tr/td×3',
     htmlEditable: true,
-    starterHtml: `<table>\n  <thead>\n    <tr>\n      <th>Nome</th>\n      <th>Matéria</th>\n      <th>Nota</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr><td>Ana</td><td>CSS</td><td>95</td></tr>\n    <tr><td>Carlos</td><td>HTML</td><td>88</td></tr>\n    <tr><td>Julia</td><td>JS</td><td>91</td></tr>\n  </tbody>\n</table>`,
+    starterHtml: `<!-- Crie a tabela aqui -->\n<!-- Estrutura: <table><thead><tr><th>...</th></tr></thead><tbody><tr><td>...</td></tr></tbody></table> -->`,
     targetHtml: `<table><thead><tr><th>Nome</th><th>Matéria</th><th>Nota</th></tr></thead><tbody><tr><td>Ana</td><td>CSS</td><td>95</td></tr><tr><td>Carlos</td><td>HTML</td><td>88</td></tr><tr><td>Julia</td><td>JS</td><td>91</td></tr></tbody></table>`,
     targetCss: `table { border-collapse: collapse; width: 280px; font-family: sans-serif; font-size: 14px; } th { background: #1e293b; color: white; padding: 10px 14px; text-align: left; } td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; color: #374151; } tr:nth-child(even) td { background: #f8fafc; } tr:nth-child(odd) td { background: white; }`,
-    starterCss: `table {\n  border-collapse: collapse;\n  width: 280px;\n  font-family: sans-serif;\n}\nth {\n  background: #1e293b;\n  color: white;\n  padding: 10px 14px;\n  text-align: left;\n}\ntd {\n  padding: 9px 14px;\n  border-bottom: 1px solid #e2e8f0;\n}\ntr:nth-child(even) td { background: /* cor alternada */; }`,
+    starterCss: `table {\n  border-collapse: collapse;\n  width: 280px;\n  font-family: sans-serif;\n}\nth {\n  background: /* cor escura */;\n  color: /* ? */;\n  padding: 10px 14px;\n  text-align: left;\n}\ntd {\n  padding: 9px 14px;\n  border-bottom: 1px solid #e2e8f0;\n}\ntr:nth-child(even) td { background: /* cor alternada */; }`,
   },
   {
     id: 64, title: 'Menu de Navegação', category: 'pagina', Icon: AlignCenter, iconColor: '#667eea',
@@ -1000,10 +1000,10 @@ const CHALLENGES: Challenge[] = [
     ],
     htmlStructure: 'nav > ul > li×4 > a',
     htmlEditable: true,
-    starterHtml: `<nav>\n  <ul>\n    <li><a href="#">Home</a></li>\n    <li><a href="#">Sobre</a></li>\n    <li><a href="#">Projetos</a></li>\n    <li><a href="#">Contato</a></li>\n  </ul>\n</nav>`,
+    starterHtml: `<!-- Crie o menu de navegação aqui -->\n<!-- Use: <nav>, <ul>, <li>, <a href="#"> -->`,
     targetHtml: `<nav><ul><li><a href="#">Home</a></li><li><a href="#">Sobre</a></li><li><a href="#">Projetos</a></li><li><a href="#">Contato</a></li></ul></nav>`,
     targetCss: `nav { background: #1e293b; padding: 0 16px; border-radius: 10px; } ul { display: flex; list-style: none; padding: 0; margin: 0; gap: 4px; } a { display: block; color: #94a3b8; text-decoration: none; padding: 12px 16px; font-family: sans-serif; font-size: 14px; border-radius: 6px; } li:first-child a { color: white; background: #667eea; }`,
-    starterCss: `nav {\n  background: #1e293b;\n  padding: 0 16px;\n  border-radius: 10px;\n}\nul {\n  display: flex;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  gap: 4px;\n}\na {\n  display: block;\n  color: #94a3b8;\n  text-decoration: none;\n  padding: 12px 16px;\n  font-family: sans-serif;\n  font-size: 14px;\n}`,
+    starterCss: `nav {\n  background: /* cor de fundo */;\n  padding: 0 16px;\n  border-radius: 10px;\n}\nul {\n  display: /* flex */;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  gap: 4px;\n}\na {\n  display: block;\n  color: /* ? */;\n  text-decoration: none;\n  padding: 12px 16px;\n  font-family: sans-serif;\n  font-size: 14px;\n}`,
   },
   {
     id: 65, title: 'Layout com Header e Footer', category: 'pagina', Icon: Layout, iconColor: '#8b5cf6',
@@ -1016,7 +1016,7 @@ const CHALLENGES: Challenge[] = [
     ],
     htmlStructure: 'header + main + footer',
     htmlEditable: true,
-    starterHtml: `<div class="pagina">\n  <header>\n    <h1>Meu Site</h1>\n  </header>\n  <main>\n    <p>Bem-vindo ao meu site! Aqui vai o conteúdo principal.</p>\n  </main>\n  <footer>\n    <p>© 2025 Meu Site</p>\n  </footer>\n</div>`,
+    starterHtml: `<!-- Crie o layout da página aqui -->\n<!-- Use: <div class="pagina">, <header>, <main>, <footer> com seus conteúdos -->`,
     targetHtml: `<div class="pagina"><header><h1>Meu Site</h1></header><main><p>Bem-vindo ao meu site!</p></main><footer><p>© 2025 Meu Site</p></footer></div>`,
     targetCss: `.pagina { width: 300px; font-family: sans-serif; border-radius: 12px; overflow: hidden; } header { background: #667eea; color: white; padding: 20px 24px; } header h1 { margin: 0; font-size: 20px; } main { background: #f8fafc; padding: 20px 24px; min-height: 80px; } main p { color: #374151; margin: 0; font-size: 14px; line-height: 1.6; } footer { background: #1e293b; color: #94a3b8; padding: 12px 24px; font-size: 12px; text-align: center; } footer p { margin: 0; }`,
     starterCss: `.pagina {\n  width: 300px;\n  font-family: sans-serif;\n  border-radius: 12px;\n  overflow: hidden;\n}\nheader {\n  background: /* cor do header */;\n  padding: 20px 24px;\n}\nmain {\n  background: #f8fafc;\n  padding: 20px 24px;\n}\nfooter {\n  background: /* cor escura */;\n  padding: 12px 24px;\n  text-align: center;\n}`,
@@ -1582,6 +1582,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [devToolsOpen, setDevToolsOpen] = useState(false);
   const obfSeedRef = useRef(genId());
+  const hasEditedRef = useRef(false);
 
   /* view */
   const [view, setView]   = useState<PageView>('menu');
@@ -1820,6 +1821,25 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     if (timerRef.current) clearInterval(timerRef.current);
     setTimeout(()=>{
       if (!previewRef.current) return;
+
+      /* Zero imediato se nenhuma alteração foi feita */
+      if (!hasEditedRef.current) {
+        const noEditDetails: ScoreDetail[] = [{label:'Nenhuma alteração no código!', passed:false, weight:100}];
+        setPlayerScore(0); setScoreDetails(noEditDetails); setSubmitted(true);
+        setTimeTaken(Math.floor((Date.now() - battleStartRef.current) / 1000));
+        setScoreReveal({show:true, value:0, final:0});
+        const noEditResult: RoundResult = { challengeIdx, score:0, details:noEditDetails };
+        setRoundResults(prev => [...prev, noEditResult]);
+        if (mode!=='solo' && roomCode) {
+          roundScoresRef.current[currentRound] = 0;
+          const totalScore = Object.values(roundScoresRef.current).reduce((a,b)=>a+b,0);
+          dbUpdate(ref(db,`rooms/${roomCode}/players/${playerId.current}`), {
+            [`scores/${currentRound}`]: 0, totalScore, submittedAt: Date.now(),
+          });
+        }
+        return;
+      }
+
       const { score, details } = calcScore(challengeIdx, previewRef.current);
       setPlayerScore(score);
       setScoreDetails(details);
@@ -1878,6 +1898,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     setHintLevel(0); setHintMsg(''); setShowHints(false);
     setTimeLeft(getChallengeTime(nextCh));
     submittedRef.current = false;
+    hasEditedRef.current = false;
   }, [currentRound, totalRounds, challengeIndices]);
 
   /* ── Firebase subscribe ── */
@@ -1955,6 +1976,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
             setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
             setHintLevel(0); setHintMsg(''); setShowHints(false);
             submittedRef.current = false;
+            hasEditedRef.current = false;
             const elapsed = data.startedAt ? Math.floor((Date.now()-data.startedAt)/1000) : 0;
             setTimeLeft(Math.max(0, getChallengeTime(CHALLENGES[cIdx]) - elapsed));
             setRoundTransition(false);
@@ -2087,6 +2109,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
     setRoundResults([]);
     setHintLevel(0); setHintMsg(''); setShowHints(false);
+    hasEditedRef.current = false;
     setView('battle');
   };
 
@@ -2720,7 +2743,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
                   <Code2 size={12} color="#06b6d4"/> <span style={{color:'#a5f3fc'}}>HTML</span>
                   <span style={{marginLeft:'auto',fontSize:9,color:'#64748b',background:'rgba(6,182,212,0.08)',padding:'2px 6px',borderRadius:4,fontWeight:500}}>escreva as tags</span>
                 </div>
-                <textarea value={playerHtml} onChange={e=>{ if(!submitted) setPlayerHtml(e.target.value); }}
+                <textarea value={playerHtml} onChange={e=>{ if(!submitted){ hasEditedRef.current=true; setPlayerHtml(e.target.value); } }}
                   disabled={submitted} spellCheck={false} autoCorrect="off" autoCapitalize="off"
                   style={{flex:'0 0 40%',minHeight:0,background:'#0d1b2a',color:'#a5f3fc',fontFamily:'monospace',fontSize:12,padding:12,border:'none',outline:'none',resize:'none',lineHeight:1.65,opacity:submitted?0.6:1,borderBottom:'1px solid rgba(6,182,212,0.15)'}}/>
                 {/* CSS editor */}
@@ -2729,7 +2752,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
                   <span style={{marginLeft:'auto',fontSize:9,color:'#64748b',background:'rgba(102,126,234,0.08)',padding:'2px 6px',borderRadius:4,fontWeight:500}}>estilize com CSS</span>
                   {submitted && <span style={{color:'#22c55e',display:'flex',alignItems:'center',gap:3,fontWeight:700}}><Check size={10}/> Enviado</span>}
                 </div>
-                <textarea value={playerCode} onChange={e=>{ if(!submitted) setPlayerCode(e.target.value); }}
+                <textarea value={playerCode} onChange={e=>{ if(!submitted){ hasEditedRef.current=true; setPlayerCode(e.target.value); } }}
                   onKeyDown={handleTab} disabled={submitted} spellCheck={false} autoCorrect="off" autoCapitalize="off"
                   style={{flex:1,minHeight:0,background:'#1e1e2e',color:'#cdd6f4',fontFamily:'monospace',fontSize:12,padding:12,border:'none',outline:'none',resize:'none',lineHeight:1.65,opacity:submitted?0.6:1}}/>
               </>
@@ -2739,7 +2762,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
                   <Code2 size={13} color="#667eea"/> <span style={{color:'#c7d2fe'}}>EDITOR CSS</span>
                   {submitted && <span style={{color:'#22c55e',marginLeft:'auto',display:'flex',alignItems:'center',gap:4,fontWeight:700}}><Check size={12}/> Enviado</span>}
                 </div>
-                <textarea value={playerCode} onChange={e=>{ if(!submitted) setPlayerCode(e.target.value); }}
+                <textarea value={playerCode} onChange={e=>{ if(!submitted){ hasEditedRef.current=true; setPlayerCode(e.target.value); } }}
                   onKeyDown={handleTab} disabled={submitted} spellCheck={false} autoCorrect="off" autoCapitalize="off"
                   style={{flex:1,minHeight:0,background:'#1e1e2e',color:'#cdd6f4',fontFamily:'monospace',fontSize:13,padding:14,border:'none',outline:'none',resize:'none',lineHeight:1.7,opacity:submitted?0.6:1}}/>
               </>
