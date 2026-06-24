@@ -13,7 +13,7 @@ import { ref, set, update as dbUpdate, onValue, get } from 'firebase/database';
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
 
-type Category = 'basico' | 'flexbox' | 'grid' | 'animacao' | 'efeitos';
+type Category = 'basico' | 'intermediario' | 'avancado';
 type CategoryFilter = Category | 'todos';
 type PageView = 'menu' | 'setup' | 'lobby' | 'battle' | 'results';
 type GameMode = 'create' | 'join' | 'solo';
@@ -51,7 +51,7 @@ const CHALLENGES: Challenge[] = [
   {
     id: 0, title: 'Círculo Vermelho', category: 'basico', Icon: Circle, iconColor: '#ef4444',
     difficulty: 'Fácil', points: 100,
-    description: 'Crie um círculo vermelho de 100×100px usando CSS puro.',
+    description: 'Crie um círculo vermelho de 100×100px usando CSS puro. Cor: #e74c3c (rgb 231,76,60).',
     hints: [
       'Todo círculo em CSS começa como um quadrado. Pense no que arredonda completamente os cantos de um elemento.',
       'border-radius: 50% transforma qualquer quadrado em círculo perfeito. Use background-color para a cor vermelha.',
@@ -65,7 +65,7 @@ const CHALLENGES: Challenge[] = [
   {
     id: 1, title: 'Quadrado com Sombra', category: 'basico', Icon: Square, iconColor: '#3b82f6',
     difficulty: 'Fácil', points: 150,
-    description: 'Crie um quadrado azul de 100×100px com sombra ao redor.',
+    description: 'Crie um quadrado azul de 100×100px com sombra ao redor. Cor de fundo: #3498db (rgb 52,152,219).',
     hints: [
       'Existe uma propriedade CSS específica para adicionar sombra à caixa de um elemento.',
       'box-shadow aceita 4 valores: deslocamento-X, deslocamento-Y, desfoque e cor. Ex: 6px 6px 15px rgba(0,0,0,0.4)',
@@ -77,9 +77,9 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.box {\n  width: 100px;\n  height: 100px;\n  background-color: /* ? */;\n  box-shadow: /* ? */;\n}`,
   },
   {
-    id: 2, title: 'Gradiente Colorido', category: 'basico', Icon: Palette, iconColor: '#f59e0b',
+    id: 2, title: 'Gradiente Colorido', category: 'intermediario', Icon: Palette, iconColor: '#f59e0b',
     difficulty: 'Fácil', points: 150,
-    description: 'Crie um retângulo com gradiente linear do laranja ao vermelho.',
+    description: 'Crie um retângulo com gradiente linear do laranja ao vermelho. Cores: #f39c12 → #e74c3c, ângulo 135deg.',
     hints: [
       'Em vez de uma cor sólida, background aceita gradientes como valor.',
       'background: linear-gradient(ângulo, cor1, cor2). Use 135deg para diagonal.',
@@ -91,7 +91,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.card {\n  width: 200px;\n  height: 100px;\n  border-radius: 12px;\n  background: linear-gradient(/* ângulo */, /* cor1 */, /* cor2 */);\n}`,
   },
   {
-    id: 3, title: 'Texto Centralizado', category: 'basico', Icon: AlignCenter, iconColor: '#8b5cf6',
+    id: 3, title: 'Texto Centralizado', category: 'intermediario', Icon: AlignCenter, iconColor: '#8b5cf6',
     difficulty: 'Médio', points: 200,
     description: 'Centralize o texto "CSS Battle!" dentro de uma caixa escura, horizontal e verticalmente.',
     hints: [
@@ -107,7 +107,7 @@ const CHALLENGES: Challenge[] = [
   {
     id: 4, title: 'Botão Estilizado', category: 'basico', Icon: MousePointer, iconColor: '#22c55e',
     difficulty: 'Médio', points: 200,
-    description: 'Estilize o botão: fundo verde, texto branco, sem borda padrão, cantos arredondados.',
+    description: 'Estilize o botão: fundo verde, texto branco, sem borda padrão, cantos arredondados. Cor verde: #27ae60.',
     hints: [
       'Botões HTML têm estilos padrão do navegador. Você precisa sobrescrever a borda e definir background e color.',
       'border: none remove a borda padrão. background-color define a cor de fundo. cursor: pointer muda o cursor.',
@@ -119,7 +119,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.btn {\n  background-color: /* ? */;\n  color: /* ? */;\n  border: /* ? */;\n  padding: 14px 28px;\n  border-radius: /* ? */;\n  font-size: 16px;\n  font-family: sans-serif;\n  cursor: pointer;\n}`,
   },
   {
-    id: 5, title: 'Card de Perfil', category: 'basico', Icon: User, iconColor: '#6366f1',
+    id: 5, title: 'Card de Perfil', category: 'intermediario', Icon: User, iconColor: '#6366f1',
     difficulty: 'Médio', points: 250,
     description: 'Monte um card com avatar circular (texto "JS") e nome "JavaScript" abaixo.',
     hints: [
@@ -133,7 +133,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.card {\n  width: 140px;\n  padding: 24px 16px;\n  background: #1a1a2e;\n  border-radius: 16px;\n  display: flex;\n  flex-direction: /* ? */;\n  align-items: /* ? */;\n  gap: 12px;\n}\n.avatar {\n  width: 60px;\n  height: 60px;\n  background: linear-gradient(135deg, #667eea, #764ba2);\n  border-radius: /* ? */;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-size: 18px;\n  font-family: sans-serif;\n}\n.name {\n  color: /* ? */;\n  font-weight: bold;\n  margin: 0;\n  font-family: sans-serif;\n}`,
   },
   {
-    id: 6, title: 'Grid 2×2', category: 'basico', Icon: LayoutGrid, iconColor: '#14b8a6',
+    id: 6, title: 'Grid 2×2', category: 'intermediario', Icon: LayoutGrid, iconColor: '#14b8a6',
     difficulty: 'Difícil', points: 300,
     description: 'Organize as 4 células coloridas em uma grade 2×2 usando CSS Grid.',
     hints: [
@@ -147,7 +147,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.grid {\n  width: 180px;\n  display: /* ? */;\n  grid-template-columns: /* ? */;\n  gap: 8px;\n}\n.cell {\n  height: 80px;\n  border-radius: 8px;\n}`,
   },
   {
-    id: 7, title: 'Spinner Animado', category: 'basico', Icon: RotateCw, iconColor: '#f97316',
+    id: 7, title: 'Spinner Animado', category: 'avancado', Icon: RotateCw, iconColor: '#f97316',
     difficulty: 'Difícil', points: 300,
     description: 'Crie um spinner circular girando continuamente com animação CSS.',
     hints: [
@@ -163,7 +163,7 @@ const CHALLENGES: Challenge[] = [
 
   /* ── Flexbox ─────────────────────────────────────────────────────── */
   {
-    id: 8, title: 'Row Espaçado', category: 'flexbox', Icon: AlignCenter, iconColor: '#667eea',
+    id: 8, title: 'Row Espaçado', category: 'intermediario', Icon: AlignCenter, iconColor: '#667eea',
     difficulty: 'Fácil', points: 150,
     description: 'Organize 3 caixas coloridas em linha com espaço igual entre elas usando Flexbox.',
     hints: [
@@ -177,7 +177,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.row {\n  width: 260px;\n  display: /* ? */;\n  justify-content: /* ? */;\n  align-items: /* ? */;\n}\n.box {\n  width: 60px;\n  height: 60px;\n  border-radius: 8px;\n}`,
   },
   {
-    id: 9, title: 'Nav Bar Flex', category: 'flexbox', Icon: Layout, iconColor: '#8b5cf6',
+    id: 9, title: 'Nav Bar Flex', category: 'intermediario', Icon: Layout, iconColor: '#8b5cf6',
     difficulty: 'Médio', points: 200,
     description: 'Crie uma barra de navegação com logo à esquerda e links à direita usando Flexbox.',
     hints: [
@@ -191,7 +191,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.nav {\n  width: 320px;\n  background: #1a1a2e;\n  padding: 16px 20px;\n  border-radius: 10px;\n  box-sizing: border-box;\n  display: /* ? */;\n  justify-content: /* ? */;\n  align-items: /* ? */;\n}\n.logo { color: #667eea; font-weight: bold; font-family: sans-serif; font-size: 15px; }\n.links {\n  display: /* ? */;\n  gap: 16px;\n}\n.link { color: white; font-family: sans-serif; font-size: 13px; text-decoration: none; }`,
   },
   {
-    id: 10, title: 'Coluna Flex', category: 'flexbox', Icon: TrendingUp, iconColor: '#22c55e',
+    id: 10, title: 'Coluna Flex', category: 'intermediario', Icon: TrendingUp, iconColor: '#22c55e',
     difficulty: 'Médio', points: 200,
     description: 'Empilhe 3 barras coloridas verticalmente e centralizadas usando Flexbox.',
     hints: [
@@ -205,7 +205,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.col {\n  padding: 20px;\n  background: #1e293b;\n  border-radius: 12px;\n  display: /* ? */;\n  flex-direction: /* ? */;\n  align-items: /* ? */;\n  gap: 10px;\n}\n.item {\n  width: 120px;\n  height: 40px;\n  border-radius: 6px;\n}`,
   },
   {
-    id: 11, title: 'Flex Wrap', category: 'flexbox', Icon: AlignCenter, iconColor: '#f59e0b',
+    id: 11, title: 'Flex Wrap', category: 'intermediario', Icon: AlignCenter, iconColor: '#f59e0b',
     difficulty: 'Médio', points: 200,
     description: 'Faça as tags quebrarem para a próxima linha automaticamente quando não couberem.',
     hints: [
@@ -221,7 +221,7 @@ const CHALLENGES: Challenge[] = [
 
   /* ── Grid ─────────────────────────────────────────────────────────── */
   {
-    id: 12, title: 'Galeria de Fotos', category: 'grid', Icon: LayoutGrid, iconColor: '#14b8a6',
+    id: 12, title: 'Galeria de Fotos', category: 'intermediario', Icon: LayoutGrid, iconColor: '#14b8a6',
     difficulty: 'Médio', points: 250,
     description: 'Organize 6 fotos em uma grade de 3 colunas usando CSS Grid.',
     hints: [
@@ -235,7 +235,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.gallery {\n  padding: 10px;\n  background: #1e293b;\n  border-radius: 12px;\n  display: /* ? */;\n  grid-template-columns: /* ? */;\n  gap: 8px;\n}\n.photo {\n  height: 80px;\n  background: linear-gradient(135deg, #667eea, #764ba2);\n  border-radius: 6px;\n}`,
   },
   {
-    id: 13, title: 'Layout Sidebar', category: 'grid', Icon: Layout, iconColor: '#6366f1',
+    id: 13, title: 'Layout Sidebar', category: 'intermediario', Icon: Layout, iconColor: '#6366f1',
     difficulty: 'Difícil', points: 300,
     description: 'Crie um layout com sidebar fixa de 160px e conteúdo principal ocupando o restante.',
     hints: [
@@ -251,9 +251,9 @@ const CHALLENGES: Challenge[] = [
 
   /* ── Animação ─────────────────────────────────────────────────────── */
   {
-    id: 14, title: 'Pulsar', category: 'animacao', Icon: Circle, iconColor: '#8b5cf6',
+    id: 14, title: 'Pulsar', category: 'avancado', Icon: Circle, iconColor: '#8b5cf6',
     difficulty: 'Médio', points: 250,
-    description: 'Faça um círculo pulsar (crescer e encolher) continuamente com animação CSS.',
+    description: 'Faça um círculo pulsar (crescer e encolher) continuamente com animação CSS. Cor do círculo: #667eea.',
     hints: [
       'Animações de escala usam transform: scale(). Crie @keyframes alternando entre dois tamanhos.',
       '@keyframes pulsar { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.4); } } — aplique com animation: pulsar 1s infinite.',
@@ -265,7 +265,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.pulse {\n  width: 80px;\n  height: 80px;\n  background: #667eea;\n  border-radius: 50%;\n  animation: /* ? */;\n}\n@keyframes pulsar {\n  /* defina os estados da animação */\n}`,
   },
   {
-    id: 15, title: 'Deslizar', category: 'animacao', Icon: ChevronRight, iconColor: '#22c55e',
+    id: 15, title: 'Deslizar', category: 'avancado', Icon: ChevronRight, iconColor: '#22c55e',
     difficulty: 'Difícil', points: 300,
     description: 'Anime uma caixa deslizando para esquerda e direita de forma contínua.',
     hints: [
@@ -281,7 +281,7 @@ const CHALLENGES: Challenge[] = [
 
   /* ── Efeitos ──────────────────────────────────────────────────────── */
   {
-    id: 16, title: 'Glassmorphism', category: 'efeitos', Icon: Star, iconColor: '#f093fb',
+    id: 16, title: 'Glassmorphism', category: 'avancado', Icon: Star, iconColor: '#f093fb',
     difficulty: 'Difícil', points: 350,
     description: 'Crie um card com efeito de vidro fosco (glassmorphism) sobre um fundo gradiente.',
     hints: [
@@ -295,7 +295,7 @@ const CHALLENGES: Challenge[] = [
     starterCss: `.scene { width: 280px; height: 180px; background: linear-gradient(135deg, #667eea, #f093fb); border-radius: 16px; display: flex; align-items: center; justify-content: center; }\n.card {\n  border-radius: 12px;\n  padding: 20px 28px;\n  text-align: center;\n  background: /* rgba com opacidade baixa */;\n  backdrop-filter: /* ? */;\n  border: /* ? */;\n}\n.title { color: white; font-family: sans-serif; margin: 0 0 4px; font-size: 18px; }\n.text { color: rgba(255,255,255,0.8); font-family: sans-serif; margin: 0; font-size: 13px; }`,
   },
   {
-    id: 17, title: 'Texto Gradiente', category: 'efeitos', Icon: Palette, iconColor: '#f59e0b',
+    id: 17, title: 'Texto Gradiente', category: 'avancado', Icon: Palette, iconColor: '#f59e0b',
     difficulty: 'Difícil', points: 350,
     description: 'Aplique um gradiente colorido diretamente no texto usando CSS.',
     hints: [
@@ -307,6 +307,49 @@ const CHALLENGES: Challenge[] = [
     targetHtml: '<h1 class="title">CSS Magic!</h1>',
     targetCss: `.title { font-family: sans-serif; font-size: 32px; font-weight: 900; margin: 0; background: linear-gradient(135deg, #667eea, #f093fb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }`,
     starterCss: `.title {\n  font-family: sans-serif;\n  font-size: 32px;\n  font-weight: 900;\n  margin: 0;\n  background: linear-gradient(/* ? */);\n  -webkit-background-clip: /* ? */;\n  -webkit-text-fill-color: /* ? */;\n  background-clip: /* ? */;\n}`,
+  },
+  /* ── Novos Básicos ────────────────────────────────────────────────── */
+  {
+    id: 18, title: 'Caixa Colorida', category: 'basico', Icon: Square, iconColor: '#3498db',
+    difficulty: 'Fácil', points: 80,
+    description: 'Pinte o fundo da caixa de azul e defina tamanho 150×150px. Cor exata: #3498db.',
+    hints: [
+      'A propriedade background-color define a cor de fundo de um elemento.',
+      'Use background-color: #3498db para azul. Width e height definem largura e altura.',
+      'Solução: .box { background-color: #3498db; width: 150px; height: 150px; }',
+    ],
+    htmlStructure: '<div class="box"></div>',
+    targetHtml: '<div class="box"></div>',
+    targetCss: `.box { background-color: #3498db; width: 150px; height: 150px; border-radius: 8px; }`,
+    starterCss: `.box {\n  background-color: /* use #3498db */;\n  width: /* ? */;\n  height: /* ? */;\n  border-radius: 8px;\n}`,
+  },
+  {
+    id: 19, title: 'Título Vermelho', category: 'basico', Icon: AlignCenter, iconColor: '#e74c3c',
+    difficulty: 'Fácil', points: 80,
+    description: 'Deixe o título vermelho e com font-size de 32px. Cor exata: #e74c3c.',
+    hints: [
+      'A propriedade color define a cor do texto. font-size define o tamanho.',
+      'color: #e74c3c (vermelho). font-size: 32px. font-family: sans-serif para sem serifa.',
+      'Solução: .titulo { color: #e74c3c; font-size: 32px; font-family: sans-serif; font-weight: bold; }',
+    ],
+    htmlStructure: '<h1 class="titulo">CSS é incrível!</h1>',
+    targetHtml: '<h1 class="titulo">CSS é incrível!</h1>',
+    targetCss: `.titulo { color: #e74c3c; font-size: 32px; font-family: sans-serif; font-weight: bold; margin: 0; }`,
+    starterCss: `.titulo {\n  color: /* use #e74c3c */;\n  font-size: /* ? */;\n  font-family: sans-serif;\n  font-weight: bold;\n  margin: 0;\n}`,
+  },
+  {
+    id: 20, title: 'Moldura Colorida', category: 'basico', Icon: Square, iconColor: '#27ae60',
+    difficulty: 'Fácil', points: 80,
+    description: 'Adicione uma borda sólida verde de 4px ao redor da caixa. Cor exata: #27ae60.',
+    hints: [
+      'A propriedade border aceita 3 valores: espessura, estilo e cor. Ex: 2px solid red.',
+      'border: 4px solid #27ae60 — 4px de espessura, estilo sólido, cor verde.',
+      'Solução: .caixa { border: 4px solid #27ae60; width: 120px; height: 120px; border-radius: 8px; }',
+    ],
+    htmlStructure: '<div class="caixa"></div>',
+    targetHtml: '<div class="caixa"></div>',
+    targetCss: `.caixa { border: 4px solid #27ae60; width: 120px; height: 120px; border-radius: 8px; background: transparent; }`,
+    starterCss: `.caixa {\n  border: /* 4px solid <cor> */;\n  width: 120px;\n  height: 120px;\n  border-radius: 8px;\n}`,
   },
 ];
 
@@ -433,6 +476,21 @@ function calcScore(cid: number, iframe: HTMLIFrameElement): { score: number; det
       add('background-clip: text', gs('.title','background-clip')==='text', 35);
       add('texto transparente', gs('.title','-webkit-text-fill-color').includes('0, 0, 0, 0') || gs('.title','-webkit-text-fill-color')==='transparent', 25);
       break;
+    case 18:
+      add('background-color azul (#3498db)', colorNear(gs('.box','background-color'),52,152,219), 50);
+      add('width >= 100px', px(gs('.box','width'))>=100, 25);
+      add('height >= 100px', px(gs('.box','height'))>=100, 25);
+      break;
+    case 19:
+      add('cor vermelha (#e74c3c)', colorNear(gs('.titulo','color'),231,76,60), 50);
+      add('font-size >= 24px', px(gs('.titulo','font-size'))>=24, 30);
+      add('font-weight bold', gs('.titulo','font-weight')==='700'||gs('.titulo','font-weight')==='bold', 20);
+      break;
+    case 20:
+      add('borda verde (#27ae60)', colorNear(gs('.caixa','border-top-color'),39,174,96), 50);
+      add('border-style solid', gs('.caixa','border-top-style')==='solid', 30);
+      add('border-width >= 2px', px(gs('.caixa','border-top-width'))>=2, 20);
+      break;
   }
   const total  = details.reduce((s,d)=>s+d.weight,0);
   const earned = details.reduce((s,d)=>s+(d.passed?d.weight:0),0);
@@ -461,8 +519,8 @@ function pickChallenges(cat: CategoryFilter, count: number): number[] {
 }
 
 const DIFF_COLOR: Record<string,string> = { Fácil:'#22c55e', Médio:'#f59e0b', Difícil:'#ef4444' };
-const CAT_LABEL:  Record<CategoryFilter,string> = { todos:'Todos', basico:'Básico', flexbox:'Flexbox', grid:'Grid', animacao:'Animações', efeitos:'Efeitos' };
-const CAT_COLOR:  Record<CategoryFilter,string> = { todos:'#667eea', basico:'#3b82f6', flexbox:'#8b5cf6', grid:'#14b8a6', animacao:'#f97316', efeitos:'#f093fb' };
+const CAT_LABEL:  Record<CategoryFilter,string> = { todos:'Todos', basico:'Básico', intermediario:'Intermediário', avancado:'Avançado' };
+const CAT_COLOR:  Record<CategoryFilter,string> = { todos:'#667eea', basico:'#3b82f6', intermediario:'#8b5cf6', avancado:'#ef4444' };
 const BATTLE_DURATION = 180;
 const HINT_COSTS: [number,number,number] = [0, 10, 20];
 
@@ -509,6 +567,21 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const [hintMsg, setHintMsg]               = useState('');
   const [catFilter, setCatFilter]           = useState<CategoryFilter>('todos');
   const [roundTransition, setRoundTransition] = useState(false);
+  const [showTutorial, setShowTutorial]     = useState(()=>localStorage.getItem('cssbattle_tutorial_dismissed')!=='1');
+
+  /* rejoin */
+  const [pendingRejoin, setPendingRejoin]   = useState<{roomCode:string, pid:string, playerName:string}|null>(null);
+
+  /* kick voting */
+  const [kickVotes, setKickVotes]           = useState<Record<string, Record<string,boolean>>>({});
+
+  /* emoji reactions */
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [floatingEmojis, setFloatingEmojis]   = useState<{id:string, emoji:string, name:string, x:number}[]>([]);
+  const emojiCooldownEnd  = useRef(0);
+  const spamCount         = useRef(0);
+  const spamWindowStart   = useRef(0);
+  const [cooldownLeft, setCooldownLeft]       = useState(0);
 
   /* refs */
   const previewRef    = useRef<HTMLIFrameElement>(null);
@@ -564,6 +637,34 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   useEffect(()=>()=>{
     unsubRef.current?.();
     if (timerRef.current) clearInterval(timerRef.current);
+  }, []);
+
+  /* ── Check rejoin session ── */
+  useEffect(()=>{
+    const stored = localStorage.getItem('cssbattle_session');
+    if (!stored) return;
+    try {
+      const s = JSON.parse(stored) as {roomCode:string, pid:string, playerName:string};
+      get(ref(db,`rooms/${s.roomCode}`)).then(snap=>{
+        if (snap.exists()) {
+          const d = snap.val();
+          if (d.status !== 'finished') setPendingRejoin(s);
+          else localStorage.removeItem('cssbattle_session');
+        } else {
+          localStorage.removeItem('cssbattle_session');
+        }
+      }).catch(()=>{});
+    } catch { localStorage.removeItem('cssbattle_session'); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* ── Emoji cooldown tick ── */
+  useEffect(()=>{
+    const iv = setInterval(()=>{
+      const remaining = Math.max(0, Math.ceil((emojiCooldownEnd.current - Date.now()) / 1000));
+      setCooldownLeft(remaining);
+    }, 500);
+    return ()=>clearInterval(iv);
   }, []);
 
   /* ── Timer ── */
@@ -626,6 +727,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const subscribeRoom = useCallback((code: string)=>{
     unsubRef.current?.();
     const roomRef = ref(db,`rooms/${code}`);
+    const seenReactionsRef = { current: new Set<string>() };
     const unsub = onValue(roomRef, snap=>{
       const data = snap.val();
       if (!data) return;
@@ -633,6 +735,34 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
       const players: Record<string,PlayerData> = data.players || {};
       setAllPlayers(players);
       setRoomMaxPlayers(data.maxPlayers ?? 2);
+
+      /* kick votes */
+      const votes: Record<string,Record<string,boolean>> = data.kickVotes || {};
+      setKickVotes(votes);
+      const playerCount = Object.keys(players).length;
+      Object.entries(votes).forEach(([targetId, voters])=>{
+        const voteCount = Object.keys(voters).length;
+        if (playerCount >= 2 && voteCount >= Math.ceil(playerCount / 2)) {
+          if (data.hostId === playerId.current) {
+            const upd: Record<string,null> = {};
+            upd[`players/${targetId}`] = null;
+            upd[`kickVotes/${targetId}`] = null;
+            dbUpdate(roomRef, upd).catch(()=>{});
+          }
+        }
+      });
+
+      /* emoji reactions */
+      const reactions: Record<string,{emoji:string, name:string, ts:number}> = data.reactions || {};
+      const now = Date.now();
+      Object.entries(reactions).forEach(([id, r])=>{
+        if (seenReactionsRef.current.has(id)) return;
+        if (now - r.ts > 6000) return;
+        seenReactionsRef.current.add(id);
+        const x = Math.random() * 70 + 15;
+        setFloatingEmojis(prev=>[...prev, {id, emoji:r.emoji, name:r.name, x}]);
+        setTimeout(()=>setFloatingEmojis(prev=>prev.filter(f=>f.id!==id)), 3500);
+      });
 
       const indices: number[] = data.challengeIndices ?? [data.challengeIndex ?? 0];
       const cRound: number    = data.currentRound ?? 0;
@@ -713,6 +843,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
       setRoomCode(code); setIsHost(true);
       prevRoundRef.current = -1;
       roundScoresRef.current = {};
+      localStorage.setItem('cssbattle_session', JSON.stringify({roomCode:code, pid:playerId.current, playerName:playerName.trim()}));
       subscribeRoom(code); setView('lobby');
     } catch { setError('Erro ao criar sala. Verifique a conexão.'); }
     setLoading(false);
@@ -742,6 +873,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
       setRoomCode(code); setIsHost(false);
       prevRoundRef.current = -1;
       roundScoresRef.current = {};
+      localStorage.setItem('cssbattle_session', JSON.stringify({roomCode:code, pid:playerId.current, playerName:playerName.trim()}));
       subscribeRoom(code); setView('lobby');
     } catch(err: any) {
       console.error('[CSS Battle] joinRoom:', err);
@@ -782,6 +914,61 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     setView('battle');
   };
 
+  /* ── Rejoin room ── */
+  const rejoinRoom = async ()=>{
+    if (!pendingRejoin) return;
+    setLoading(true); setError('');
+    try {
+      const snap = await get(ref(db,`rooms/${pendingRejoin.roomCode}`));
+      if (!snap.exists()){ localStorage.removeItem('cssbattle_session'); setPendingRejoin(null); setError('Sala não existe mais.'); setLoading(false); return; }
+      const data = snap.val();
+      if (data.status==='finished'){ localStorage.removeItem('cssbattle_session'); setPendingRejoin(null); setError('Esta partida já terminou.'); setLoading(false); return; }
+      playerId.current = pendingRejoin.pid;
+      setPlayerName(pendingRejoin.playerName);
+      await dbUpdate(ref(db,`rooms/${pendingRejoin.roomCode}/players/${pendingRejoin.pid}`), { name: pendingRejoin.playerName, reconnectedAt: Date.now() });
+      setRoomCode(pendingRejoin.roomCode);
+      setIsHost(data.hostId === pendingRejoin.pid);
+      prevRoundRef.current = -1;
+      roundScoresRef.current = {};
+      subscribeRoom(pendingRejoin.roomCode);
+      setView(data.status === 'playing' ? 'battle' : 'lobby');
+    } catch { setError('Erro ao reconectar. Tente entrar manualmente.'); }
+    setLoading(false);
+  };
+
+  /* ── Vote kick ── */
+  const voteKick = async (targetId: string)=>{
+    if (!roomCode || targetId === playerId.current) return;
+    await dbUpdate(ref(db,`rooms/${roomCode}/kickVotes/${targetId}`), { [playerId.current]: true }).catch(()=>{});
+  };
+
+  /* ── Send emoji reaction ── */
+  const EMOJI_LIST = ['😂','🔥','👏','💀','😱','🤯','💪','👀','🎉','😭','⚡','🏆'];
+  const sendReaction = (emoji: string)=>{
+    if (!roomCode) return;
+    const now = Date.now();
+    if (now < emojiCooldownEnd.current) return;
+    const windowMs = 10000;
+    if (now - spamWindowStart.current > windowMs) {
+      spamCount.current = 0;
+      spamWindowStart.current = now;
+    }
+    spamCount.current += 1;
+    if (spamCount.current >= 5) {
+      emojiCooldownEnd.current = now + 20000;
+      spamCount.current = 0;
+      setCooldownLeft(20);
+      return;
+    }
+    emojiCooldownEnd.current = now + 2000;
+    setCooldownLeft(2);
+    const rid = genId();
+    set(ref(db,`rooms/${roomCode}/reactions/${rid}`), { emoji, name: playerName||'?', ts: now })
+      .then(()=>setTimeout(()=>dbUpdate(ref(db,`rooms/${roomCode}/reactions`),{[rid]:null}).catch(()=>{}), 5000))
+      .catch(()=>{});
+    setShowEmojiPicker(false);
+  };
+
   /* ── Hint unlock ── */
   const unlockHint = (level: 1|2|3)=>{
     if (hintLevel >= level) return;
@@ -816,7 +1003,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   const timerPct   = (timeLeft/BATTLE_DURATION)*100;
   const timerColor = timeLeft>120 ? '#22c55e' : timeLeft>60 ? '#f59e0b' : '#ef4444';
   const catChallenges = catFilter==='todos' ? CHALLENGES : CHALLENGES.filter(c=>c.category===catFilter);
-  const categories: CategoryFilter[] = ['todos','basico','flexbox','grid','animacao','efeitos'];
+  const categories: CategoryFilter[] = ['todos','basico','intermediario','avancado'];
 
   /* ══════════════════════════════════════════════════════════
       MENU
@@ -827,56 +1014,109 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
 
         {/* Top nav */}
         <div style={{padding:'20px 0 0'}}>
-          <button onClick={onBackToHub} style={{background:'none',border:`1px solid ${border}`,color:dim,padding:'6px 12px',borderRadius:8,cursor:'pointer',display:'flex',alignItems:'center',gap:6,fontSize:13}}>
-            <ArrowLeft size={14}/> Hub
+          <button onClick={onBackToHub} style={{background:'none',border:`1px solid ${border}`,color:dim,padding:'8px 16px',borderRadius:8,cursor:'pointer',display:'flex',alignItems:'center',gap:7,fontSize:14}}>
+            <ArrowLeft size={16}/> Hub
           </button>
         </div>
 
         {/* Hero */}
         <div style={{textAlign:'center',padding:'40px 0 36px',position:'relative'}}>
           <div style={{display:'flex',justifyContent:'center',marginBottom:18}}>
-            <div style={{width:80,height:80,background:'linear-gradient(135deg,#667eea,#f093fb)',borderRadius:22,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 12px 40px rgba(102,126,234,0.35)'}}>
-              <Swords size={40} color="white"/>
+            <div style={{width:88,height:88,background:'linear-gradient(135deg,#667eea,#f093fb)',borderRadius:24,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 12px 40px rgba(102,126,234,0.35)'}}>
+              <Swords size={44} color="white"/>
             </div>
           </div>
           <h1 style={{fontFamily:"'Press Start 2P',monospace",fontSize:clamp(20,28),margin:'0 0 14px',background:'linear-gradient(135deg,#667eea,#f093fb)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',lineHeight:1.4}}>
             CSS BATTLE
           </h1>
-          <p style={{color:dim,fontSize:15,margin:'0 auto',maxWidth:520,lineHeight:1.7}}>
+          <p style={{color:dim,fontSize:16,margin:'0 auto',maxWidth:520,lineHeight:1.8}}>
             Recrie layouts CSS contra colegas em tempo real. Pontuação automática, dicas com moedas e múltiplas rodadas.
           </p>
         </div>
 
+        {/* Rejoin banner */}
+        {pendingRejoin && (
+          <div style={{background:isDark?'rgba(34,197,94,0.08)':'rgba(34,197,94,0.06)',border:'1px solid rgba(34,197,94,0.3)',borderRadius:14,padding:'14px 18px',marginBottom:18,display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+            <div style={{width:36,height:36,background:'rgba(34,197,94,0.15)',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <RotateCw size={17} color="#22c55e"/>
+            </div>
+            <div style={{flex:1,minWidth:120}}>
+              <div style={{fontSize:14,fontWeight:700,color:text}}>Você estava em uma sala!</div>
+              <div style={{fontSize:12,color:dim,marginTop:2}}>Sala: <span style={{fontFamily:'monospace',fontWeight:700,color:'#22c55e'}}>{pendingRejoin.roomCode}</span> · {pendingRejoin.playerName}</div>
+            </div>
+            <div style={{display:'flex',gap:8}}>
+              <button onClick={rejoinRoom} disabled={loading}
+                style={{background:'linear-gradient(135deg,#22c55e,#16a34a)',color:'white',border:'none',borderRadius:8,padding:'8px 16px',fontSize:13,fontWeight:700,cursor:'pointer'}}>
+                {loading?'Reconectando...':'Entrar de volta'}
+              </button>
+              <button onClick={()=>{ setPendingRejoin(null); localStorage.removeItem('cssbattle_session'); }}
+                style={{background:'none',border:`1px solid ${border}`,color:dim,borderRadius:8,padding:'8px 12px',fontSize:12,cursor:'pointer'}}>
+                Ignorar
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Tutorial banner */}
+        {showTutorial && (
+          <div style={{background:isDark?'rgba(102,126,234,0.08)':'rgba(102,126,234,0.06)',border:`1px solid rgba(102,126,234,0.25)`,borderRadius:16,padding:'20px 24px',marginBottom:32,position:'relative'}}>
+            <button onClick={()=>{ setShowTutorial(false); localStorage.setItem('cssbattle_tutorial_dismissed','1'); }}
+              style={{position:'absolute',top:12,right:12,background:'none',border:'none',color:dim,cursor:'pointer',padding:4,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:6}}>
+              <X size={16}/>
+            </button>
+            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14}}>
+              <div style={{width:32,height:32,background:'rgba(102,126,234,0.15)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <Eye size={16} color="#667eea"/>
+              </div>
+              <span style={{fontSize:15,fontWeight:700,color:text}}>Como funciona esta tela?</span>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:12}}>
+              {[
+                {icon:'🏠', title:'Criar Sala', desc:'Você vira o host. Define categoria de desafios, número de rodadas e capacidade. Compartilhe o código de 4 letras com os colegas.'},
+                {icon:'🔗', title:'Entrar em Sala', desc:'Alguém já criou uma sala? Digite o código de 4 letras que o host compartilhou e entre diretamente na partida.'},
+                {icon:'🎮', title:'Praticar Solo', desc:'Treine no seu próprio ritmo sem adversários. Todas as dicas ficam disponíveis (com custo de moedas) para aprender.'},
+                {icon:'⚡', title:'Como é a batalha?', desc:'Cada rodada mostra um layout-alvo. Você escreve CSS para replicá-lo. Quanto mais critérios bater, maior sua pontuação!'},
+              ].map(item=>(
+                <div key={item.title} style={{background:isDark?'rgba(255,255,255,0.03)':'rgba(0,0,0,0.03)',borderRadius:10,padding:'12px 14px'}}>
+                  <div style={{fontSize:20,marginBottom:6}}>{item.icon}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:text,marginBottom:4}}>{item.title}</div>
+                  <div style={{fontSize:12,color:dim,lineHeight:1.7}}>{item.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Mode cards */}
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14,marginBottom:44}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:16,marginBottom:48}}>
           {([
             {m:'create' as GameMode, Icon:Home,     color:'#667eea', title:'Criar Sala',    desc:'Defina categoria, rodadas e convide colegas.'},
             {m:'join'   as GameMode, Icon:Link,     color:'#3b82f6', title:'Entrar em Sala', desc:'Digite o código de 4 letras para entrar.'},
             {m:'solo'   as GameMode, Icon:Gamepad2, color:'#22c55e', title:'Praticar Solo', desc:'Treine no seu ritmo com dicas disponíveis.'},
           ]).map(({m,Icon:Ic,color,title,desc})=>(
             <button key={m} onClick={()=>{ setMode(m); setView('setup'); setError(''); }}
-              style={{background:card,border:`1px solid ${border}`,borderRadius:16,padding:'24px 20px',cursor:'pointer',textAlign:'left',transition:'transform 0.15s,box-shadow 0.15s'}}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow=`0 12px 32px ${color}28`;}}
+              style={{background:card,border:`1px solid ${border}`,borderRadius:18,padding:'28px 24px',cursor:'pointer',textAlign:'left',transition:'transform 0.15s,box-shadow 0.15s'}}
+              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow=`0 14px 36px ${color}30`;}}
               onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='';}}>
-              <div style={{width:44,height:44,background:`${color}18`,borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:14,border:`1px solid ${color}30`}}>
-                <Ic size={22} color={color}/>
+              <div style={{width:52,height:52,background:`${color}18`,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:16,border:`1px solid ${color}30`}}>
+                <Ic size={26} color={color}/>
               </div>
-              <div style={{fontSize:15,fontWeight:700,color:text,marginBottom:5}}>{title}</div>
-              <div style={{fontSize:12,color:dim,lineHeight:1.65}}>{desc}</div>
+              <div style={{fontSize:17,fontWeight:700,color:text,marginBottom:7}}>{title}</div>
+              <div style={{fontSize:14,color:dim,lineHeight:1.7}}>{desc}</div>
             </button>
           ))}
         </div>
 
         {/* Category filter */}
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14,flexWrap:'wrap',gap:8}}>
-          <h2 style={{fontSize:12,fontWeight:700,color:dim,letterSpacing:'0.1em',textTransform:'uppercase',margin:0}}>Desafios disponíveis</h2>
-          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16,flexWrap:'wrap',gap:10}}>
+          <h2 style={{fontSize:13,fontWeight:700,color:dim,letterSpacing:'0.1em',textTransform:'uppercase',margin:0}}>Desafios disponíveis</h2>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
             {categories.map(cat=>{
               const active = catFilter===cat;
               const cc = CAT_COLOR[cat];
               return (
                 <button key={cat} onClick={()=>setCatFilter(cat)}
-                  style={{padding:'5px 12px',borderRadius:999,border:`1px solid ${active?cc:border}`,background:active?`${cc}18`:'transparent',color:active?cc:dim,fontSize:12,fontWeight:active?700:400,cursor:'pointer'}}>
+                  style={{padding:'7px 14px',borderRadius:999,border:`1px solid ${active?cc:border}`,background:active?`${cc}18`:'transparent',color:active?cc:dim,fontSize:13,fontWeight:active?700:400,cursor:'pointer'}}>
                   {CAT_LABEL[cat]} <span style={{opacity:0.6}}>{cat==='todos'?CHALLENGES.length:CHALLENGES.filter(c=>c.category===cat).length}</span>
                 </button>
               );
@@ -885,20 +1125,20 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
         </div>
 
         {/* Challenge grid */}
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(210px,1fr))',gap:8}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(230px,1fr))',gap:10}}>
           {catChallenges.map(ch=>{
             const Ic=ch.Icon;
             return (
-              <div key={ch.id} style={{background:card,border:`1px solid ${border}`,borderRadius:12,padding:'13px 15px',display:'flex',alignItems:'center',gap:11}}>
-                <div style={{width:36,height:36,background:`${ch.iconColor}18`,borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,border:`1px solid ${ch.iconColor}28`}}>
-                  <Ic size={16} color={ch.iconColor}/>
+              <div key={ch.id} style={{background:card,border:`1px solid ${border}`,borderRadius:14,padding:'15px 17px',display:'flex',alignItems:'center',gap:13}}>
+                <div style={{width:42,height:42,background:`${ch.iconColor}18`,borderRadius:11,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,border:`1px solid ${ch.iconColor}28`}}>
+                  <Ic size={20} color={ch.iconColor}/>
                 </div>
                 <div style={{minWidth:0}}>
-                  <div style={{fontSize:12,fontWeight:600,color:text,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{ch.title}</div>
-                  <div style={{display:'flex',alignItems:'center',gap:6,marginTop:2}}>
-                    <span style={{fontSize:10,color:DIFF_COLOR[ch.difficulty]}}>{ch.difficulty}</span>
-                    <span style={{fontSize:10,color:dim}}>· {ch.points}pts</span>
-                    <span style={{fontSize:10,color:CAT_COLOR[ch.category],background:`${CAT_COLOR[ch.category]}14`,padding:'1px 6px',borderRadius:999}}>{CAT_LABEL[ch.category]}</span>
+                  <div style={{fontSize:14,fontWeight:600,color:text,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{ch.title}</div>
+                  <div style={{display:'flex',alignItems:'center',gap:6,marginTop:4}}>
+                    <span style={{fontSize:12,color:DIFF_COLOR[ch.difficulty]}}>{ch.difficulty}</span>
+                    <span style={{fontSize:12,color:dim}}>· {ch.points}pts</span>
+                    <span style={{fontSize:12,color:CAT_COLOR[ch.category],background:`${CAT_COLOR[ch.category]}14`,padding:'2px 8px',borderRadius:999}}>{CAT_LABEL[ch.category]}</span>
                   </div>
                 </div>
               </div>
@@ -929,32 +1169,32 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
             <h2 style={{fontSize:17,fontWeight:700,margin:0,color:text}}>{modeLabel}</h2>
           </div>
 
-          <div style={{marginBottom:14}}>
-            <label style={{fontSize:12,color:dim,display:'block',marginBottom:6}}>Seu nome</label>
-            <input value={playerName} onChange={e=>setPlayerName(e.target.value)} placeholder="Ex: Maria Silva" maxLength={24} style={inputStyle}/>
+          <div style={{marginBottom:18}}>
+            <label style={{fontSize:14,color:dim,display:'block',marginBottom:8,fontWeight:500}}>Seu nome</label>
+            <input value={playerName} onChange={e=>setPlayerName(e.target.value)} placeholder="Ex: Maria Silva" maxLength={24} style={{...inputStyle,fontSize:15,padding:'14px 16px'}}/>
           </div>
 
           {mode==='join' && (
-            <div style={{marginBottom:14}}>
-              <label style={{fontSize:12,color:dim,display:'block',marginBottom:6}}>Código da sala</label>
+            <div style={{marginBottom:18}}>
+              <label style={{fontSize:14,color:dim,display:'block',marginBottom:8,fontWeight:500}}>Código da sala</label>
               <input value={joinCodeInput} onChange={e=>setJoinCodeInput(e.target.value.toUpperCase().slice(0,4))}
                 placeholder="XXXX" maxLength={4}
-                style={{...inputStyle,fontSize:28,letterSpacing:'0.3em',fontFamily:'monospace',textAlign:'center',textTransform:'uppercase'}}/>
+                style={{...inputStyle,fontSize:34,letterSpacing:'0.4em',fontFamily:'monospace',textAlign:'center',textTransform:'uppercase',padding:'18px 14px'}}/>
             </div>
           )}
 
           {mode !== 'join' && (
             <>
               {/* Categoria */}
-              <div style={{marginBottom:14}}>
-                <label style={{fontSize:12,color:dim,display:'block',marginBottom:8}}>Categoria dos desafios</label>
-                <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+              <div style={{marginBottom:18}}>
+                <label style={{fontSize:14,color:dim,display:'block',marginBottom:10,fontWeight:500}}>Categoria dos desafios</label>
+                <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
                   {categories.map(cat=>{
                     const active = categorySetup===cat;
                     const cc = CAT_COLOR[cat];
                     return (
                       <button key={cat} onClick={()=>setCategorySetup(cat)}
-                        style={{padding:'6px 12px',borderRadius:8,border:`1px solid ${active?cc:border}`,background:active?`${cc}18`:'transparent',color:active?cc:dim,fontSize:12,fontWeight:active?700:400,cursor:'pointer'}}>
+                        style={{padding:'8px 16px',borderRadius:10,border:`2px solid ${active?cc:border}`,background:active?`${cc}18`:'transparent',color:active?cc:dim,fontSize:14,fontWeight:active?700:500,cursor:'pointer',transition:'all 0.12s'}}>
                         {CAT_LABEL[cat]}
                       </button>
                     );
@@ -963,42 +1203,48 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
               </div>
 
               {/* Rodadas */}
-              <div style={{marginBottom:14}}>
-                <label style={{fontSize:12,color:dim,display:'block',marginBottom:8}}>Número de rodadas</label>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
-                  {([1,3,5] as (1|3|5)[]).map(n=>(
-                    <button key={n} onClick={()=>setTotalRoundsSetup(n)}
-                      style={{padding:'10px',borderRadius:10,border:`2px solid ${totalRoundsSetup===n?'#667eea':border}`,background:totalRoundsSetup===n?'rgba(102,126,234,0.12)':'transparent',cursor:'pointer',color:totalRoundsSetup===n?'#667eea':dim,fontWeight:700,fontSize:15,display:'flex',flexDirection:'column',alignItems:'center',gap:3}}>
-                      {n}
-                      <span style={{fontSize:10,fontWeight:400}}>{n===1?'Rápido':n===3?'Normal':'Longo'}</span>
-                    </button>
-                  ))}
+              <div style={{marginBottom:18}}>
+                <label style={{fontSize:14,color:dim,display:'block',marginBottom:10,fontWeight:500}}>Número de rodadas</label>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}>
+                  {([1,3,5] as (1|3|5)[]).map(n=>{
+                    const active = totalRoundsSetup===n;
+                    return (
+                      <button key={n} onClick={()=>setTotalRoundsSetup(n)}
+                        style={{padding:'16px 10px',borderRadius:12,border:`2px solid ${active?'#667eea':border}`,background:active?'rgba(102,126,234,0.12)':'transparent',cursor:'pointer',color:active?'#667eea':dim,fontWeight:700,fontSize:26,display:'flex',flexDirection:'column',alignItems:'center',gap:5,transition:'all 0.12s',boxShadow:active?'0 0 0 4px rgba(102,126,234,0.12)':'none'}}>
+                        {n}
+                        <span style={{fontSize:12,fontWeight:500,color:active?'#667eea':dim}}>{n===1?'Rápido':n===3?'Normal':'Longo'}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Jogadores (só no create) */}
               {mode==='create' && (
-                <div style={{marginBottom:14}}>
-                  <label style={{fontSize:12,color:dim,display:'block',marginBottom:8}}>Máximo de jogadores</label>
-                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
-                    {([2,3,4] as (2|3|4)[]).map(n=>(
-                      <button key={n} onClick={()=>setMaxPlayers(n)}
-                        style={{padding:'10px',borderRadius:10,border:`2px solid ${maxPlayers===n?'#667eea':border}`,background:maxPlayers===n?'rgba(102,126,234,0.12)':'transparent',cursor:'pointer',color:maxPlayers===n?'#667eea':dim,fontWeight:700,fontSize:15,display:'flex',flexDirection:'column',alignItems:'center',gap:3}}>
-                        {n}
-                        <span style={{fontSize:10,fontWeight:400}}>{n===2?'Duo':n===3?'Trio':'Squad'}</span>
-                      </button>
-                    ))}
+                <div style={{marginBottom:18}}>
+                  <label style={{fontSize:14,color:dim,display:'block',marginBottom:10,fontWeight:500}}>Máximo de jogadores</label>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}>
+                    {([2,3,4] as (2|3|4)[]).map(n=>{
+                      const active = maxPlayers===n;
+                      return (
+                        <button key={n} onClick={()=>setMaxPlayers(n)}
+                          style={{padding:'16px 10px',borderRadius:12,border:`2px solid ${active?'#667eea':border}`,background:active?'rgba(102,126,234,0.12)':'transparent',cursor:'pointer',color:active?'#667eea':dim,fontWeight:700,fontSize:26,display:'flex',flexDirection:'column',alignItems:'center',gap:5,transition:'all 0.12s',boxShadow:active?'0 0 0 4px rgba(102,126,234,0.12)':'none'}}>
+                          {n}
+                          <span style={{fontSize:12,fontWeight:500,color:active?'#667eea':dim}}>{n===2?'Duo':n===3?'Trio':'Squad'}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
             </>
           )}
 
-          {error && <div style={{color:'#ef4444',fontSize:12,marginBottom:12,padding:'8px 12px',background:'rgba(239,68,68,0.1)',borderRadius:8}}>{error}</div>}
+          {error && <div style={{color:'#ef4444',fontSize:13,marginBottom:14,padding:'10px 14px',background:'rgba(239,68,68,0.1)',borderRadius:8}}>{error}</div>}
 
           <button onClick={mode==='create'?createRoom:mode==='join'?joinRoom:startSolo} disabled={loading}
-            style={{width:'100%',background:'linear-gradient(135deg,#667eea,#764ba2)',color:'white',border:'none',borderRadius:10,padding:'14px',fontSize:14,fontWeight:700,cursor:loading?'not-allowed':'pointer',opacity:loading?0.7:1,display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
-            <Play size={16}/>
+            style={{width:'100%',background:'linear-gradient(135deg,#667eea,#764ba2)',color:'white',border:'none',borderRadius:12,padding:'16px',fontSize:16,fontWeight:700,cursor:loading?'not-allowed':'pointer',opacity:loading?0.7:1,display:'flex',alignItems:'center',justifyContent:'center',gap:9}}>
+            <Play size={18}/>
             {loading?'Aguarde...' : mode==='create'?'Criar Sala' : mode==='join'?'Entrar' : `Iniciar (${totalRoundsSetup} ${totalRoundsSetup===1?'rodada':'rodadas'})`}
           </button>
         </div>
@@ -1053,13 +1299,25 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
               <span style={{fontSize:11,color:dim,textTransform:'uppercase',letterSpacing:'0.08em'}}>Jogadores</span>
               <span style={{fontSize:12,fontWeight:700,color:joined>=max?'#22c55e':dim}}>{joined}/{max}</span>
             </div>
-            {Object.entries(allPlayers).map(([id,p])=>(
-              <div key={id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',background:isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)',borderRadius:10,marginBottom:6}}>
-                <div style={{width:8,height:8,borderRadius:'50%',background:'#22c55e',flexShrink:0}}/>
-                <span style={{fontSize:13,fontWeight:600,color:text,flex:1}}>{p.name}</span>
-                {id===playerId.current && <span style={{fontSize:10,color:'#667eea',background:'rgba(102,126,234,0.12)',padding:'2px 8px',borderRadius:999}}>você</span>}
-              </div>
-            ))}
+            {Object.entries(allPlayers).map(([id,p])=>{
+              const isSelf = id===playerId.current;
+              const myVoteCount = kickVotes[id] ? Object.keys(kickVotes[id]).length : 0;
+              const alreadyVoted = kickVotes[id]?.[playerId.current] ?? false;
+              return (
+                <div key={id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',background:isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)',borderRadius:10,marginBottom:6}}>
+                  <div style={{width:8,height:8,borderRadius:'50%',background:'#22c55e',flexShrink:0}}/>
+                  <span style={{fontSize:13,fontWeight:600,color:text,flex:1}}>{p.name}</span>
+                  {isSelf && <span style={{fontSize:10,color:'#667eea',background:'rgba(102,126,234,0.12)',padding:'2px 8px',borderRadius:999}}>você</span>}
+                  {!isSelf && (
+                    <button onClick={()=>voteKick(id)} disabled={alreadyVoted}
+                      title={alreadyVoted?'Você já votou':'Votar para remover'}
+                      style={{background:alreadyVoted?'rgba(239,68,68,0.08)':'none',border:`1px solid ${alreadyVoted?'rgba(239,68,68,0.3)':border}`,color:alreadyVoted?'#ef4444':dim,borderRadius:6,padding:'3px 8px',cursor:alreadyVoted?'default':'pointer',fontSize:11,display:'flex',alignItems:'center',gap:4}}>
+                      🚫 {myVoteCount>0?`${myVoteCount} voto${myVoteCount>1?'s':''}`:alreadyVoted?'votado':'remover'}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
             {Array.from({length:Math.max(0,max-joined)}).map((_,i)=>(
               <div key={`empty-${i}`} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',border:`1px dashed ${border}`,borderRadius:10,marginBottom:6}}>
                 <div style={{width:8,height:8,borderRadius:'50%',background:border,flexShrink:0}}/>
@@ -1101,6 +1359,14 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
 
     return (
       <div style={{height:'100vh',display:'flex',flexDirection:'column',background:bg,overflow:'hidden',position:'relative'}}>
+
+        {/* Floating emoji reactions */}
+        {floatingEmojis.map(f=>(
+          <div key={f.id} style={{position:'absolute',left:`${f.x}%`,bottom:70,zIndex:90,display:'flex',flexDirection:'column',alignItems:'center',gap:2,animation:'floatUp 3.5s ease-out forwards',pointerEvents:'none'}}>
+            <div style={{fontSize:32,lineHeight:1}}>{f.emoji}</div>
+            <div style={{fontSize:10,color:'white',background:'rgba(0,0,0,0.55)',padding:'2px 6px',borderRadius:999,maxWidth:80,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.name}</div>
+          </div>
+        ))}
 
         {/* Round transition overlay */}
         {roundTransition && (
@@ -1153,16 +1419,31 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
             </div>
             {opponents.map(([id,p])=>{
               const s = p.scores?.[String(currentRound)] ?? -1;
+              const alreadyVotedKick = kickVotes[id]?.[playerId.current] ?? false;
+              const kickCount = kickVotes[id] ? Object.keys(kickVotes[id]).length : 0;
               return (
-                <div key={id} style={{display:'flex',alignItems:'center',gap:4,padding:'3px 8px',background:'rgba(102,126,234,0.08)',borderRadius:6,border:'1px solid rgba(102,126,234,0.2)'}}>
+                <div key={id} style={{display:'flex',alignItems:'center',gap:3,padding:'3px 6px',background:'rgba(102,126,234,0.08)',borderRadius:6,border:'1px solid rgba(102,126,234,0.2)'}}>
                   <div style={{width:5,height:5,borderRadius:'50%',background:s>=0?'#667eea':'#94a3b8'}}/>
                   <span style={{fontSize:10,color:'#667eea',fontWeight:600}}>{p.name}</span>
                   {s>=0 ? <span style={{fontSize:10,color:'#667eea',fontWeight:700}}>{s}%</span>
                         : <span style={{fontSize:9,color:dim}}>jogando</span>}
+                  <button onClick={()=>voteKick(id)} disabled={alreadyVotedKick}
+                    title={alreadyVotedKick?'Já votou':'Votar para remover'}
+                    style={{background:'none',border:'none',cursor:alreadyVotedKick?'default':'pointer',padding:'0 2px',fontSize:10,color:alreadyVotedKick?'#ef4444':dim,opacity:alreadyVotedKick?1:0.6}}>
+                    🚫{kickCount>0?kickCount:''}
+                  </button>
                 </div>
               );
             })}
           </div>
+
+          {/* Emoji button */}
+          {mode !== 'solo' && (
+            <button onClick={()=>setShowEmojiPicker(v=>!v)}
+              style={{background:showEmojiPicker?'rgba(102,126,234,0.15)':'none',border:`1px solid ${showEmojiPicker?'rgba(102,126,234,0.4)':border}`,borderRadius:6,padding:'4px 8px',cursor:'pointer',fontSize:16,lineHeight:1}}>
+              😊
+            </button>
+          )}
 
           {/* Timer */}
           <div style={{fontFamily:'monospace',fontSize:20,fontWeight:800,minWidth:58,textAlign:'right',flexShrink:0,color:timerColor}}>
@@ -1249,7 +1530,27 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
         </div>
 
         {/* Bottom bar */}
-        <div style={{padding:'8px 14px',borderTop:`1px solid ${border}`,background:card,display:'flex',alignItems:'center',gap:10,flexShrink:0,flexWrap:'wrap',minHeight:52}}>
+        <div style={{padding:'8px 14px',borderTop:`1px solid ${border}`,background:card,display:'flex',alignItems:'center',gap:10,flexShrink:0,flexWrap:'wrap',minHeight:52,position:'relative'}}>
+
+          {/* Emoji picker popup */}
+          {showEmojiPicker && (
+            <div style={{position:'absolute',bottom:60,left:14,background:card,border:`1px solid ${border}`,borderRadius:12,padding:'10px',display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:6,zIndex:50,boxShadow:'0 8px 32px rgba(0,0,0,0.3)'}}>
+              {EMOJI_LIST.map(e=>(
+                <button key={e} onClick={()=>sendReaction(e)} disabled={cooldownLeft>0}
+                  style={{fontSize:22,background:'none',border:'none',cursor:cooldownLeft>0?'not-allowed':'pointer',borderRadius:6,padding:'4px',opacity:cooldownLeft>0?0.4:1,transition:'transform 0.1s'}}
+                  onMouseEnter={el=>{ if(cooldownLeft===0) el.currentTarget.style.transform='scale(1.25)'; }}
+                  onMouseLeave={el=>{ el.currentTarget.style.transform=''; }}>
+                  {e}
+                </button>
+              ))}
+              {cooldownLeft>0 && (
+                <div style={{gridColumn:'1/-1',textAlign:'center',fontSize:11,color:'#ef4444',marginTop:2}}>
+                  {cooldownLeft >= 10 ? `⏳ Penalidade anti-spam: ${cooldownLeft}s` : `Aguarde ${cooldownLeft}s`}
+                </div>
+              )}
+            </div>
+          )}
+
           {!submitted ? (
             <>
               <button onClick={()=>{ setShowInstr(true); setShowHints(true); }}
