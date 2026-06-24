@@ -27,6 +27,7 @@ import MakerPage from './pages/MakerPage';
 import NoticiasPage from './pages/NoticiasPage';
 import DesafiosPage from './pages/DesafiosPage';
 import CssBattlePage from './pages/CssBattlePage';
+import GamesHubPage from './pages/GamesHubPage';
 import PasswordModal from './components/PasswordModal';
 import FloatingNav from './components/FloatingNav';
 import { COSMETICS, CosmeticDef, getActiveCosmeticId } from './data/cosmetics';
@@ -1581,12 +1582,13 @@ const App: React.FC = () => {
     new URLSearchParams(window.location.search).get('sala')?.toUpperCase() ?? ''
   );
 
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'cssbattle'>(() => {
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle'>(() => {
     if (window.location.hash === '#roadmaps')  return 'roadmaps';
     if (window.location.hash === '#suporte')   return 'suporte';
     if (window.location.hash === '#maker')     return 'maker';
     if (window.location.hash === '#noticias')  return 'noticias';
     if (window.location.hash === '#desafios')  return 'desafios';
+    if (window.location.hash === '#detetive')  return 'detetive';
     if (window.location.hash === '#cssbattle') return 'cssbattle';
     if (new URLSearchParams(window.location.search).get('sala'))  return 'cssbattle';
     // #professor nunca restaura via hash — requer autenticação sempre
@@ -1641,6 +1643,8 @@ const App: React.FC = () => {
       window.location.hash = 'noticias';
     } else if (currentPage === 'desafios') {
       window.location.hash = 'desafios';
+    } else if (currentPage === 'detetive') {
+      window.location.hash = 'detetive';
     } else if (currentPage === 'cssbattle') {
       window.location.hash = 'cssbattle';
     } else {
@@ -1657,6 +1661,7 @@ const App: React.FC = () => {
       else if (hash === '#maker')     setCurrentPage('maker');
       else if (hash === '#noticias')  setCurrentPage('noticias');
       else if (hash === '#desafios')  setCurrentPage('desafios');
+      else if (hash === '#detetive')  setCurrentPage('detetive');
       else if (hash === '#cssbattle') setCurrentPage('cssbattle');
       else setCurrentPage('hub');
     };
@@ -1903,14 +1908,25 @@ const App: React.FC = () => {
     );
   }
 
-  /* Desafios page */
+  /* Arena de Desafios — hub/launcher de jogos */
   if (currentPage === 'desafios') {
-    return <DesafiosPage onBackToHub={() => setCurrentPage('hub')} />;
+    return (
+      <GamesHubPage
+        onBackToHub={() => setCurrentPage('hub')}
+        onOpenDetetive={() => setCurrentPage('detetive')}
+        onOpenCssBattle={() => setCurrentPage('cssbattle')}
+      />
+    );
   }
 
-  /* CSS Battle page */
+  /* Detetive de Código */
+  if (currentPage === 'detetive') {
+    return <DesafiosPage onBackToHub={() => setCurrentPage('desafios')} />;
+  }
+
+  /* CSS Battle — back vai para a arena, não para o hub principal */
   if (currentPage === 'cssbattle') {
-    return <CssBattlePage onBackToHub={() => setCurrentPage('hub')} initialJoinCode={initialJoinCode} />;
+    return <CssBattlePage onBackToHub={() => setCurrentPage('desafios')} initialJoinCode={initialJoinCode} />;
   }
 
   return (
@@ -2191,7 +2207,6 @@ const App: React.FC = () => {
         onOpenMaker={() => setCurrentPage('maker')}
         onOpenNoticias={() => setCurrentPage('noticias')}
         onOpenDesafios={() => setCurrentPage('desafios')}
-        onOpenCssBattle={() => setCurrentPage('cssbattle')}
       />
 
       {/* Modal mobile */}
