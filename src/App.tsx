@@ -29,6 +29,7 @@ import DesafiosPage from './pages/DesafiosPage';
 import CssBattlePage from './pages/CssBattlePage';
 import GamesHubPage from './pages/GamesHubPage';
 import FlexRocketPage from './pages/FlexRocketPage';
+import ReactBugHunterPage from './pages/ReactBugHunterPage';
 import PasswordModal from './components/PasswordModal';
 import FloatingNav from './components/FloatingNav';
 import { COSMETICS, CosmeticDef, getActiveCosmeticId } from './data/cosmetics';
@@ -1583,15 +1584,16 @@ const App: React.FC = () => {
     new URLSearchParams(window.location.search).get('sala')?.toUpperCase() ?? ''
   );
 
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket'>(() => {
-    if (window.location.hash === '#roadmaps')    return 'roadmaps';
-    if (window.location.hash === '#suporte')     return 'suporte';
-    if (window.location.hash === '#maker')       return 'maker';
-    if (window.location.hash === '#noticias')    return 'noticias';
-    if (window.location.hash === '#desafios')    return 'desafios';
-    if (window.location.hash === '#detetive')    return 'detetive';
-    if (window.location.hash === '#cssbattle')   return 'cssbattle';
-    if (window.location.hash === '#flexrocket')  return 'flexrocket';
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'reactbughunter'>(() => {
+    if (window.location.hash === '#roadmaps')       return 'roadmaps';
+    if (window.location.hash === '#suporte')        return 'suporte';
+    if (window.location.hash === '#maker')          return 'maker';
+    if (window.location.hash === '#noticias')       return 'noticias';
+    if (window.location.hash === '#desafios')       return 'desafios';
+    if (window.location.hash === '#detetive')       return 'detetive';
+    if (window.location.hash === '#cssbattle')      return 'cssbattle';
+    if (window.location.hash === '#flexrocket')     return 'flexrocket';
+    if (window.location.hash === '#reactbughunter') return 'reactbughunter';
     if (new URLSearchParams(window.location.search).get('sala'))  return 'cssbattle';
     // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
@@ -1651,6 +1653,8 @@ const App: React.FC = () => {
       window.location.hash = 'cssbattle';
     } else if (currentPage === 'flexrocket') {
       window.location.hash = 'flexrocket';
+    } else if (currentPage === 'reactbughunter') {
+      window.location.hash = 'reactbughunter';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -1921,6 +1925,7 @@ const App: React.FC = () => {
         onOpenDetetive={() => setCurrentPage('detetive')}
         onOpenCssBattle={() => setCurrentPage('cssbattle')}
         onOpenFlexRocket={() => setCurrentPage('flexrocket')}
+        onOpenReactBugHunter={() => setCurrentPage('reactbughunter')}
         isDark={isDark}
       />
     );
@@ -1939,6 +1944,11 @@ const App: React.FC = () => {
   /* Foguetes na Órbita — jogo de CSS Flexbox */
   if (currentPage === 'flexrocket') {
     return <FlexRocketPage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
+  }
+
+  /* React Bug Hunter */
+  if (currentPage === 'reactbughunter') {
+    return <ReactBugHunterPage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
   }
 
   return (

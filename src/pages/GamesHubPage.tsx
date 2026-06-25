@@ -441,10 +441,11 @@ interface GamesHubPageProps {
   onOpenDetetive: () => void;
   onOpenCssBattle: () => void;
   onOpenFlexRocket: () => void;
+  onOpenReactBugHunter: () => void;
   isDark?: boolean;
 }
 
-export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, isDark = true }: GamesHubPageProps) {
+export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, onOpenReactBugHunter, isDark = true }: GamesHubPageProps) {
   const { currentUser, leaderboard, users, login, registerUser, logout } = useGameState();
   const [showAuth, setShowAuth] = useState(false);
 
@@ -660,6 +661,18 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             glowColor2={isDark ? '#00ccaa' : '#0f766e'}
             accentText={accent}
             onPlay={onOpenFlexRocket}
+            isDark={isDark}
+          />
+          <GameCard
+            title="REACT BUG HUNTER"
+            subtitle="PRÁTICA REACT"
+            desc="Encontre e corrija bugs reais em componentes React. Veja o resultado ao vivo enquanto resolve os 20 desafios progressivos."
+            tags={['React', 'Bugs', 'useState', 'useEffect', '20 desafios']}
+            icon={<span style={{ fontSize: 26 }}>🐛</span>}
+            glowColor={isDark ? '#61dafb' : '#0891b2'}
+            glowColor2={isDark ? '#38bdf8' : '#0284c7'}
+            accentText={isDark ? '#61dafb' : '#0891b2'}
+            onPlay={onOpenReactBugHunter}
             isDark={isDark}
           />
         </div>
