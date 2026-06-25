@@ -1938,7 +1938,7 @@ const App: React.FC = () => {
 
   /* Foguetes na Órbita — jogo de CSS Flexbox */
   if (currentPage === 'flexrocket') {
-    return <FlexRocketPage onBack={() => setCurrentPage('desafios')} />;
+    return <FlexRocketPage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
   }
 
   return (

@@ -464,55 +464,72 @@ function GameArena({ level, containerStyle, itemStyle, won, wrong }: {
 /* ══════════════════════════════════════════════════════════════
    LEVEL SELECT SCREEN
 ══════════════════════════════════════════════════════════════ */
-function LevelSelect({ completed, onSelect, onBack }: {
+function LevelSelect({ completed, onSelect, onBack, isDark }: {
   completed: Set<number>;
   onSelect: (idx: number) => void;
   onBack: () => void;
+  isDark: boolean;
 }) {
   const firstLocked = LEVELS.findIndex(l => !completed.has(l.id));
   const nextIdx     = firstLocked === -1 ? LEVELS.length - 1 : firstLocked;
 
+  const bg       = isDark ? '#060a14'  : '#dde4ef';
+  const mainText = isDark ? '#e2e8f0'  : '#1e293b';
+  const subText  = isDark ? '#64748b'  : '#475569';
+  const muted    = isDark ? '#334155'  : '#64748b';
+  const accent   = isDark ? '#00ffcc'  : '#0d9488';
+  const accentBd = isDark ? 'rgba(0,255,204,.22)' : 'rgba(0,0,0,0.18)';
+  const topBd    = isDark ? 'rgba(0,255,204,.1)'  : 'rgba(0,0,0,0.12)';
+  const grid     = isDark ? 'rgba(0,255,204,.03)'  : 'rgba(0,100,80,.04)';
+  const cardDone = isDark ? '#0a1628' : '#f0fdf9';
+  const cardCurr = isDark ? '#080f1e' : '#f8fafc';
+  const cardLock = isDark ? 'rgba(255,255,255,.02)' : 'rgba(0,0,0,.03)';
+  const cardUnlk = isDark ? 'rgba(255,255,255,.04)' : '#ffffff';
+  const panelBg  = isDark ? 'rgba(255,255,255,.02)' : 'rgba(255,255,255,.75)';
+  const panelBd  = isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.10)';
+
   return (
     <div style={{
-      minHeight:'100vh',background:'#060a14',
-      backgroundImage:'linear-gradient(rgba(0,255,204,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,.03) 1px,transparent 1px)',
+      minHeight:'100vh',
+      background:bg,
+      backgroundImage:`linear-gradient(${grid} 1px,transparent 1px),linear-gradient(90deg,${grid} 1px,transparent 1px)`,
       backgroundSize:'44px 44px',
-      fontFamily:'system-ui,-apple-system,sans-serif',color:'#e2e8f0',
+      fontFamily:'system-ui,-apple-system,sans-serif',color:mainText,
     }}>
       <style>{ANIM}</style>
 
       {/* Header */}
       <div style={{
         display:'flex',alignItems:'center',justifyContent:'space-between',
-        padding:'18px 24px',borderBottom:'1px solid rgba(0,255,204,.1)',
+        padding:'18px 24px',borderBottom:`1px solid ${topBd}`,
         flexWrap:'wrap',gap:12,
       }}>
         <button onClick={onBack} style={{
           display:'flex',alignItems:'center',gap:8,
-          background:'none',border:'1.5px solid rgba(0,255,204,.22)',
-          color:'#64748b',cursor:'pointer',padding:'8px 16px',
+          background:'none',border:`1.5px solid ${accentBd}`,
+          color:subText,cursor:'pointer',padding:'8px 16px',
           fontFamily:"'Press Start 2P',monospace",fontSize:9,borderRadius:4,
           transition:'all .15s',
         }}
-          onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.color='#00ffcc';(e.currentTarget as HTMLElement).style.borderColor='rgba(0,255,204,.5)';}}
-          onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.color='#64748b';(e.currentTarget as HTMLElement).style.borderColor='rgba(0,255,204,.22)';}}
+          onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.color=accent;(e.currentTarget as HTMLElement).style.borderColor=accent;}}
+          onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.color=subText;(e.currentTarget as HTMLElement).style.borderColor=accentBd;}}
         >
           <ChevronLeft size={14}/> ARENA
         </button>
 
         <div style={{textAlign:'center'}}>
-          <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:7,color:'#334155',letterSpacing:'.2em',marginBottom:6}}>
+          <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:7,color:muted,letterSpacing:'.2em',marginBottom:6}}>
             CSS FLEXBOX
           </div>
-          <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:13,color:'#00ffcc',
-            textShadow:'0 0 18px rgba(0,255,204,.5)',letterSpacing:'.05em'}}>
+          <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:13,color:accent,
+            textShadow: isDark ? '0 0 18px rgba(0,255,204,.5)' : 'none', letterSpacing:'.05em'}}>
             FOGUETES NA ÓRBITA
           </div>
         </div>
 
-        <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:9,color:'#334155',textAlign:'right'}}>
+        <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:9,color:muted,textAlign:'right'}}>
           <div>{completed.size}/{LEVELS.length}</div>
-          <div style={{fontSize:7,marginTop:4,color:'#1e293b'}}>COMPLETOS</div>
+          <div style={{fontSize:7,marginTop:4,color:subText}}>COMPLETOS</div>
         </div>
       </div>
 
@@ -521,19 +538,19 @@ function LevelSelect({ completed, onSelect, onBack }: {
         {/* Progress bar */}
         <div style={{marginBottom:40}}>
           <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:10}}>
-            <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:9,color:'#475569'}}>
+            <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:9,color:subText}}>
               PROGRESSO DA FROTA
             </span>
-            <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:11,color:'#00ffcc'}}>
+            <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:11,color:accent}}>
               {Math.round(completed.size/LEVELS.length*100)}%
             </span>
           </div>
-          <div style={{height:8,background:'rgba(255,255,255,.06)',borderRadius:4,overflow:'hidden'}}>
+          <div style={{height:8,background: isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.08)',borderRadius:4,overflow:'hidden'}}>
             <div style={{
               height:'100%',borderRadius:4,
               width:`${completed.size/LEVELS.length*100}%`,
-              background:'linear-gradient(90deg,#00ffcc,#00ccaa)',
-              boxShadow:'0 0 10px rgba(0,255,204,.5)',
+              background:`linear-gradient(90deg,${accent},${isDark?'#00ccaa':'#0f766e'})`,
+              boxShadow: isDark ? '0 0 10px rgba(0,255,204,.5)' : 'none',
               transition:'width .4s ease',
             }}/>
           </div>
@@ -546,26 +563,37 @@ function LevelSelect({ completed, onSelect, onBack }: {
             const isUnlocked = i === 0 || completed.has(LEVELS[i - 1].id);
             const isCurrent  = i === nextIdx && !isDone;
 
+            const cardBg = isDone ? cardDone : isCurrent ? cardCurr : isUnlocked ? cardUnlk : cardLock;
+            const cardBd = isDone
+              ? (isDark ? 'rgba(0,255,204,.45)' : 'rgba(13,148,136,.5)')
+              : isCurrent
+              ? (isDark ? 'rgba(0,255,204,.35)' : 'rgba(13,148,136,.4)')
+              : isUnlocked
+              ? (isDark ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.12)')
+              : (isDark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.05)');
+            const numClr = isDone || isCurrent ? accent : isUnlocked ? subText : muted;
+            const titleClr = isDone
+              ? (isDark ? '#94a3b8' : '#475569')
+              : isCurrent ? mainText : isUnlocked ? subText : muted;
+            const tagBg  = isDone ? (isDark ? 'rgba(0,255,204,.12)' : 'rgba(13,148,136,.12)') : (isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.05)');
+            const tagClr = isDone ? accent : muted;
+            const tagBd  = isDone ? (isDark ? 'rgba(0,255,204,.2)' : 'rgba(13,148,136,.25)') : (isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.08)');
+
             return (
               <button
                 key={lvl.id}
                 disabled={!isUnlocked}
                 onClick={() => onSelect(i)}
                 style={{
-                  background: isDone
-                    ? 'rgba(0,255,204,.07)'
-                    : isCurrent
-                    ? 'rgba(0,255,204,.05)'
-                    : isUnlocked
-                    ? 'rgba(255,255,255,.03)'
-                    : 'rgba(255,255,255,.015)',
-                  border: `2px solid ${isDone ? 'rgba(0,255,204,.45)' : isCurrent ? 'rgba(0,255,204,.35)' : isUnlocked ? 'rgba(255,255,255,.1)' : 'rgba(255,255,255,.04)'}`,
+                  background: cardBg,
+                  border: `2px solid ${cardBd}`,
                   borderRadius:10,padding:'18px 14px',
                   cursor: isUnlocked ? 'pointer' : 'not-allowed',
                   textAlign:'left',position:'relative',
-                  opacity: isUnlocked ? 1 : 0.42,
+                  opacity: isUnlocked ? 1 : 0.45,
                   transition:'all .2s',
                   animation:`rktCardIn .35s ease ${i * .04}s both`,
+                  boxShadow: !isDark && isUnlocked ? '0 2px 8px rgba(0,0,0,.06)' : 'none',
                 }}
                 onMouseEnter={e => { if (isUnlocked) (e.currentTarget as HTMLElement).style.transform='translateY(-4px)'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform='none'; }}
@@ -573,10 +601,10 @@ function LevelSelect({ completed, onSelect, onBack }: {
                 {/* Status icon */}
                 <div style={{position:'absolute',top:12,right:12}}>
                   {isDone
-                    ? <CheckCircle2 size={16} color="#00ffcc"/>
+                    ? <CheckCircle2 size={16} color={accent}/>
                     : isUnlocked
-                    ? <Play size={14} color={isCurrent ? '#00ffcc' : '#334155'}/>
-                    : <Lock size={13} color="#1e293b"/>
+                    ? <Play size={14} color={isCurrent ? accent : muted}/>
+                    : <Lock size={13} color={muted}/>
                   }
                 </div>
 
@@ -584,7 +612,7 @@ function LevelSelect({ completed, onSelect, onBack }: {
                 <div style={{
                   fontFamily:"'Press Start 2P',monospace",
                   fontSize: lvl.id === 15 ? 8 : 18,
-                  color: isDone ? '#00ffcc' : isCurrent ? '#00ffcc' : isUnlocked ? '#475569' : '#1e293b',
+                  color: numClr,
                   marginBottom:10,lineHeight:1,
                 }}>
                   {lvl.id === 15 ? 'FINAL' : String(lvl.id).padStart(2,'0')}
@@ -593,7 +621,7 @@ function LevelSelect({ completed, onSelect, onBack }: {
                 {/* Title */}
                 <div style={{
                   fontSize:13,fontWeight:700,
-                  color: isDone ? '#94a3b8' : isCurrent ? '#e2e8f0' : isUnlocked ? '#64748b' : '#1e293b',
+                  color: titleClr,
                   marginBottom:10,lineHeight:1.4,
                 }}>
                   {lvl.title}
@@ -604,9 +632,7 @@ function LevelSelect({ completed, onSelect, onBack }: {
                   {lvl.concepts.slice(0,2).map(c=>(
                     <span key={c} style={{
                       fontSize:10,padding:'2px 6px',borderRadius:3,
-                      background: isDone ? 'rgba(0,255,204,.12)' : 'rgba(255,255,255,.05)',
-                      color: isDone ? '#00ffcc' : '#334155',
-                      border:`1px solid ${isDone ? 'rgba(0,255,204,.2)' : 'rgba(255,255,255,.06)'}`,
+                      background: tagBg, color: tagClr, border:`1px solid ${tagBd}`,
                     }}>{c.split(':')[0]}</span>
                   ))}
                 </div>
@@ -619,15 +645,16 @@ function LevelSelect({ completed, onSelect, onBack }: {
         {completed.size === LEVELS.length && (
           <div style={{
             marginTop:48,padding:'28px 32px',
-            background:'rgba(0,255,204,.05)',border:'2px solid rgba(0,255,204,.3)',
+            background: isDark ? 'rgba(0,255,204,.05)' : 'rgba(13,148,136,.06)',
+            border:`2px solid ${isDark ? 'rgba(0,255,204,.3)' : 'rgba(13,148,136,.35)'}`,
             borderRadius:12,textAlign:'center',
             animation:'rktSlide .5s ease both',
           }}>
-            <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:14,color:'#00ffcc',
-              textShadow:'0 0 24px #00ffcc',marginBottom:12}}>
+            <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:14,color:accent,
+              textShadow: isDark ? '0 0 24px #00ffcc' : 'none',marginBottom:12}}>
               FROTA COMPLETA!
             </div>
-            <p style={{fontSize:15,color:'#475569',margin:0}}>
+            <p style={{fontSize:15,color:subText,margin:0}}>
               Você dominou todas as propriedades do CSS Flexbox. A galáxia está nas suas mãos!
             </p>
           </div>
@@ -640,7 +667,7 @@ function LevelSelect({ completed, onSelect, onBack }: {
 /* ══════════════════════════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════════════════════════ */
-export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
+export default function FlexRocketPage({ onBack, isDark = true }: { onBack: () => void; isDark?: boolean }) {
   /* — persistence — */
   const [completed, setCompleted] = useState<Set<number>>(() => {
     try {
@@ -711,12 +738,37 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
         completed={completed}
         onSelect={goToLevel}
         onBack={onBack}
+        isDark={isDark}
       />
     );
   }
 
   /* ─ Game screen ─ */
   const isUnlocked = levelIdx === 0 || completed.has(LEVELS[levelIdx - 1].id);
+
+  /* ── Tema ── */
+  const bg       = isDark ? '#060a14'  : '#dde4ef';
+  const mainText = isDark ? '#e2e8f0'  : '#1e293b';
+  const subText  = isDark ? '#64748b'  : '#475569';
+  const muted    = isDark ? '#334155'  : '#64748b';
+  const accent   = isDark ? '#00ffcc'  : '#0d9488';
+  const accentBd = isDark ? 'rgba(0,255,204,.22)' : 'rgba(0,0,0,0.18)';
+  const topBd    = isDark ? 'rgba(0,255,204,.1)'  : 'rgba(0,0,0,0.12)';
+  const leftPanelBg  = isDark ? '#060a14'  : '#f8fafc';
+  const leftBorder   = isDark ? 'rgba(0,255,204,.08)' : 'rgba(0,0,0,0.10)';
+  const briefBg      = isDark ? 'rgba(0,255,204,.06)' : 'rgba(13,148,136,.07)';
+  const briefBorderL = isDark ? '#00ffcc' : '#0d9488';
+  const taskAccent   = isDark ? '#00ffcc' : '#0d9488';
+  const conceptBg    = isDark ? 'rgba(0,255,204,.1)' : 'rgba(13,148,136,.1)';
+  const conceptBd    = isDark ? 'rgba(0,255,204,.25)' : 'rgba(13,148,136,.3)';
+  const editorBg     = isDark ? '#070b16'  : '#1e1e2e'; // editor fica sempre escuro (terminal)
+  const dotBg        = isDark ? 'rgba(0,255,204,.05)' : 'rgba(255,255,255,.07)';
+  const dotBd        = isDark ? 'rgba(0,255,204,.08)' : 'rgba(255,255,255,.1)';
+  const actionBd     = isDark ? 'rgba(0,255,204,.08)' : 'rgba(0,0,0,.10)';
+  const hintBg       = isDark ? 'rgba(251,191,36,.07)' : 'rgba(251,191,36,.1)';
+  const hintBd       = isDark ? 'rgba(251,191,36,.28)' : 'rgba(251,191,36,.4)';
+  const errBg        = isDark ? 'rgba(239,68,68,.1)' : 'rgba(239,68,68,.08)';
+  const errBd        = isDark ? 'rgba(239,68,68,.35)' : 'rgba(239,68,68,.4)';
 
   const btnBase: React.CSSProperties = {
     display:'flex',alignItems:'center',justifyContent:'center',gap:8,
@@ -728,36 +780,36 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
   return (
     <div style={{
       display:'flex',flexDirection:'column',height:'100vh',overflow:'hidden',
-      background:'#060a14',fontFamily:'system-ui,-apple-system,sans-serif',color:'#e2e8f0',
+      background:bg,fontFamily:'system-ui,-apple-system,sans-serif',color:mainText,
     }}>
       <style>{ANIM}</style>
 
       {/* ── TOP BAR ── */}
       <div style={{
         display:'flex',alignItems:'center',justifyContent:'space-between',
-        padding:'12px 20px',borderBottom:'1px solid rgba(0,255,204,.1)',
+        padding:'12px 20px',borderBottom:`1px solid ${topBd}`,
         flexShrink:0,flexWrap:'wrap',gap:8,
       }}>
         <button onClick={() => setScreen('select')} style={{
           display:'flex',alignItems:'center',gap:7,
-          background:'none',border:'1.5px solid rgba(0,255,204,.22)',
-          color:'#64748b',cursor:'pointer',padding:'7px 14px',
+          background:'none',border:`1.5px solid ${accentBd}`,
+          color:subText,cursor:'pointer',padding:'7px 14px',
           fontFamily:"'Press Start 2P',monospace",fontSize:8,borderRadius:4,
           transition:'all .15s',
         }}
-          onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.color='#00ffcc';(e.currentTarget as HTMLElement).style.borderColor='rgba(0,255,204,.5)';}}
-          onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.color='#64748b';(e.currentTarget as HTMLElement).style.borderColor='rgba(0,255,204,.22)';}}
+          onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.color=accent;(e.currentTarget as HTMLElement).style.borderColor=accent;}}
+          onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.color=subText;(e.currentTarget as HTMLElement).style.borderColor=accentBd;}}
         >
           <ChevronLeft size={13}/> MISSÕES
         </button>
 
         <div style={{textAlign:'center'}}>
-          <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:8,color:'#00ffcc',letterSpacing:'.04em'}}>
+          <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:8,color:accent,letterSpacing:'.04em'}}>
             {level.code} — {level.title}
           </div>
         </div>
 
-        <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:8,color:'#334155'}}>
+        <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:8,color:muted}}>
           {String(levelIdx+1).padStart(2,'0')}&nbsp;/&nbsp;{LEVELS.length}
         </div>
       </div>
@@ -768,30 +820,31 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
         {/* ════ LEFT PANEL ════ */}
         <div className="rkt-left" style={{
           width:'46%',display:'flex',flexDirection:'column',
-          borderRight:'1px solid rgba(0,255,204,.08)',
+          background:leftPanelBg,
+          borderRight:`1px solid ${leftBorder}`,
           overflow:'hidden',
         }}>
 
           {/* TOP-LEFT: Mission briefing + level dots */}
           <div style={{
             padding:'18px 20px 14px',
-            borderBottom:'1px solid rgba(0,255,204,.07)',
+            borderBottom:`1px solid ${leftBorder}`,
             flexShrink:0,
           }}>
             {/* Story */}
-            <p style={{fontSize:14,color:'#64748b',lineHeight:1.7,margin:'0 0 12px'}}>
+            <p style={{fontSize:14,color:subText,lineHeight:1.7,margin:'0 0 12px'}}>
               {level.story}
             </p>
 
             {/* Task */}
             <div style={{
-              padding:'10px 14px',background:'rgba(0,255,204,.06)',
-              borderLeft:'3px solid #00ffcc',borderRadius:4,marginBottom:16,
+              padding:'10px 14px',background:briefBg,
+              borderLeft:`3px solid ${briefBorderL}`,borderRadius:4,marginBottom:16,
             }}>
-              <span style={{fontSize:11,fontFamily:"'Press Start 2P',monospace",color:'#00ffcc',letterSpacing:'.03em'}}>
+              <span style={{fontSize:11,fontFamily:"'Press Start 2P',monospace",color:taskAccent,letterSpacing:'.03em'}}>
                 MISSÃO:&nbsp;
               </span>
-              <span style={{fontSize:14,color:'#94a3b8',lineHeight:1.6}}>{level.task}</span>
+              <span style={{fontSize:14,color:isDark?'#94a3b8':subText,lineHeight:1.6}}>{level.task}</span>
             </div>
 
             {/* Concepts tags */}
@@ -799,8 +852,8 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
               {level.concepts.map(c=>(
                 <span key={c} style={{
                   padding:'4px 10px',fontSize:12,fontWeight:700,
-                  background:'rgba(0,255,204,.1)',color:'#00ffcc',
-                  border:'1px solid rgba(0,255,204,.25)',borderRadius:3,
+                  background:conceptBg,color:accent,
+                  border:`1px solid ${conceptBd}`,borderRadius:3,
                 }}>{c}</span>
               ))}
             </div>
@@ -811,6 +864,13 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
                 const isDone    = completed.has(l.id);
                 const isLocked  = i > 0 && !completed.has(LEVELS[i-1].id);
                 const isCurrent = i === levelIdx;
+                const dotBgColor = isDone ? accent
+                  : isCurrent ? (isDark ? 'rgba(0,255,204,.15)' : 'rgba(13,148,136,.15)')
+                  : isLocked  ? (isDark ? 'rgba(255,255,255,.03)' : 'rgba(0,0,0,.04)')
+                  : (isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)');
+                const dotBdColor = (isCurrent || isDone) ? accent
+                  : isLocked ? (isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.08)')
+                  : (isDark ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.12)');
                 return (
                   <button key={l.id}
                     onClick={() => !isLocked && goToLevel(i)}
@@ -818,18 +878,18 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
                     style={{
                       width:26,height:26,borderRadius:6,
                       cursor: isLocked ? 'not-allowed' : 'pointer',
-                      background: isDone ? '#00ffcc' : isCurrent ? 'rgba(0,255,204,.15)' : isLocked ? 'rgba(255,255,255,.03)' : 'rgba(255,255,255,.07)',
-                      border:`1.5px solid ${isCurrent ? '#00ffcc' : isDone ? '#00ffcc' : isLocked ? 'rgba(255,255,255,.05)' : 'rgba(255,255,255,.1)'}`,
+                      background: dotBgColor,
+                      border:`1.5px solid ${dotBdColor}`,
                       display:'flex',alignItems:'center',justifyContent:'center',
                       opacity: isLocked ? 0.35 : 1,
                       transition:'all .15s',
                     } as React.CSSProperties}
                   >
                     {isDone
-                      ? <CheckCircle2 size={12} color="#060a14"/>
+                      ? <CheckCircle2 size={12} color={isDark?'#060a14':'#ffffff'}/>
                       : isLocked
-                      ? <Lock size={10} color="#334155"/>
-                      : <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:7,color:isCurrent?'#00ffcc':'#475569'}}>{i+1}</span>
+                      ? <Lock size={10} color={muted}/>
+                      : <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:7,color:isCurrent?accent:subText}}>{i+1}</span>
                     }
                   </button>
                 );
@@ -843,13 +903,13 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
             {/* Container CSS */}
             <div style={{
               flex:1,display:'flex',flexDirection:'column',minHeight:0,
-              background:'#070b16',
-              borderBottom: level.hasItemCss ? '1px solid rgba(0,255,204,.08)' : 'none',
+              background:editorBg,
+              borderBottom: level.hasItemCss ? `1px solid ${dotBd}` : 'none',
             }}>
               {/* Editor title bar */}
               <div style={{
                 display:'flex',alignItems:'center',gap:8,padding:'8px 14px',
-                background:'rgba(0,255,204,.05)',borderBottom:'1px solid rgba(0,255,204,.08)',
+                background:dotBg,borderBottom:`1px solid ${dotBd}`,
                 flexShrink:0,
               }}>
                 <div style={{display:'flex',gap:5}}>
@@ -857,7 +917,7 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
                     <div key={c} style={{width:9,height:9,borderRadius:'50%',background:c}}/>
                   ))}
                 </div>
-                <span style={{fontSize:12,color:'#334155',fontFamily:'monospace',letterSpacing:'.03em'}}>
+                <span style={{fontSize:12,color:'#475569',fontFamily:'monospace',letterSpacing:'.03em'}}>
                   container.css
                 </span>
               </div>
@@ -885,7 +945,7 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
             {level.hasItemCss && (
               <div style={{
                 flex:'0 0 auto',maxHeight:'40%',display:'flex',flexDirection:'column',
-                background:'#07091a',overflow:'hidden',
+                background:editorBg,overflow:'hidden',
               }}>
                 <div style={{
                   display:'flex',alignItems:'center',gap:8,padding:'8px 14px',
@@ -897,7 +957,7 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
                       <div key={c} style={{width:9,height:9,borderRadius:'50%',background:c}}/>
                     ))}
                   </div>
-                  <span style={{fontSize:12,color:'#334155',fontFamily:'monospace'}}>rocket-3.css</span>
+                  <span style={{fontSize:12,color:'#475569',fontFamily:'monospace'}}>rocket-3.css</span>
                   <span style={{fontSize:11,color:'#a78bfa',marginLeft:4}}>← foguete especial</span>
                 </div>
                 <div style={{overflow:'auto',minHeight:60}}>
@@ -922,14 +982,14 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
 
           {/* ACTION BAR */}
           <div style={{
-            padding:'12px 16px',borderTop:'1px solid rgba(0,255,204,.08)',
+            padding:'12px 16px',borderTop:`1px solid ${actionBd}`,
             flexShrink:0,display:'flex',flexDirection:'column',gap:10,
           }}>
             {/* Feedback messages */}
             {checked && !won && (
               <div style={{
                 display:'flex',alignItems:'center',gap:9,padding:'9px 13px',
-                background:'rgba(239,68,68,.1)',border:'1.5px solid rgba(239,68,68,.35)',
+                background:errBg,border:`1.5px solid ${errBd}`,
                 borderRadius:5,fontSize:13,color:'#f87171',
               }}>
                 <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:8,flexShrink:0}}>FALHA</span>
@@ -939,7 +999,7 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
             {showHint && (
               <div style={{
                 display:'flex',alignItems:'flex-start',gap:9,padding:'9px 13px',
-                background:'rgba(251,191,36,.07)',border:'1.5px solid rgba(251,191,36,.28)',
+                background:hintBg,border:`1.5px solid ${hintBd}`,
                 borderRadius:5,fontSize:14,color:'#fbbf24',lineHeight:1.65,
               }}>
                 <Lightbulb size={15} style={{flexShrink:0,marginTop:1}}/>
@@ -952,18 +1012,18 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
               {!won ? (
                 <button onClick={handleCheck} style={{
                   ...btnBase,flex:1,minWidth:140,
-                  background:'linear-gradient(135deg,rgba(0,255,204,.15),rgba(0,255,204,.07))',
-                  border:'2px solid #00ffcc',color:'#00ffcc',fontSize:11,
-                  boxShadow:'0 0 14px rgba(0,255,204,.2)',
+                  background: isDark ? 'linear-gradient(135deg,rgba(0,255,204,.15),rgba(0,255,204,.07))' : 'rgba(13,148,136,.1)',
+                  border:`2px solid ${accent}`,color:accent,fontSize:11,
+                  boxShadow: isDark ? '0 0 14px rgba(0,255,204,.2)' : 'none',
                 }}>
                   VERIFICAR
                 </button>
               ) : (
                 <button onClick={handleNext} style={{
                   ...btnBase,flex:1,minWidth:140,
-                  background:'linear-gradient(135deg,#00ffcc,#00ccaa)',
-                  color:'#060a14',fontSize:11,
-                  boxShadow:'0 0 18px rgba(0,255,204,.4)',
+                  background:`linear-gradient(135deg,${accent},${isDark?'#00ccaa':'#0f766e'})`,
+                  color: isDark ? '#060a14' : '#ffffff', fontSize:11,
+                  boxShadow: isDark ? '0 0 18px rgba(0,255,204,.4)' : 'none',
                 }}>
                   {levelIdx < LEVELS.length - 1
                     ? <><span>PRÓXIMA</span><ChevronRight size={14}/></>
@@ -975,19 +1035,19 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
               <button onClick={()=>setShowHint(v=>!v)} style={{
                 ...btnBase,padding:'11px 14px',fontSize:12,
                 background:'none',
-                border:`1.5px solid ${showHint?'rgba(251,191,36,.5)':'rgba(255,255,255,.1)'}`,
-                color: showHint?'#fbbf24':'#475569',fontFamily:'system-ui,sans-serif',
+                border:`1.5px solid ${showHint?'rgba(251,191,36,.5)': isDark?'rgba(255,255,255,.1)':'rgba(0,0,0,.15)'}`,
+                color: showHint?'#fbbf24':subText,fontFamily:'system-ui,sans-serif',
               }}>
                 <Lightbulb size={14}/>
               </button>
 
               <button onClick={handleReset} style={{
                 ...btnBase,padding:'11px 14px',fontSize:12,
-                background:'none',border:'1.5px solid rgba(255,255,255,.08)',
-                color:'#334155',fontFamily:'system-ui,sans-serif',
+                background:'none',border:`1.5px solid ${isDark?'rgba(255,255,255,.08)':'rgba(0,0,0,.12)'}`,
+                color:muted,fontFamily:'system-ui,sans-serif',
               }}
-                onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.color='#64748b';}}
-                onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.color='#334155';}}
+                onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.color=subText;}}
+                onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.color=muted;}}
               >
                 <RotateCcw size={13}/>
               </button>
@@ -995,7 +1055,7 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
           </div>
         </div>
 
-        {/* ════ RIGHT PANEL ════ */}
+        {/* ════ RIGHT PANEL ════ — sempre escuro (espaço sideral) */}
         <div className="rkt-right" style={{
           flex:1,display:'flex',flexDirection:'column',
           alignItems:'center',justifyContent:'center',
@@ -1003,7 +1063,7 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
         }}>
           {/* Right panel label */}
           <div style={{
-            fontFamily:"'Press Start 2P',monospace",fontSize:8,color:'#0f1a2e',
+            fontFamily:"'Press Start 2P',monospace",fontSize:8,color:'rgba(255,255,255,.12)',
             letterSpacing:'.2em',marginBottom:14,alignSelf:'flex-start',
           }}>
             VISUALIZAÇÃO
@@ -1045,7 +1105,7 @@ export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
               {color:'#00ffcc',label:'Estação (posição alvo)'},
               {color:ROCKET_COLORS[0],label:'Foguete (seu CSS)'},
             ].map(item=>(
-              <div key={item.label} style={{display:'flex',alignItems:'center',gap:7,fontSize:12,color:'#1e293b'}}>
+              <div key={item.label} style={{display:'flex',alignItems:'center',gap:7,fontSize:12,color:'rgba(255,255,255,.35)'}}>
                 <div style={{
                   width:11,height:11,borderRadius:'50%',
                   border:`2px solid ${item.color}`,background:`${item.color}22`,
