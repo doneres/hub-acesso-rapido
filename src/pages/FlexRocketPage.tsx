@@ -1,244 +1,267 @@
 import React, { useState, useMemo } from 'react';
-import {
-  ChevronLeft, RotateCcw, Lightbulb, CheckCircle2,
-  Trophy, Star, Lock, ChevronRight,
-} from 'lucide-react';
+import { ChevronLeft, RotateCcw, Lightbulb, CheckCircle2, Lock, Play, ChevronRight } from 'lucide-react';
 
-/* ═══════════════════════════════════════════════════════════
-   ANIMATIONS
-═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   ANIMATIONS + RESPONSIVE
+══════════════════════════════════════════════════════════════ */
 const ANIM = `
   @keyframes rktFloat {
-    0%,100% { transform: translateY(0px); }
-    50%      { transform: translateY(-7px); }
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
   }
   @keyframes rktTwinkle {
-    0%,100% { opacity: 0.25; }
-    50%      { opacity: 0.9; }
+    0%,100% { opacity: 0.18; }
+    50%      { opacity: 0.75; }
   }
   @keyframes rktWin {
-    0%   { opacity: 0; transform: scale(0.8) translateY(10px); }
-    60%  { transform: scale(1.06) translateY(-2px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
+    0%   { opacity:0; transform:scale(0.82); }
+    60%  { transform:scale(1.08); }
+    100% { opacity:1; transform:scale(1); }
   }
   @keyframes rktSlide {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
   }
   @keyframes rktPulse {
-    0%,100% { box-shadow: 0 0 8px #00ffcc88, 0 0 20px #00ffcc33; }
-    50%      { box-shadow: 0 0 18px #00ffcccc, 0 0 36px #00ffcc66; }
-  }
-  @keyframes rktDotPulse {
-    0%,100% { box-shadow: 0 0 0 0 rgba(0,255,204,0.5); }
-    50%      { box-shadow: 0 0 0 5px rgba(0,255,204,0); }
+    0%,100% { opacity:.45; }
+    50%     { opacity:1; }
   }
   @keyframes rktWrong {
-    0%,100% { transform: translateX(0); }
-    20%     { transform: translateX(-6px); }
-    40%     { transform: translateX(6px); }
-    60%     { transform: translateX(-4px); }
-    80%     { transform: translateX(4px); }
+    0%,100% { transform:translateX(0); }
+    20%     { transform:translateX(-8px); }
+    40%     { transform:translateX(8px); }
+    60%     { transform:translateX(-5px); }
+    80%     { transform:translateX(5px); }
   }
-  @keyframes rktScanline {
-    from { top: -2px; }
-    to   { top: 100%; }
+  @keyframes rktScan {
+    from { top:-2px; }
+    to   { top:100%; }
+  }
+  @keyframes rktDock {
+    0%   { transform:scale(1) rotate(0deg); }
+    40%  { transform:scale(1.2) rotate(-6deg); }
+    70%  { transform:scale(0.93) rotate(3deg); }
+    100% { transform:scale(1) rotate(0deg); }
+  }
+  @keyframes rktCardIn {
+    from { opacity:0; transform:translateY(12px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes rktRingPulse {
+    0%,100% { box-shadow:0 0 6px rgba(0,255,204,.35); }
+    50%     { box-shadow:0 0 18px rgba(0,255,204,.7), 0 0 32px rgba(0,255,204,.25); }
+  }
+
+  .rkt-code {
+    font-family: 'Fira Code','Cascadia Code','Consolas',monospace;
+    font-size: 14px;
+    line-height: 1.8;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    color: #7ee787;
+    width: 100%;
+    height: 100%;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    caret-color: #00ffcc;
+    min-height: 80px;
+  }
+  .rkt-code:disabled { opacity:.55; cursor:not-allowed; }
+
+  @media (max-width: 760px) {
+    .rkt-split { flex-direction: column !important; }
+    .rkt-left  { width:100%!important; max-height:58vh; border-right:none!important; border-bottom:1px solid rgba(0,255,204,.1); overflow-y:auto; }
+    .rkt-right { width:100%!important; min-height:240px; flex:0 0 240px!important; }
   }
 `;
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    TYPES
-═══════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════════ */
 interface Level {
-  id: number;
-  code: string;
-  title: string;
-  story: string;
-  task: string;
-  rockets: number;
-  prefill: string;
-  hasItemCss?: boolean;
-  itemPrefill?: string;
-  itemTarget?: number;
+  id: number; code: string; title: string;
+  story: string; task: string;
+  rockets: number; prefill: string;
+  hasItemCss?: boolean; itemPrefill?: string; itemTarget?: number;
   winContainer: Record<string, string>;
   winItem?: Record<string, string>;
   solutionContainer: React.CSSProperties;
   solutionItem?: React.CSSProperties;
-  hint: string;
-  narrow?: boolean;
+  hint: string; narrow?: boolean;
+  concepts: string[];
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    LEVELS
-═══════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════════ */
 const LEVELS: Level[] = [
   {
-    id: 1, code: 'MISSÃO-01', title: 'Órbita Leste',
-    story: 'Três foguetes perdidos precisam atracar nas estações do setor leste da galáxia.',
-    task: 'Mova os foguetes para o lado direito do container.',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: { 'justify-content': 'flex-end' },
-    solutionContainer: { justifyContent: 'flex-end' },
-    hint: 'justify-content: flex-end envia os itens para o final do eixo principal (direita no modo row).',
+    id:1, code:'MISSÃO-01', title:'Órbita Leste',
+    story:'Três foguetes perdidos precisam atracar nas estações do setor leste da galáxia.',
+    task:'Mova os foguetes para o lado direito do container.',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'justify-content':'flex-end'},
+    solutionContainer:{justifyContent:'flex-end'},
+    hint:'justify-content: flex-end envia os itens para o final do eixo principal (direita no modo row).',
+    concepts:['justify-content: flex-end'],
   },
   {
-    id: 2, code: 'MISSÃO-02', title: 'Estação Central',
-    story: 'A Estação Alfa fica no centro exato da órbita equatorial. Leve os foguetes até lá.',
-    task: 'Centralize os foguetes horizontalmente.',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: { 'justify-content': 'center' },
-    solutionContainer: { justifyContent: 'center' },
-    hint: 'justify-content: center centraliza os itens no eixo principal.',
+    id:2, code:'MISSÃO-02', title:'Estação Central',
+    story:'A Estação Alfa fica no centro exato da órbita equatorial.',
+    task:'Centralize os foguetes horizontalmente.',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'justify-content':'center'},
+    solutionContainer:{justifyContent:'center'},
+    hint:'justify-content: center centraliza os itens no eixo principal (horizontal no modo row).',
+    concepts:['justify-content: center'],
   },
   {
-    id: 3, code: 'MISSÃO-03', title: 'Patrulha de Fronteiras',
-    story: 'Três foguetes devem cobrir os dois extremos e o ponto central simultaneamente.',
-    task: 'Distribua os foguetes com espaço igual ENTRE eles.',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: { 'justify-content': 'space-between' },
-    solutionContainer: { justifyContent: 'space-between' },
-    hint: 'justify-content: space-between distribui do início ao fim, sem margem nas bordas.',
+    id:3, code:'MISSÃO-03', title:'Patrulha de Fronteiras',
+    story:'Três foguetes devem cobrir os dois extremos e o ponto central simultaneamente.',
+    task:'Distribua os foguetes com espaço igual ENTRE eles.',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'justify-content':'space-between'},
+    solutionContainer:{justifyContent:'space-between'},
+    hint:'justify-content: space-between distribui do início ao fim, sem margem nas bordas.',
+    concepts:['justify-content: space-between'],
   },
   {
-    id: 4, code: 'MISSÃO-04', title: 'Zonas de Patrulha',
-    story: 'Quatro foguetes precisam de zonas iguais de patrulha ao REDOR de cada nave.',
-    task: 'Adicione espaço igual ao redor de cada foguete.',
-    rockets: 4, prefill: 'display: flex;\n',
-    winContainer: { 'justify-content': 'space-around' },
-    solutionContainer: { justifyContent: 'space-around' },
-    hint: 'justify-content: space-around coloca metade do espaço nas bordas e espaço cheio entre itens.',
+    id:4, code:'MISSÃO-04', title:'Zonas de Patrulha',
+    story:'Quatro foguetes precisam de zonas iguais de patrulha ao REDOR de cada nave.',
+    task:'Adicione espaço igual ao redor de cada foguete.',
+    rockets:4, prefill:'display: flex;\n',
+    winContainer:{'justify-content':'space-around'},
+    solutionContainer:{justifyContent:'space-around'},
+    hint:'justify-content: space-around coloca metade do espaço nas bordas e espaço cheio entre itens.',
+    concepts:['justify-content: space-around'],
   },
   {
-    id: 5, code: 'MISSÃO-05', title: 'Plataforma Sul',
-    story: 'Uma chuva de meteoros força os foguetes a pousar na plataforma sul da estação.',
-    task: 'Mova os foguetes para o final do eixo cruzado (baixo).',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: { 'align-items': 'flex-end' },
-    solutionContainer: { alignItems: 'flex-end' },
-    hint: 'align-items controla o eixo perpendicular ao flex-direction. flex-end = baixo no modo row.',
+    id:5, code:'MISSÃO-05', title:'Plataforma Sul',
+    story:'Uma chuva de meteoros força os foguetes a pousar na plataforma sul da estação.',
+    task:'Mova os foguetes para o final do eixo cruzado (baixo).',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'align-items':'flex-end'},
+    solutionContainer:{alignItems:'flex-end'},
+    hint:'align-items controla o eixo perpendicular ao principal. flex-end = baixo no modo row.',
+    concepts:['align-items: flex-end'],
   },
   {
-    id: 6, code: 'MISSÃO-06', title: 'Altitude de Cruzeiro',
-    story: 'Regulamento orbital: todas as naves devem voar no corredor central de altitude.',
-    task: 'Centralize os foguetes verticalmente.',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: { 'align-items': 'center' },
-    solutionContainer: { alignItems: 'center' },
-    hint: 'align-items: center centraliza os itens verticalmente (eixo cruzado no modo row).',
+    id:6, code:'MISSÃO-06', title:'Altitude de Cruzeiro',
+    story:'Regulamento orbital: todas as naves devem voar no corredor central de altitude.',
+    task:'Centralize os foguetes verticalmente.',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'align-items':'center'},
+    solutionContainer:{alignItems:'center'},
+    hint:'align-items: center centraliza os itens no eixo cruzado (vertical no modo row).',
+    concepts:['align-items: center'],
   },
   {
-    id: 7, code: 'MISSÃO-07', title: 'Esquina Nordeste',
-    story: 'A estação de reabastecimento fica no canto direito superior. Precisão máxima.',
-    task: 'Mova os foguetes para o canto direito e para cima.',
-    rockets: 2, prefill: 'display: flex;\n',
-    winContainer: { 'justify-content': 'flex-end', 'align-items': 'flex-start' },
-    solutionContainer: { justifyContent: 'flex-end', alignItems: 'flex-start' },
-    hint: 'Você precisa de duas propriedades: justify-content para horizontal e align-items para vertical.',
+    id:7, code:'MISSÃO-07', title:'Esquina Nordeste',
+    story:'A estação de reabastecimento fica no canto direito superior. Precisão máxima.',
+    task:'Mova os foguetes para o canto direito e para cima.',
+    rockets:2, prefill:'display: flex;\n',
+    winContainer:{'justify-content':'flex-end','align-items':'flex-start'},
+    solutionContainer:{justifyContent:'flex-end',alignItems:'flex-start'},
+    hint:'Combine justify-content: flex-end (direita) com align-items: flex-start (topo).',
+    concepts:['justify-content','align-items'],
   },
   {
-    id: 8, code: 'MISSÃO-08', title: 'Aproximação Invertida',
-    story: 'Protocolo de emergência: as naves devem se aproximar no sentido inverso ao normal.',
-    task: 'Inverta a ordem horizontal dos foguetes.',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: { 'flex-direction': 'row-reverse' },
-    solutionContainer: { flexDirection: 'row-reverse' },
-    hint: 'flex-direction: row-reverse inverte a ordem — o último item fica na posição 1.',
+    id:8, code:'MISSÃO-08', title:'Aproximação Invertida',
+    story:'Protocolo de emergência: as naves devem se aproximar no sentido inverso ao normal.',
+    task:'Inverta a ordem horizontal dos foguetes.',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'flex-direction':'row-reverse'},
+    solutionContainer:{flexDirection:'row-reverse'},
+    hint:'flex-direction: row-reverse inverte a ordem — o último item fica na posição 1.',
+    concepts:['flex-direction: row-reverse'],
   },
   {
-    id: 9, code: 'MISSÃO-09', title: 'Torre de Lançamento',
-    story: 'A nova plataforma só comporta foguetes empilhados verticalmente em coluna.',
-    task: 'Empilhe os foguetes em coluna de cima para baixo.',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: { 'flex-direction': 'column' },
-    solutionContainer: { flexDirection: 'column' },
-    hint: 'flex-direction: column muda o eixo principal para vertical.',
+    id:9, code:'MISSÃO-09', title:'Torre de Lançamento',
+    story:'A nova plataforma só comporta foguetes empilhados verticalmente em coluna.',
+    task:'Empilhe os foguetes em coluna de cima para baixo.',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'flex-direction':'column'},
+    solutionContainer:{flexDirection:'column'},
+    hint:'flex-direction: column muda o eixo principal para vertical.',
+    concepts:['flex-direction: column'],
   },
   {
-    id: 10, code: 'MISSÃO-10', title: 'Coluna Invertida',
-    story: 'Sistema de emergência: sequência de lançamento invertida — de baixo para cima.',
-    task: 'Empilhe os foguetes em coluna na ordem reversa.',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: { 'flex-direction': 'column-reverse' },
-    solutionContainer: { flexDirection: 'column-reverse' },
-    hint: 'flex-direction: column-reverse empilha verticalmente, mas o item 1 fica embaixo.',
+    id:10, code:'MISSÃO-10', title:'Coluna Invertida',
+    story:'Sistema de emergência: sequência de lançamento invertida — de baixo para cima.',
+    task:'Empilhe os foguetes em coluna na ordem reversa.',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'flex-direction':'column-reverse'},
+    solutionContainer:{flexDirection:'column-reverse'},
+    hint:'flex-direction: column-reverse empilha verticalmente, mas o item 1 fica embaixo.',
+    concepts:['flex-direction: column-reverse'],
   },
   {
-    id: 11, code: 'MISSÃO-11', title: 'Ponto de Encontro',
-    story: 'A Estação Ômega fica no centro absoluto da órbita. Precisão de nanômetros.',
-    task: 'Centralize os foguetes horizontal E verticalmente ao mesmo tempo.',
-    rockets: 2, prefill: 'display: flex;\n',
-    winContainer: { 'justify-content': 'center', 'align-items': 'center' },
-    solutionContainer: { justifyContent: 'center', alignItems: 'center' },
-    hint: 'Use justify-content: center E align-items: center juntos.',
+    id:11, code:'MISSÃO-11', title:'Ponto de Encontro',
+    story:'A Estação Ômega fica no centro absoluto da órbita. Precisão de nanômetros.',
+    task:'Centralize os foguetes horizontal E verticalmente ao mesmo tempo.',
+    rockets:2, prefill:'display: flex;\n',
+    winContainer:{'justify-content':'center','align-items':'center'},
+    solutionContainer:{justifyContent:'center',alignItems:'center'},
+    hint:'Use justify-content: center E align-items: center juntos para centralizar em ambos os eixos.',
+    concepts:['justify-content: center','align-items: center'],
   },
   {
-    id: 12, code: 'MISSÃO-12', title: 'Coluna Central',
-    story: 'Formação especial da frota: coluna central alinhada ao eixo da galáxia.',
-    task: 'Empilhe em coluna e centralize horizontalmente.',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: { 'flex-direction': 'column', 'align-items': 'center' },
-    solutionContainer: { flexDirection: 'column', alignItems: 'center' },
-    hint: 'No modo column, align-items age no eixo horizontal. Use flex-direction + align-items.',
+    id:12, code:'MISSÃO-12', title:'Coluna Central',
+    story:'Formação especial da frota: coluna central alinhada ao eixo da galáxia.',
+    task:'Empilhe em coluna e centralize horizontalmente.',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'flex-direction':'column','align-items':'center'},
+    solutionContainer:{flexDirection:'column',alignItems:'center'},
+    hint:'No modo column, align-items age no eixo horizontal. Use flex-direction + align-items.',
+    concepts:['flex-direction: column','align-items: center'],
   },
   {
-    id: 13, code: 'MISSÃO-13', title: 'O Rebelde',
-    story: 'O terceiro foguete recebeu ordens especiais — sua posição é diferente dos demais.',
-    task: 'Use align-self no terceiro foguete para posicioná-lo embaixo.',
-    rockets: 3, prefill: 'display: flex;\nalign-items: center;\n',
-    hasItemCss: true, itemPrefill: '/* Foguete 3 */\n', itemTarget: 2,
-    winContainer: {},
-    winItem: { 'align-self': 'flex-end' },
-    solutionContainer: { alignItems: 'center' },
-    solutionItem: { alignSelf: 'flex-end' },
-    hint: 'align-self sobrescreve o align-items do container para um item específico. Use flex-end.',
+    id:13, code:'MISSÃO-13', title:'O Rebelde',
+    story:'O terceiro foguete recebeu ordens especiais — sua posição é diferente dos demais.',
+    task:'Use align-self no terceiro foguete para posicioná-lo embaixo.',
+    rockets:3, prefill:'display: flex;\nalign-items: center;\n',
+    hasItemCss:true, itemPrefill:'/* Foguete 3 */\n', itemTarget:2,
+    winContainer:{},
+    winItem:{'align-self':'flex-end'},
+    solutionContainer:{alignItems:'center'},
+    solutionItem:{alignSelf:'flex-end'},
+    hint:'align-self sobrescreve o align-items do container para um item específico. Use flex-end.',
+    concepts:['align-self: flex-end'],
   },
   {
-    id: 14, code: 'MISSÃO-14', title: 'Frota Expandida',
-    story: 'Seis novos foguetes chegaram! A órbita estreita não suporta todos na mesma linha.',
-    task: 'Faça os foguetes quebrarem para a próxima linha automaticamente.',
-    rockets: 6, prefill: 'display: flex;\n', narrow: true,
-    winContainer: { 'flex-wrap': 'wrap' },
-    solutionContainer: { flexWrap: 'wrap' },
-    hint: 'flex-wrap: wrap permite que itens quebrem para a próxima linha quando não há espaço.',
+    id:14, code:'MISSÃO-14', title:'Frota Expandida',
+    story:'Seis novos foguetes chegaram! A órbita estreita não suporta todos na mesma linha.',
+    task:'Faça os foguetes quebrarem para a próxima linha automaticamente.',
+    rockets:6, prefill:'display: flex;\n', narrow:true,
+    winContainer:{'flex-wrap':'wrap'},
+    solutionContainer:{flexWrap:'wrap'},
+    hint:'flex-wrap: wrap permite que itens quebrem para a próxima linha quando não há espaço.',
+    concepts:['flex-wrap: wrap'],
   },
   {
-    id: 15, code: 'MISSÃO-FINAL', title: 'Alfa Centauri',
-    story: 'Missão final! Formação de elite: coluna, distribuição vertical uniforme, centrada.',
-    task: 'flex-direction: column + justify-content: space-between + align-items: center.',
-    rockets: 3, prefill: 'display: flex;\n',
-    winContainer: {
-      'flex-direction': 'column',
-      'justify-content': 'space-between',
-      'align-items': 'center',
-    },
-    solutionContainer: { flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' },
-    hint: 'Três propriedades! No modo column, justify-content age no eixo vertical.',
+    id:15, code:'MISSÃO-FINAL', title:'Alfa Centauri',
+    story:'Missão final da frota! Formação de elite: coluna, distribuição uniforme e centrada.',
+    task:'Combine flex-direction: column, justify-content: space-between e align-items: center.',
+    rockets:3, prefill:'display: flex;\n',
+    winContainer:{'flex-direction':'column','justify-content':'space-between','align-items':'center'},
+    solutionContainer:{flexDirection:'column',justifyContent:'space-between',alignItems:'center'},
+    hint:'Três propriedades! No modo column, justify-content age no eixo vertical. Combine tudo.',
+    concepts:['flex-direction: column','justify-content: space-between','align-items: center'],
   },
 ];
 
-/* ═══════════════════════════════════════════════════════════
-   CSS PARSER — safe, whitelist-only
-═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   CSS PARSER
+══════════════════════════════════════════════════════════════ */
 const FLEX_MAP: Record<string, keyof React.CSSProperties> = {
-  'display':            'display',
-  'flex-direction':     'flexDirection',
-  'flex-wrap':          'flexWrap',
-  'flex-flow':          'flexFlow',
-  'justify-content':    'justifyContent',
-  'align-items':        'alignItems',
-  'align-content':      'alignContent',
-  'align-self':         'alignSelf',
-  'flex':               'flex',
-  'flex-grow':          'flexGrow',
-  'flex-shrink':        'flexShrink',
-  'flex-basis':         'flexBasis',
-  'order':              'order',
-  'gap':                'gap',
-  'row-gap':            'rowGap',
-  'column-gap':         'columnGap',
-  'place-items':        'placeItems',
-  'place-content':      'placeContent',
-  'justify-self':       'justifySelf',
+  'display':'display','flex-direction':'flexDirection','flex-wrap':'flexWrap',
+  'flex-flow':'flexFlow','justify-content':'justifyContent','align-items':'alignItems',
+  'align-content':'alignContent','align-self':'alignSelf','flex':'flex',
+  'flex-grow':'flexGrow','flex-shrink':'flexShrink','flex-basis':'flexBasis',
+  'order':'order','gap':'gap','row-gap':'rowGap','column-gap':'columnGap',
+  'place-items':'placeItems','place-content':'placeContent','justify-self':'justifySelf',
 };
 
 function parseCssText(text: string): React.CSSProperties {
@@ -257,7 +280,7 @@ function parseCssText(text: string): React.CSSProperties {
 function checkWin(containerText: string, itemText: string, level: Level): boolean {
   const cp = parseCssText(containerText);
   for (const [prop, expected] of Object.entries(level.winContainer)) {
-    const camel = FLEX_MAP[prop] as string;
+    const camel  = FLEX_MAP[prop] as string;
     if (!camel) return false;
     const actual = ((cp as Record<string, string>)[camel] ?? '').trim().toLowerCase();
     const valid  = expected.split('|').map(v => v.trim().toLowerCase());
@@ -266,7 +289,7 @@ function checkWin(containerText: string, itemText: string, level: Level): boolea
   if (level.winItem) {
     const ip = parseCssText(itemText);
     for (const [prop, expected] of Object.entries(level.winItem)) {
-      const camel = FLEX_MAP[prop] as string;
+      const camel  = FLEX_MAP[prop] as string;
       if (!camel) return false;
       const actual = ((ip as Record<string, string>)[camel] ?? '').trim().toLowerCase();
       const valid  = expected.split('|').map(v => v.trim().toLowerCase());
@@ -276,528 +299,761 @@ function checkWin(containerText: string, itemText: string, level: Level): boolea
   return true;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STATIC STARS
-═══════════════════════════════════════════════════════════ */
-const STARS = Array.from({ length: 28 }, (_, i) => ({
-  id: i,
-  left: `${(i * 17 + 3) % 97 + 1}%`,
-  top:  `${(i * 13 + 7) % 93 + 1}%`,
-  size: (i % 3) + 1,
-  dur:  2.5 + (i % 4),
-  del:  -(i * 0.7) % 4,
+/* ══════════════════════════════════════════════════════════════
+   SVG ROCKET
+══════════════════════════════════════════════════════════════ */
+const ROCKET_COLORS = ['#00ffcc','#a78bfa','#f87171','#fbbf24','#60a5fa','#fb923c'];
+
+function RocketSVG({ idx, size, glow }: { idx: number; size: number; glow: boolean }) {
+  const c = ROCKET_COLORS[idx % ROCKET_COLORS.length];
+  return (
+    <svg width={size} height={Math.round(size * 1.3)} viewBox="0 0 36 46" fill="none"
+      style={{
+        display: 'block', flexShrink: 0,
+        filter: glow ? `drop-shadow(0 0 8px ${c})` : 'none',
+        transition: 'filter .4s',
+        animation: glow ? `rktDock .5s ease both` : `rktFloat ${2 + idx * 0.4}s ease-in-out ${idx * 0.3}s infinite`,
+      }}>
+      <path d="M18 2 C13 7 11 16 11 24 L18 29 L25 24 C25 16 23 7 18 2Z" fill={c} opacity="0.9"/>
+      <path d="M11 24 L4 32 L11 28Z" fill={c} opacity="0.6"/>
+      <path d="M25 24 L32 32 L25 28Z" fill={c} opacity="0.6"/>
+      <circle cx="18" cy="15" r="4.5" fill="rgba(200,240,255,0.12)" stroke="rgba(200,240,255,0.55)" strokeWidth="1.2"/>
+      <circle cx="18" cy="15" r="2.2" fill="rgba(200,240,255,0.3)"/>
+      <ellipse cx="18" cy="30" rx="4" ry="2.2" fill="rgba(251,191,36,0.2)"/>
+      <ellipse cx="18" cy="34" rx="2.8" ry="2" fill="rgba(251,191,36,0.38)"/>
+      <ellipse cx="18" cy="38" rx="1.8" ry="1.5" fill="rgba(251,191,36,0.5)"/>
+      <ellipse cx="18" cy="42" rx="1" ry="1" fill="rgba(251,191,36,0.28)"/>
+    </svg>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SVG STATION
+══════════════════════════════════════════════════════════════ */
+function StationSVG({ size, won }: { size: number; won: boolean }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 50 50" fill="none"
+      style={{
+        display: 'block', flexShrink: 0,
+        filter: won
+          ? 'drop-shadow(0 0 12px #00ffcc)'
+          : 'drop-shadow(0 0 4px rgba(0,255,204,.4))',
+        transition: 'filter .4s',
+        animation: won ? 'none' : 'rktPulse 2.5s ease-in-out infinite',
+      }}>
+      <circle cx="25" cy="25" r="21" stroke="#00ffcc" strokeWidth="1.5" strokeDasharray="5 3" opacity={won ? 0.9 : 0.45}/>
+      <circle cx="25" cy="25" r="13" stroke="#00ffcc" strokeWidth="1.5" opacity={won ? 0.9 : 0.35}/>
+      <circle cx="25" cy="25" r="6" stroke="#00ffcc" strokeWidth="1.5" opacity={won ? 1 : 0.55}/>
+      <circle cx="25" cy="25" r="2.5" fill="#00ffcc" opacity={won ? 1 : 0.4}/>
+      <line x1="2" y1="25" x2="48" y2="25" stroke="#00ffcc" strokeWidth="0.6" opacity="0.2"/>
+      <line x1="25" y1="2" x2="25" y2="48" stroke="#00ffcc" strokeWidth="0.6" opacity="0.2"/>
+    </svg>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STAR FIELD
+══════════════════════════════════════════════════════════════ */
+const STARS = Array.from({ length: 26 }, (_, i) => ({
+  id: i, left: `${(i * 17 + 3) % 97 + 1}%`, top: `${(i * 13 + 7) % 93 + 1}%`,
+  size: (i % 3) + 1, dur: 2.5 + (i % 4), del: -(i * 0.7) % 4,
 }));
 
-function StarField() {
-  return (
-    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-      {STARS.map(s => (
-        <div key={s.id} style={{
-          position: 'absolute',
-          left: s.left, top: s.top,
-          width: s.size, height: s.size,
-          borderRadius: '50%',
-          background: '#fff',
-          animation: `rktTwinkle ${s.dur}s ease-in-out ${s.del}s infinite`,
-        }} />
-      ))}
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════
-   STATION RING
-═══════════════════════════════════════════════════════════ */
-function StationRing({ size }: { size: number }) {
-  return (
-    <div style={{
-      width: size, height: size, flexShrink: 0,
-      borderRadius: '50%',
-      border: '2.5px solid rgba(0,255,204,0.65)',
-      background: 'rgba(0,255,204,0.05)',
-      animation: 'rktPulse 2.2s ease-in-out infinite',
-    }} />
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════
-   ROCKET
-═══════════════════════════════════════════════════════════ */
-function Rocket({ idx, size, extraStyle, won }: {
-  idx: number; size: number;
-  extraStyle: React.CSSProperties; won: boolean;
-}) {
-  return (
-    <div style={{
-      width: size, height: size, flexShrink: 0,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: size * 0.52,
-      animation: won
-        ? `rktDock .4s ease ${idx * 0.1}s both`
-        : `rktFloat ${2.2 + idx * 0.4}s ease-in-out ${idx * 0.3}s infinite`,
-      filter: won ? 'drop-shadow(0 0 6px #00ffcc)' : 'none',
-      transition: 'filter .3s',
-      ...extraStyle,
-    }}>
-      🚀
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════
-   GAME ARENA
-═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   GAME ARENA (right panel)
+══════════════════════════════════════════════════════════════ */
 function GameArena({ level, containerStyle, itemStyle, won, wrong }: {
-  level: Level;
-  containerStyle: React.CSSProperties;
-  itemStyle: React.CSSProperties;
-  won: boolean;
-  wrong: boolean;
+  level: Level; containerStyle: React.CSSProperties;
+  itemStyle: React.CSSProperties; won: boolean; wrong: boolean;
 }) {
-  const sz    = level.narrow ? 44 : 52;
-  const w     = level.narrow ? 300 : '100%';
-  const h     = 230;
-  const pad   = 12;
+  const n     = level.rockets;
+  const sz    = n >= 6 ? 40 : n >= 4 ? 46 : 52;
+  const stnSz = Math.round(sz * 1.18);
+  const gap   = 8;
+  const maxW  = level.narrow ? 280 : '100%';
+
+  const borderColor = won
+    ? 'rgba(0,255,204,.6)'
+    : wrong
+    ? 'rgba(239,68,68,.45)'
+    : 'rgba(0,255,204,.12)';
 
   return (
     <div style={{
-      position: 'relative', width: w, height: h,
-      margin: '0 auto',
-      background: 'linear-gradient(160deg, #030810 0%, #060a14 60%, #080c18 100%)',
-      border: `1.5px solid ${won ? 'rgba(0,255,204,0.5)' : wrong ? 'rgba(239,68,68,0.4)' : 'rgba(0,255,204,0.15)'}`,
+      position: 'relative', width: maxW, maxWidth: '100%',
+      height: '100%', minHeight: 200,
+      background: 'linear-gradient(160deg,#030810 0%,#060a14 60%,#080c18 100%)',
+      border: `1.5px solid ${borderColor}`,
       borderRadius: 10, overflow: 'hidden',
-      boxShadow: won ? '0 0 24px rgba(0,255,204,0.25)' : 'none',
-      transition: 'border-color .3s, box-shadow .3s',
-      animation: wrong ? 'rktWrong .4s ease' : 'none',
+      boxShadow: won ? '0 0 28px rgba(0,255,204,.2)' : 'none',
+      transition: 'border-color .3s,box-shadow .3s',
+      animation: wrong ? 'rktWrong .45s ease' : 'none',
     }}>
       {/* Scanline */}
       <div style={{
-        position: 'absolute', left: 0, right: 0, height: 1, zIndex: 4, pointerEvents: 'none',
-        background: 'linear-gradient(90deg, transparent, rgba(0,255,204,0.12), transparent)',
-        animation: 'rktScanline 5s linear infinite',
-      }} />
+        position:'absolute',left:0,right:0,height:1,zIndex:4,pointerEvents:'none',
+        background:'linear-gradient(90deg,transparent,rgba(0,255,204,.1),transparent)',
+        animation:'rktScan 5s linear infinite',
+      }}/>
 
-      <StarField />
-
-      {/* Station rings — solution CSS */}
-      <div style={{
-        position: 'absolute', inset: 0, display: 'flex',
-        padding: pad, boxSizing: 'border-box', gap: 8,
-        ...level.solutionContainer,
-      }}>
-        {Array.from({ length: level.rockets }, (_, i) => (
-          <StationRing key={i} size={sz} />
+      {/* Stars */}
+      <div style={{position:'absolute',inset:0,pointerEvents:'none'}}>
+        {STARS.map(s => (
+          <div key={s.id} style={{
+            position:'absolute',left:s.left,top:s.top,
+            width:s.size,height:s.size,borderRadius:'50%',background:'#fff',
+            animation:`rktTwinkle ${s.dur}s ease-in-out ${s.del}s infinite`,
+          }}/>
         ))}
       </div>
 
-      {/* Rockets — player CSS */}
+      {/* Stations layer — solution CSS */}
       <div style={{
-        position: 'absolute', inset: 0, display: 'flex',
-        padding: pad, boxSizing: 'border-box', gap: 8,
+        position:'absolute',inset:0,display:'flex',
+        padding:12,boxSizing:'border-box',gap,
+        ...level.solutionContainer,
+      }}>
+        {Array.from({length:n},(_,i)=>(
+          <div key={i} style={{flexShrink:0,width:stnSz,height:stnSz,display:'flex',alignItems:'center',justifyContent:'center',
+            ...( level.solutionItem && i === level.itemTarget ? level.solutionItem : {} )}}>
+            <StationSVG size={stnSz} won={won}/>
+          </div>
+        ))}
+      </div>
+
+      {/* Rockets layer — player CSS */}
+      <div style={{
+        position:'absolute',inset:0,display:'flex',
+        padding:12,boxSizing:'border-box',gap,
         ...containerStyle,
       }}>
-        {Array.from({ length: level.rockets }, (_, i) => (
-          <Rocket
-            key={i}
-            idx={i}
-            size={sz}
-            extraStyle={level.hasItemCss && i === level.itemTarget ? itemStyle : {}}
-            won={won}
-          />
+        {Array.from({length:n},(_,i)=>(
+          <div key={i} style={{flexShrink:0,
+            ...( level.hasItemCss && i === level.itemTarget ? itemStyle : {} )}}>
+            <RocketSVG idx={i} size={sz} glow={won}/>
+          </div>
         ))}
       </div>
 
       {/* Win overlay */}
       {won && (
         <div style={{
-          position: 'absolute', inset: 0, zIndex: 5,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(0,255,204,0.08)', backdropFilter: 'blur(2px)',
-          animation: 'rktWin .45s ease both',
+          position:'absolute',inset:0,zIndex:5,
+          display:'flex',alignItems:'center',justifyContent:'center',
+          background:'rgba(0,255,204,.07)',backdropFilter:'blur(2px)',
+          animation:'rktWin .4s ease both',
         }}>
           <div style={{
-            fontFamily: "'Press Start 2P', monospace", fontSize: 16,
-            color: '#00ffcc', textShadow: '0 0 24px #00ffcc, 0 0 48px #00ffcc44',
-            letterSpacing: '0.06em',
-          }}>
-            ANCORADO!
-          </div>
+            fontFamily:"'Press Start 2P',monospace",fontSize:18,
+            color:'#00ffcc',textShadow:'0 0 28px #00ffcc,0 0 56px rgba(0,255,204,.4)',
+            letterSpacing:'.06em',
+          }}>ANCORADO!</div>
         </div>
       )}
+
+      {/* Label */}
+      <div style={{
+        position:'absolute',top:10,left:12,
+        fontFamily:"'Press Start 2P',monospace",fontSize:7,
+        color:'rgba(0,255,204,.3)',letterSpacing:'.15em',pointerEvents:'none',
+      }}>SIMULADOR ORBITAL</div>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
+   LEVEL SELECT SCREEN
+══════════════════════════════════════════════════════════════ */
+function LevelSelect({ completed, onSelect, onBack }: {
+  completed: Set<number>;
+  onSelect: (idx: number) => void;
+  onBack: () => void;
+}) {
+  const firstLocked = LEVELS.findIndex(l => !completed.has(l.id));
+  const nextIdx     = firstLocked === -1 ? LEVELS.length - 1 : firstLocked;
+
+  return (
+    <div style={{
+      minHeight:'100vh',background:'#060a14',
+      backgroundImage:'linear-gradient(rgba(0,255,204,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,.03) 1px,transparent 1px)',
+      backgroundSize:'44px 44px',
+      fontFamily:'system-ui,-apple-system,sans-serif',color:'#e2e8f0',
+    }}>
+      <style>{ANIM}</style>
+
+      {/* Header */}
+      <div style={{
+        display:'flex',alignItems:'center',justifyContent:'space-between',
+        padding:'18px 24px',borderBottom:'1px solid rgba(0,255,204,.1)',
+        flexWrap:'wrap',gap:12,
+      }}>
+        <button onClick={onBack} style={{
+          display:'flex',alignItems:'center',gap:8,
+          background:'none',border:'1.5px solid rgba(0,255,204,.22)',
+          color:'#64748b',cursor:'pointer',padding:'8px 16px',
+          fontFamily:"'Press Start 2P',monospace",fontSize:9,borderRadius:4,
+          transition:'all .15s',
+        }}
+          onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.color='#00ffcc';(e.currentTarget as HTMLElement).style.borderColor='rgba(0,255,204,.5)';}}
+          onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.color='#64748b';(e.currentTarget as HTMLElement).style.borderColor='rgba(0,255,204,.22)';}}
+        >
+          <ChevronLeft size={14}/> ARENA
+        </button>
+
+        <div style={{textAlign:'center'}}>
+          <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:7,color:'#334155',letterSpacing:'.2em',marginBottom:6}}>
+            CSS FLEXBOX
+          </div>
+          <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:13,color:'#00ffcc',
+            textShadow:'0 0 18px rgba(0,255,204,.5)',letterSpacing:'.05em'}}>
+            FOGUETES NA ÓRBITA
+          </div>
+        </div>
+
+        <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:9,color:'#334155',textAlign:'right'}}>
+          <div>{completed.size}/{LEVELS.length}</div>
+          <div style={{fontSize:7,marginTop:4,color:'#1e293b'}}>COMPLETOS</div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:960,margin:'0 auto',padding:'32px 20px 60px'}}>
+
+        {/* Progress bar */}
+        <div style={{marginBottom:40}}>
+          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:10}}>
+            <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:9,color:'#475569'}}>
+              PROGRESSO DA FROTA
+            </span>
+            <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:11,color:'#00ffcc'}}>
+              {Math.round(completed.size/LEVELS.length*100)}%
+            </span>
+          </div>
+          <div style={{height:8,background:'rgba(255,255,255,.06)',borderRadius:4,overflow:'hidden'}}>
+            <div style={{
+              height:'100%',borderRadius:4,
+              width:`${completed.size/LEVELS.length*100}%`,
+              background:'linear-gradient(90deg,#00ffcc,#00ccaa)',
+              boxShadow:'0 0 10px rgba(0,255,204,.5)',
+              transition:'width .4s ease',
+            }}/>
+          </div>
+        </div>
+
+        {/* Level grid */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(170px,1fr))',gap:16}}>
+          {LEVELS.map((lvl, i) => {
+            const isDone     = completed.has(lvl.id);
+            const isUnlocked = i === 0 || completed.has(LEVELS[i - 1].id);
+            const isCurrent  = i === nextIdx && !isDone;
+
+            return (
+              <button
+                key={lvl.id}
+                disabled={!isUnlocked}
+                onClick={() => onSelect(i)}
+                style={{
+                  background: isDone
+                    ? 'rgba(0,255,204,.07)'
+                    : isCurrent
+                    ? 'rgba(0,255,204,.05)'
+                    : isUnlocked
+                    ? 'rgba(255,255,255,.03)'
+                    : 'rgba(255,255,255,.015)',
+                  border: `2px solid ${isDone ? 'rgba(0,255,204,.45)' : isCurrent ? 'rgba(0,255,204,.35)' : isUnlocked ? 'rgba(255,255,255,.1)' : 'rgba(255,255,255,.04)'}`,
+                  borderRadius:10,padding:'18px 14px',
+                  cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                  textAlign:'left',position:'relative',
+                  opacity: isUnlocked ? 1 : 0.42,
+                  transition:'all .2s',
+                  animation:`rktCardIn .35s ease ${i * .04}s both`,
+                }}
+                onMouseEnter={e => { if (isUnlocked) (e.currentTarget as HTMLElement).style.transform='translateY(-4px)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform='none'; }}
+              >
+                {/* Status icon */}
+                <div style={{position:'absolute',top:12,right:12}}>
+                  {isDone
+                    ? <CheckCircle2 size={16} color="#00ffcc"/>
+                    : isUnlocked
+                    ? <Play size={14} color={isCurrent ? '#00ffcc' : '#334155'}/>
+                    : <Lock size={13} color="#1e293b"/>
+                  }
+                </div>
+
+                {/* Number */}
+                <div style={{
+                  fontFamily:"'Press Start 2P',monospace",
+                  fontSize: lvl.id === 15 ? 8 : 18,
+                  color: isDone ? '#00ffcc' : isCurrent ? '#00ffcc' : isUnlocked ? '#475569' : '#1e293b',
+                  marginBottom:10,lineHeight:1,
+                }}>
+                  {lvl.id === 15 ? 'FINAL' : String(lvl.id).padStart(2,'0')}
+                </div>
+
+                {/* Title */}
+                <div style={{
+                  fontSize:13,fontWeight:700,
+                  color: isDone ? '#94a3b8' : isCurrent ? '#e2e8f0' : isUnlocked ? '#64748b' : '#1e293b',
+                  marginBottom:10,lineHeight:1.4,
+                }}>
+                  {lvl.title}
+                </div>
+
+                {/* Concepts */}
+                <div style={{display:'flex',flexWrap:'wrap',gap:4}}>
+                  {lvl.concepts.slice(0,2).map(c=>(
+                    <span key={c} style={{
+                      fontSize:10,padding:'2px 6px',borderRadius:3,
+                      background: isDone ? 'rgba(0,255,204,.12)' : 'rgba(255,255,255,.05)',
+                      color: isDone ? '#00ffcc' : '#334155',
+                      border:`1px solid ${isDone ? 'rgba(0,255,204,.2)' : 'rgba(255,255,255,.06)'}`,
+                    }}>{c.split(':')[0]}</span>
+                  ))}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* All done banner */}
+        {completed.size === LEVELS.length && (
+          <div style={{
+            marginTop:48,padding:'28px 32px',
+            background:'rgba(0,255,204,.05)',border:'2px solid rgba(0,255,204,.3)',
+            borderRadius:12,textAlign:'center',
+            animation:'rktSlide .5s ease both',
+          }}>
+            <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:14,color:'#00ffcc',
+              textShadow:'0 0 24px #00ffcc',marginBottom:12}}>
+              FROTA COMPLETA!
+            </div>
+            <p style={{fontSize:15,color:'#475569',margin:0}}>
+              Você dominou todas as propriedades do CSS Flexbox. A galáxia está nas suas mãos!
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    MAIN PAGE
-═══════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════════ */
 export default function FlexRocketPage({ onBack }: { onBack: () => void }) {
-  const [levelIdx, setLevelIdx]         = useState(0);
-  const [css, setCss]                   = useState(LEVELS[0].prefill);
-  const [itemCss, setItemCss]           = useState(LEVELS[0].itemPrefill ?? '');
-  const [won, setWon]                   = useState(false);
-  const [wrong, setWrong]               = useState(false);
-  const [showHint, setShowHint]         = useState(false);
-  const [checked, setChecked]           = useState(false);
-  const [allDone, setAllDone]           = useState(false);
-  const [completed, setCompleted]       = useState<Set<number>>(new Set());
+  /* — persistence — */
+  const [completed, setCompleted] = useState<Set<number>>(() => {
+    try {
+      const s = localStorage.getItem('flexrocket-v1');
+      if (s) return new Set(JSON.parse(s) as number[]);
+    } catch {}
+    return new Set<number>();
+  });
+
+  const markCompleted = (id: number) => {
+    setCompleted(prev => {
+      const next = new Set([...prev, id]);
+      try { localStorage.setItem('flexrocket-v1', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  };
+
+  /* — navigation — */
+  const [screen,   setScreen]   = useState<'select'|'game'>('select');
+  const [levelIdx, setLevelIdx] = useState(0);
+
+  /* — editor state — */
+  const [css,      setCss]      = useState(LEVELS[0].prefill);
+  const [itemCss,  setItemCss]  = useState(LEVELS[0].itemPrefill ?? '');
+  const [won,      setWon]      = useState(false);
+  const [wrong,    setWrong]    = useState(false);
+  const [showHint, setShowHint] = useState(false);
+  const [checked,  setChecked]  = useState(false);
 
   const level          = LEVELS[levelIdx];
   const containerStyle = useMemo(() => parseCssText(css), [css]);
   const itemStyle      = useMemo(() => parseCssText(itemCss), [itemCss]);
-
-  const handleCheck = () => {
-    const isWin = checkWin(css, itemCss, level);
-    setChecked(true);
-    if (isWin) {
-      setWon(true);
-      setWrong(false);
-      setCompleted(prev => new Set([...prev, level.id]));
-      if (levelIdx === LEVELS.length - 1) setAllDone(true);
-    } else {
-      setWrong(true);
-      setTimeout(() => setWrong(false), 500);
-    }
-  };
 
   const goToLevel = (idx: number) => {
     setLevelIdx(idx);
     setCss(LEVELS[idx].prefill);
     setItemCss(LEVELS[idx].itemPrefill ?? '');
     setWon(false); setWrong(false); setChecked(false); setShowHint(false);
+    setScreen('game');
+  };
+
+  const handleCheck = () => {
+    const isWin = checkWin(css, itemCss, level);
+    setChecked(true);
+    if (isWin) {
+      setWon(true); setWrong(false);
+      markCompleted(level.id);
+    } else {
+      setWrong(true);
+      setTimeout(() => setWrong(false), 500);
+    }
   };
 
   const handleNext = () => {
     if (levelIdx < LEVELS.length - 1) goToLevel(levelIdx + 1);
+    else setScreen('select');
   };
 
   const handleReset = () => {
-    setCss(level.prefill);
-    setItemCss(level.itemPrefill ?? '');
+    setCss(level.prefill); setItemCss(level.itemPrefill ?? '');
     setWon(false); setWrong(false); setChecked(false); setShowHint(false);
   };
 
-  /* ── Textarea styles ── */
-  const taSt: React.CSSProperties = {
-    width: '100%', boxSizing: 'border-box',
-    minHeight: 90, resize: 'vertical',
-    background: '#060a14', border: '1.5px solid rgba(0,255,204,0.2)',
-    color: '#7ee787', fontSize: 13, lineHeight: 1.7,
-    fontFamily: "'Fira Code', 'Cascadia Code', 'Consolas', monospace",
-    padding: '10px 14px', outline: 'none', borderRadius: 4,
-    transition: 'border-color .15s',
-  };
-
-  /* ── All done screen ── */
-  if (allDone) {
+  /* ─ Level select screen ─ */
+  if (screen === 'select') {
     return (
-      <div style={{
-        minHeight: '100vh', background: '#060a14',
-        backgroundImage: 'linear-gradient(rgba(0,255,204,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.03) 1px,transparent 1px)',
-        backgroundSize: '44px 44px',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        padding: 24, fontFamily: 'system-ui, sans-serif',
-      }}>
-        <style>{ANIM}</style>
-        <div style={{ textAlign: 'center', animation: 'rktSlide .6s ease both' }}>
-          <div style={{ fontSize: 64, marginBottom: 20 }}>🚀</div>
-          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: '#475569', letterSpacing: '0.2em', marginBottom: 14 }}>
-            MISSÃO COMPLETA
-          </div>
-          <h1 style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 22, color: '#00ffcc', margin: '0 0 16px', textShadow: '0 0 24px #00ffcc' }}>
-            PARABÉNS!
-          </h1>
-          <p style={{ fontSize: 14, color: '#64748b', maxWidth: 360, lineHeight: 1.7, marginBottom: 28 }}>
-            Você completou todas as {LEVELS.length} missões e dominou o CSS Flexbox. A frota está orgulhosa!
-          </p>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
-            {LEVELS.map(l => (
-              <div key={l.id} style={{ width: 28, height: 28, borderRadius: '50%', background: '#00ffcc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Star size={12} color="#060a14" />
-              </div>
-            ))}
-          </div>
-          <button onClick={onBack} style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            padding: '12px 28px', background: 'linear-gradient(135deg,#00ffcc,#00ccaa)',
-            border: 'none', color: '#060a14', cursor: 'pointer',
-            fontFamily: "'Press Start 2P', monospace", fontSize: 10, fontWeight: 900,
-            boxShadow: '0 0 24px rgba(0,255,204,0.4)',
-          }}>
-            <ChevronLeft size={14} /> VOLTAR À ARENA
-          </button>
-        </div>
-      </div>
+      <LevelSelect
+        completed={completed}
+        onSelect={goToLevel}
+        onBack={onBack}
+      />
     );
   }
 
-  /* ── Main layout ── */
+  /* ─ Game screen ─ */
+  const isUnlocked = levelIdx === 0 || completed.has(LEVELS[levelIdx - 1].id);
+
+  const btnBase: React.CSSProperties = {
+    display:'flex',alignItems:'center',justifyContent:'center',gap:8,
+    padding:'11px 18px',cursor:'pointer',borderRadius:4,fontSize:13,fontWeight:700,
+    fontFamily:"'Press Start 2P',monospace",letterSpacing:'.04em',transition:'all .15s',
+    border:'none',
+  };
+
   return (
     <div style={{
-      minHeight: '100vh', background: '#060a14',
-      backgroundImage: 'linear-gradient(rgba(0,255,204,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.03) 1px,transparent 1px)',
-      backgroundSize: '44px 44px',
-      fontFamily: 'system-ui, -apple-system, sans-serif', color: '#e2e8f0',
-      overflowX: 'hidden',
+      display:'flex',flexDirection:'column',height:'100vh',overflow:'hidden',
+      background:'#060a14',fontFamily:'system-ui,-apple-system,sans-serif',color:'#e2e8f0',
     }}>
       <style>{ANIM}</style>
 
-      {/* TOP BAR */}
+      {/* ── TOP BAR ── */}
       <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '16px 20px', borderBottom: '1px solid rgba(0,255,204,0.1)',
-        flexWrap: 'wrap', gap: 12,
+        display:'flex',alignItems:'center',justifyContent:'space-between',
+        padding:'12px 20px',borderBottom:'1px solid rgba(0,255,204,.1)',
+        flexShrink:0,flexWrap:'wrap',gap:8,
       }}>
-        <button onClick={onBack} style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          background: 'none', border: '1.5px solid rgba(0,255,204,0.22)',
-          color: '#64748b', cursor: 'pointer', padding: '7px 14px',
-          fontFamily: "'Press Start 2P', monospace", fontSize: 8, borderRadius: 4,
-          transition: 'all .15s',
+        <button onClick={() => setScreen('select')} style={{
+          display:'flex',alignItems:'center',gap:7,
+          background:'none',border:'1.5px solid rgba(0,255,204,.22)',
+          color:'#64748b',cursor:'pointer',padding:'7px 14px',
+          fontFamily:"'Press Start 2P',monospace",fontSize:8,borderRadius:4,
+          transition:'all .15s',
         }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#00ffcc'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,255,204,0.5)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#64748b'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,255,204,0.22)'; }}
+          onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.color='#00ffcc';(e.currentTarget as HTMLElement).style.borderColor='rgba(0,255,204,.5)';}}
+          onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.color='#64748b';(e.currentTarget as HTMLElement).style.borderColor='rgba(0,255,204,.22)';}}
         >
-          <ChevronLeft size={13} /> ARENA
+          <ChevronLeft size={13}/> MISSÕES
         </button>
 
-        <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: '#00ffcc', textAlign: 'center' }}>
-          🚀 FOGUETES NA ÓRBITA
+        <div style={{textAlign:'center'}}>
+          <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:8,color:'#00ffcc',letterSpacing:'.04em'}}>
+            {level.code} — {level.title}
+          </div>
         </div>
 
-        <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: '#334155' }}>
-          {String(levelIdx + 1).padStart(2, '0')}/{LEVELS.length}
+        <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:8,color:'#334155'}}>
+          {String(levelIdx+1).padStart(2,'0')}&nbsp;/&nbsp;{LEVELS.length}
         </div>
       </div>
 
-      <div style={{ maxWidth: 820, margin: '0 auto', padding: '20px 16px 60px' }}>
+      {/* ── MAIN SPLIT ── */}
+      <div className="rkt-split" style={{display:'flex',flex:1,overflow:'hidden',minHeight:0}}>
 
-        {/* ARENA */}
-        <div style={{ marginBottom: 20, animation: 'rktSlide .4s ease both' }}>
-          <GameArena
-            level={level}
-            containerStyle={containerStyle}
-            itemStyle={itemStyle}
-            won={won}
-            wrong={wrong}
-          />
-        </div>
-
-        {/* MISSION INFO */}
-        <div style={{
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 8, padding: '16px 18px', marginBottom: 18,
-          animation: 'rktSlide .45s ease .05s both',
+        {/* ════ LEFT PANEL ════ */}
+        <div className="rkt-left" style={{
+          width:'46%',display:'flex',flexDirection:'column',
+          borderRight:'1px solid rgba(0,255,204,.08)',
+          overflow:'hidden',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#00ffcc' }}>
-              {level.code}
-            </span>
-            <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: '#e2e8f0' }}>
-              {level.title}
-            </span>
-          </div>
-          <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.65, marginBottom: 8, marginTop: 0 }}>
-            {level.story}
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'rgba(0,255,204,0.06)', borderLeft: '3px solid #00ffcc', borderRadius: 4 }}>
-            <span style={{ fontSize: 12, color: '#94a3b8' }}><strong style={{ color: '#00ffcc' }}>Missão:</strong> {level.task}</span>
-          </div>
-        </div>
 
-        {/* CSS EDITOR */}
-        <div style={{ marginBottom: 18, animation: 'rktSlide .45s ease .1s both' }}>
-
-          {/* Container CSS */}
+          {/* TOP-LEFT: Mission briefing + level dots */}
           <div style={{
-            background: '#0a0e1a', border: '1.5px solid rgba(0,255,204,0.18)',
-            borderRadius: 6, overflow: 'hidden', marginBottom: level.hasItemCss ? 12 : 0,
+            padding:'18px 20px 14px',
+            borderBottom:'1px solid rgba(0,255,204,.07)',
+            flexShrink:0,
           }}>
-            {/* Editor title bar */}
+            {/* Story */}
+            <p style={{fontSize:14,color:'#64748b',lineHeight:1.7,margin:'0 0 12px'}}>
+              {level.story}
+            </p>
+
+            {/* Task */}
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
-              background: 'rgba(0,255,204,0.06)', borderBottom: '1px solid rgba(0,255,204,0.1)',
+              padding:'10px 14px',background:'rgba(0,255,204,.06)',
+              borderLeft:'3px solid #00ffcc',borderRadius:4,marginBottom:16,
             }}>
-              <div style={{ display: 'flex', gap: 5 }}>
-                {['#ef4444', '#fbbf24', '#22c55e'].map(c => (
-                  <div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }} />
-                ))}
-              </div>
-              <span style={{ fontSize: 11, color: '#334155', fontFamily: 'monospace' }}>container.css</span>
+              <span style={{fontSize:11,fontFamily:"'Press Start 2P',monospace",color:'#00ffcc',letterSpacing:'.03em'}}>
+                MISSÃO:&nbsp;
+              </span>
+              <span style={{fontSize:14,color:'#94a3b8',lineHeight:1.6}}>{level.task}</span>
             </div>
-            <div style={{ padding: '10px 14px 4px', fontFamily: 'monospace', fontSize: 13, color: '#475569' }}>
-              .container {'{'}
+
+            {/* Concepts tags */}
+            <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:14}}>
+              {level.concepts.map(c=>(
+                <span key={c} style={{
+                  padding:'4px 10px',fontSize:12,fontWeight:700,
+                  background:'rgba(0,255,204,.1)',color:'#00ffcc',
+                  border:'1px solid rgba(0,255,204,.25)',borderRadius:3,
+                }}>{c}</span>
+              ))}
             </div>
-            <textarea
-              value={css}
-              onChange={e => { setCss(e.target.value); setChecked(false); setWon(false); }}
-              disabled={won}
-              style={{ ...taSt, border: 'none', borderRadius: 0, background: 'transparent', paddingTop: 0, paddingBottom: 0, minHeight: 70 }}
-              onFocus={e => (e.currentTarget.style.outline = 'none')}
-              spellCheck={false}
-            />
-            <div style={{ padding: '4px 14px 10px', fontFamily: 'monospace', fontSize: 13, color: '#475569' }}>
-              {'}'}
+
+            {/* Mini level map */}
+            <div style={{display:'flex',flexWrap:'wrap',gap:5}}>
+              {LEVELS.map((l, i) => {
+                const isDone    = completed.has(l.id);
+                const isLocked  = i > 0 && !completed.has(LEVELS[i-1].id);
+                const isCurrent = i === levelIdx;
+                return (
+                  <button key={l.id}
+                    onClick={() => !isLocked && goToLevel(i)}
+                    title={`${l.code}: ${l.title}`}
+                    style={{
+                      width:26,height:26,borderRadius:6,
+                      cursor: isLocked ? 'not-allowed' : 'pointer',
+                      background: isDone ? '#00ffcc' : isCurrent ? 'rgba(0,255,204,.15)' : isLocked ? 'rgba(255,255,255,.03)' : 'rgba(255,255,255,.07)',
+                      border:`1.5px solid ${isCurrent ? '#00ffcc' : isDone ? '#00ffcc' : isLocked ? 'rgba(255,255,255,.05)' : 'rgba(255,255,255,.1)'}`,
+                      display:'flex',alignItems:'center',justifyContent:'center',
+                      opacity: isLocked ? 0.35 : 1,
+                      transition:'all .15s',
+                    } as React.CSSProperties}
+                  >
+                    {isDone
+                      ? <CheckCircle2 size={12} color="#060a14"/>
+                      : isLocked
+                      ? <Lock size={10} color="#334155"/>
+                      : <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:7,color:isCurrent?'#00ffcc':'#475569'}}>{i+1}</span>
+                    }
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Item CSS (align-self level) */}
-          {level.hasItemCss && (
+          {/* BOTTOM-LEFT: CSS Editor */}
+          <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',minHeight:0}}>
+
+            {/* Container CSS */}
             <div style={{
-              background: '#0a0e1a', border: '1.5px solid rgba(167,139,250,0.25)',
-              borderRadius: 6, overflow: 'hidden',
+              flex:1,display:'flex',flexDirection:'column',minHeight:0,
+              background:'#070b16',
+              borderBottom: level.hasItemCss ? '1px solid rgba(0,255,204,.08)' : 'none',
             }}>
+              {/* Editor title bar */}
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
-                background: 'rgba(167,139,250,0.06)', borderBottom: '1px solid rgba(167,139,250,0.12)',
+                display:'flex',alignItems:'center',gap:8,padding:'8px 14px',
+                background:'rgba(0,255,204,.05)',borderBottom:'1px solid rgba(0,255,204,.08)',
+                flexShrink:0,
               }}>
-                <div style={{ display: 'flex', gap: 5 }}>
-                  {['#ef4444', '#fbbf24', '#22c55e'].map(c => (
-                    <div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }} />
+                <div style={{display:'flex',gap:5}}>
+                  {['#ef4444','#fbbf24','#22c55e'].map(c=>(
+                    <div key={c} style={{width:9,height:9,borderRadius:'50%',background:c}}/>
                   ))}
                 </div>
-                <span style={{ fontSize: 11, color: '#334155', fontFamily: 'monospace' }}>rocket-3.css</span>
-                <span style={{ fontSize: 10, color: '#a78bfa', marginLeft: 4 }}>← foguete especial</span>
+                <span style={{fontSize:12,color:'#334155',fontFamily:'monospace',letterSpacing:'.03em'}}>
+                  container.css
+                </span>
               </div>
-              <div style={{ padding: '10px 14px 4px', fontFamily: 'monospace', fontSize: 13, color: '#475569' }}>
-                .rocket-3 {'{'}
-              </div>
-              <textarea
-                value={itemCss}
-                onChange={e => { setItemCss(e.target.value); setChecked(false); setWon(false); }}
-                disabled={won}
-                style={{ ...taSt, border: 'none', borderRadius: 0, background: 'transparent', paddingTop: 0, paddingBottom: 0, minHeight: 60, borderColor: 'transparent' }}
-                onFocus={e => (e.currentTarget.style.outline = 'none')}
-                spellCheck={false}
-              />
-              <div style={{ padding: '4px 14px 10px', fontFamily: 'monospace', fontSize: 13, color: '#475569' }}>
-                {'}'}
+
+              {/* Code area */}
+              <div style={{flex:1,overflow:'auto',minHeight:0}}>
+                <div style={{padding:'10px 14px 0',fontFamily:'monospace',fontSize:14,color:'#475569'}}>
+                  .container {'{'}
+                </div>
+                <textarea
+                  className="rkt-code"
+                  value={css}
+                  onChange={e=>{setCss(e.target.value);setChecked(false);setWon(false);}}
+                  disabled={won && !level.hasItemCss}
+                  spellCheck={false}
+                  style={{minHeight:0}}
+                />
+                <div style={{padding:'0 14px 10px',fontFamily:'monospace',fontSize:14,color:'#475569'}}>
+                  {'}'}
+                </div>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* FEEDBACK */}
-        {checked && !won && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-            background: 'rgba(239,68,68,0.1)', border: '1.5px solid rgba(239,68,68,0.35)',
-            borderRadius: 6, marginBottom: 14, fontSize: 13, color: '#f87171',
-          }}>
-            <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8 }}>FALHA!</span>
-            Verifique as propriedades e valores — os foguetes ainda não encaixaram.
+            {/* Item CSS (level 13) */}
+            {level.hasItemCss && (
+              <div style={{
+                flex:'0 0 auto',maxHeight:'40%',display:'flex',flexDirection:'column',
+                background:'#07091a',overflow:'hidden',
+              }}>
+                <div style={{
+                  display:'flex',alignItems:'center',gap:8,padding:'8px 14px',
+                  background:'rgba(167,139,250,.06)',borderBottom:'1px solid rgba(167,139,250,.1)',
+                  flexShrink:0,
+                }}>
+                  <div style={{display:'flex',gap:5}}>
+                    {['#ef4444','#fbbf24','#22c55e'].map(c=>(
+                      <div key={c} style={{width:9,height:9,borderRadius:'50%',background:c}}/>
+                    ))}
+                  </div>
+                  <span style={{fontSize:12,color:'#334155',fontFamily:'monospace'}}>rocket-3.css</span>
+                  <span style={{fontSize:11,color:'#a78bfa',marginLeft:4}}>← foguete especial</span>
+                </div>
+                <div style={{overflow:'auto',minHeight:60}}>
+                  <div style={{padding:'10px 14px 0',fontFamily:'monospace',fontSize:14,color:'#475569'}}>
+                    .rocket-3 {'{'}
+                  </div>
+                  <textarea
+                    className="rkt-code"
+                    value={itemCss}
+                    onChange={e=>{setItemCss(e.target.value);setChecked(false);setWon(false);}}
+                    disabled={won}
+                    spellCheck={false}
+                    style={{minHeight:60,color:'#c4b5fd'}}
+                  />
+                  <div style={{padding:'0 14px 10px',fontFamily:'monospace',fontSize:14,color:'#475569'}}>
+                    {'}'}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
 
-        {/* HINT */}
-        {showHint && (
+          {/* ACTION BAR */}
           <div style={{
-            display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 14px',
-            background: 'rgba(251,191,36,0.08)', border: '1.5px solid rgba(251,191,36,0.3)',
-            borderRadius: 6, marginBottom: 14, fontSize: 13, color: '#fbbf24',
+            padding:'12px 16px',borderTop:'1px solid rgba(0,255,204,.08)',
+            flexShrink:0,display:'flex',flexDirection:'column',gap:10,
           }}>
-            <Lightbulb size={14} style={{ flexShrink: 0, marginTop: 1 }} />
-            <span>{level.hint}</span>
-          </div>
-        )}
+            {/* Feedback messages */}
+            {checked && !won && (
+              <div style={{
+                display:'flex',alignItems:'center',gap:9,padding:'9px 13px',
+                background:'rgba(239,68,68,.1)',border:'1.5px solid rgba(239,68,68,.35)',
+                borderRadius:5,fontSize:13,color:'#f87171',
+              }}>
+                <span style={{fontFamily:"'Press Start 2P',monospace",fontSize:8,flexShrink:0}}>FALHA</span>
+                Verifique as propriedades — os foguetes não encaixaram.
+              </div>
+            )}
+            {showHint && (
+              <div style={{
+                display:'flex',alignItems:'flex-start',gap:9,padding:'9px 13px',
+                background:'rgba(251,191,36,.07)',border:'1.5px solid rgba(251,191,36,.28)',
+                borderRadius:5,fontSize:14,color:'#fbbf24',lineHeight:1.65,
+              }}>
+                <Lightbulb size={15} style={{flexShrink:0,marginTop:1}}/>
+                {level.hint}
+              </div>
+            )}
 
-        {/* ACTION BUTTONS */}
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 28 }}>
-          {!won ? (
-            <button onClick={handleCheck} style={{
-              flex: 1, minWidth: 160, padding: '13px',
-              background: 'linear-gradient(135deg, rgba(0,255,204,0.15), rgba(0,255,204,0.08))',
-              border: '2px solid #00ffcc', color: '#00ffcc',
-              fontFamily: "'Press Start 2P', monospace", fontSize: 10,
-              cursor: 'pointer', letterSpacing: '0.08em',
-              boxShadow: '0 0 16px rgba(0,255,204,0.2)',
-              borderRadius: 4, transition: 'all .15s',
-            }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(0,255,204,0.2)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 28px rgba(0,255,204,0.4)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'linear-gradient(135deg,rgba(0,255,204,0.15),rgba(0,255,204,0.08))'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 16px rgba(0,255,204,0.2)'; }}
-            >
-              VERIFICAR ANCORAGEM
-            </button>
-          ) : (
-            <button onClick={handleNext} disabled={levelIdx === LEVELS.length - 1} style={{
-              flex: 1, minWidth: 160, padding: '13px',
-              background: 'linear-gradient(135deg, #00ffcc, #00ccaa)',
-              border: 'none', color: '#060a14',
-              fontFamily: "'Press Start 2P', monospace", fontSize: 10,
-              cursor: levelIdx === LEVELS.length - 1 ? 'not-allowed' : 'pointer',
-              opacity: levelIdx === LEVELS.length - 1 ? 0.5 : 1,
-              boxShadow: '0 0 20px rgba(0,255,204,0.4)',
-              borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}>
-              PRÓXIMA MISSÃO <ChevronRight size={14} />
-            </button>
-          )}
+            {/* Buttons */}
+            <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+              {!won ? (
+                <button onClick={handleCheck} style={{
+                  ...btnBase,flex:1,minWidth:140,
+                  background:'linear-gradient(135deg,rgba(0,255,204,.15),rgba(0,255,204,.07))',
+                  border:'2px solid #00ffcc',color:'#00ffcc',fontSize:11,
+                  boxShadow:'0 0 14px rgba(0,255,204,.2)',
+                }}>
+                  VERIFICAR
+                </button>
+              ) : (
+                <button onClick={handleNext} style={{
+                  ...btnBase,flex:1,minWidth:140,
+                  background:'linear-gradient(135deg,#00ffcc,#00ccaa)',
+                  color:'#060a14',fontSize:11,
+                  boxShadow:'0 0 18px rgba(0,255,204,.4)',
+                }}>
+                  {levelIdx < LEVELS.length - 1
+                    ? <><span>PRÓXIMA</span><ChevronRight size={14}/></>
+                    : 'VER MISSÕES'
+                  }
+                </button>
+              )}
 
-          <button onClick={() => setShowHint(v => !v)} style={{
-            padding: '13px 18px', background: 'none',
-            border: `1.5px solid ${showHint ? 'rgba(251,191,36,0.6)' : 'rgba(255,255,255,0.1)'}`,
-            color: showHint ? '#fbbf24' : '#475569', cursor: 'pointer', borderRadius: 4,
-            display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, transition: 'all .15s',
-          }}>
-            <Lightbulb size={14} /> Dica
-          </button>
-
-          <button onClick={handleReset} style={{
-            padding: '13px 16px', background: 'none',
-            border: '1.5px solid rgba(255,255,255,0.08)',
-            color: '#334155', cursor: 'pointer', borderRadius: 4,
-            display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, transition: 'all .15s',
-          }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#64748b'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#334155'; }}
-          >
-            <RotateCcw size={13} /> Resetar
-          </button>
-        </div>
-
-        {/* LEVEL DOTS */}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {LEVELS.map((l, i) => {
-            const isDone    = completed.has(l.id);
-            const isCurrent = i === levelIdx;
-            const isLocked  = i > levelIdx && !completed.has(l.id);
-            return (
-              <button
-                key={l.id}
-                onClick={() => !isLocked && goToLevel(i)}
-                title={`${l.code}: ${l.title}`}
-                style={{
-                  width: 28, height: 28, borderRadius: '50%',
-                  cursor: isLocked ? 'not-allowed' : 'pointer',
-                  background: isDone ? '#00ffcc' : isCurrent ? 'transparent' : 'rgba(255,255,255,0.05)',
-                  border: isCurrent ? '2px solid #00ffcc' : isDone ? '2px solid #00ffcc' : '2px solid rgba(255,255,255,0.08)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  animation: isCurrent ? 'rktDotPulse 1.5s ease-in-out infinite' : 'none',
-                  transition: 'all .15s',
-                } as React.CSSProperties}
-              >
-                {isDone
-                  ? <CheckCircle2 size={13} color="#060a14" />
-                  : isLocked
-                  ? <Lock size={10} color="#334155" />
-                  : <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: isCurrent ? '#00ffcc' : '#475569' }}>{i + 1}</span>
-                }
+              <button onClick={()=>setShowHint(v=>!v)} style={{
+                ...btnBase,padding:'11px 14px',fontSize:12,
+                background:'none',
+                border:`1.5px solid ${showHint?'rgba(251,191,36,.5)':'rgba(255,255,255,.1)'}`,
+                color: showHint?'#fbbf24':'#475569',fontFamily:'system-ui,sans-serif',
+              }}>
+                <Lightbulb size={14}/>
               </button>
-            );
-          })}
+
+              <button onClick={handleReset} style={{
+                ...btnBase,padding:'11px 14px',fontSize:12,
+                background:'none',border:'1.5px solid rgba(255,255,255,.08)',
+                color:'#334155',fontFamily:'system-ui,sans-serif',
+              }}
+                onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.color='#64748b';}}
+                onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.color='#334155';}}
+              >
+                <RotateCcw size={13}/>
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* LEGEND */}
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 14, flexWrap: 'wrap' }}>
-          {[
-            { color: 'rgba(0,255,204,0.65)', label: 'Estação de ancoragem (alvo)' },
-            { color: '#fbbf24', label: 'Foguete 🚀' },
-          ].map(item => (
-            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#334155' }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', border: `2px solid ${item.color}`, background: `${item.color}22` }} />
-              {item.label}
-            </div>
-          ))}
+        {/* ════ RIGHT PANEL ════ */}
+        <div className="rkt-right" style={{
+          flex:1,display:'flex',flexDirection:'column',
+          alignItems:'center',justifyContent:'center',
+          padding:20,background:'#030710',overflow:'hidden',
+        }}>
+          {/* Right panel label */}
+          <div style={{
+            fontFamily:"'Press Start 2P',monospace",fontSize:8,color:'#0f1a2e',
+            letterSpacing:'.2em',marginBottom:14,alignSelf:'flex-start',
+          }}>
+            VISUALIZAÇÃO
+          </div>
+
+          {/* Game arena fills remaining space */}
+          <div style={{flex:1,width:'100%',minHeight:0}}>
+            {isUnlocked ? (
+              <GameArena
+                level={level}
+                containerStyle={containerStyle}
+                itemStyle={itemStyle}
+                won={won}
+                wrong={wrong}
+              />
+            ) : (
+              <div style={{
+                height:'100%',display:'flex',flexDirection:'column',
+                alignItems:'center',justifyContent:'center',gap:16,
+                border:'1.5px solid rgba(255,255,255,.06)',borderRadius:10,
+              }}>
+                <Lock size={32} color="#1e293b"/>
+                <div style={{fontFamily:"'Press Start 2P',monospace",fontSize:10,color:'#1e293b',
+                  letterSpacing:'.08em',textAlign:'center'}}>
+                  MISSÃO BLOQUEADA
+                </div>
+                <p style={{fontSize:14,color:'#1e293b',textAlign:'center',margin:0}}>
+                  Complete a missão anterior para desbloquear.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Legend */}
+          <div style={{
+            display:'flex',gap:20,marginTop:14,flexWrap:'wrap',justifyContent:'center',
+          }}>
+            {[
+              {color:'#00ffcc',label:'Estação (posição alvo)'},
+              {color:ROCKET_COLORS[0],label:'Foguete (seu CSS)'},
+            ].map(item=>(
+              <div key={item.label} style={{display:'flex',alignItems:'center',gap:7,fontSize:12,color:'#1e293b'}}>
+                <div style={{
+                  width:11,height:11,borderRadius:'50%',
+                  border:`2px solid ${item.color}`,background:`${item.color}22`,
+                }}/>
+                {item.label}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
