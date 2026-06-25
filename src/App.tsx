@@ -1921,6 +1921,7 @@ const App: React.FC = () => {
         onOpenDetetive={() => setCurrentPage('detetive')}
         onOpenCssBattle={() => setCurrentPage('cssbattle')}
         onOpenFlexRocket={() => setCurrentPage('flexrocket')}
+        isDark={isDark}
       />
     );
   }

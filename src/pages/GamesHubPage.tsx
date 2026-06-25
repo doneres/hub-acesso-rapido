@@ -260,13 +260,16 @@ function AuthModal({ users, onLogin, onRegister, onClose }: {
 /* ═══════════════════════════════════════════════════════════
    GAME CARD
 ═══════════════════════════════════════════════════════════ */
-function GameCard({ title, subtitle, desc, tags, icon, glowColor, glowColor2, accentText, onPlay }: {
+function GameCard({ title, subtitle, desc, tags, icon, glowColor, glowColor2, accentText, onPlay, isDark }: {
   title: string; subtitle: string; desc: string;
   tags: string[]; icon: React.ReactNode;
   glowColor: string; glowColor2: string; accentText: string;
-  onPlay: () => void;
+  onPlay: () => void; isDark: boolean;
 }) {
   const [hov, setHov] = useState(false);
+  const cardBg   = isDark ? '#0a0e1a' : '#ffffff';
+  const titleClr = isDark ? '#e2e8f0' : '#1e293b';
+  const descClr  = isDark ? '#64748b' : '#475569';
 
   return (
     <div
@@ -274,7 +277,7 @@ function GameCard({ title, subtitle, desc, tags, icon, glowColor, glowColor2, ac
       onMouseLeave={() => setHov(false)}
       style={{
         flex: '1 1 260px', minWidth: 240, maxWidth: 400,
-        background: '#0a0e1a',
+        background: cardBg,
         border: `2px solid ${hov ? glowColor : glowColor + '55'}`,
         cursor: 'pointer',
         position: 'relative', overflow: 'hidden',
@@ -325,14 +328,14 @@ function GameCard({ title, subtitle, desc, tags, icon, glowColor, glowColor2, ac
             <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: accentText, marginBottom: 5, letterSpacing: '0.1em' }}>
               {subtitle}
             </div>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 11, color: '#e2e8f0', lineHeight: 1.6 }}>
+            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 11, color: titleClr, lineHeight: 1.6 }}>
               {title}
             </div>
           </div>
         </div>
 
         {/* Description */}
-        <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.65, marginBottom: 16, marginTop: 0 }}>
+        <p style={{ fontSize: 13, color: descClr, lineHeight: 1.65, marginBottom: 16, marginTop: 0 }}>
           {desc}
         </p>
 
@@ -376,12 +379,17 @@ function GameCard({ title, subtitle, desc, tags, icon, glowColor, glowColor2, ac
 /* ═══════════════════════════════════════════════════════════
    RANKING ROW
 ═══════════════════════════════════════════════════════════ */
-function RankRow({ rank, user, isMe }: { rank: number; user: any; isMe: boolean }) {
+function RankRow({ rank, user, isMe, isDark }: { rank: number; user: any; isMe: boolean; isDark: boolean }) {
+  const nameclr  = isDark ? '#cbd5e1' : '#1e293b';
+  const rankclr  = isDark ? '#334155' : '#64748b';
+  const ptsclr   = isDark ? '#475569' : '#64748b';
+  const evenBg   = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.03)';
+
   const medal =
     rank === 1 ? <Crown size={13} color="#fbbf24" /> :
     rank === 2 ? <Medal size={13} color="#94a3b8" /> :
     rank === 3 ? <Medal size={13} color="#cd7c0f" /> :
-    <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#334155', minWidth: 18, textAlign: 'center' }}>
+    <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: rankclr, minWidth: 18, textAlign: 'center' }}>
       #{rank}
     </span>;
 
@@ -389,7 +397,7 @@ function RankRow({ rank, user, isMe }: { rank: number; user: any; isMe: boolean 
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '9px 14px',
-      background: isMe ? 'rgba(0,255,204,0.07)' : rank % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
+      background: isMe ? 'rgba(0,255,204,0.07)' : rank % 2 === 0 ? evenBg : 'transparent',
       border: isMe ? '1px solid rgba(0,255,204,0.25)' : '1px solid transparent',
       borderRadius: 6,
       animation: `hubRankRow .35s ease ${rank * 0.05}s both`,
@@ -398,14 +406,14 @@ function RankRow({ rank, user, isMe }: { rank: number; user: any; isMe: boolean 
         {medal}
       </div>
       <span style={{ fontSize: 18, flexShrink: 0 }}>{user.avatar}</span>
-      <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: isMe ? '#00ffcc' : '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: isMe ? '#00ffcc' : nameclr, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {user.name}{isMe ? ' (você)' : ''}
       </span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: rank <= 3 ? '#fbbf24' : '#475569' }}>
+        <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: rank <= 3 ? '#fbbf24' : ptsclr }}>
           {user.points.toLocaleString('pt-BR')}
         </span>
-        <span style={{ fontSize: 10, color: '#334155' }}>pts</span>
+        <span style={{ fontSize: 10, color: rankclr }}>pts</span>
       </div>
     </div>
   );
@@ -419,9 +427,10 @@ interface GamesHubPageProps {
   onOpenDetetive: () => void;
   onOpenCssBattle: () => void;
   onOpenFlexRocket: () => void;
+  isDark?: boolean;
 }
 
-export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket }: GamesHubPageProps) {
+export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, isDark = true }: GamesHubPageProps) {
   const { currentUser, leaderboard, users, login, registerUser, logout } = useGameState();
   const [showAuth, setShowAuth] = useState(false);
 
@@ -429,19 +438,28 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
     ? leaderboard.findIndex(u => u.id === currentUser.id) + 1
     : 0;
 
+  /* ── Tema ── */
+  const bg        = isDark ? '#060a14'  : '#dde4ef';
+  const mainText  = isDark ? '#e2e8f0'  : '#1e293b';
+  const subText   = isDark ? '#64748b'  : '#475569';
+  const mutedText = isDark ? '#334155'  : '#64748b';
+  const panelBg   = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.7)';
+  const panelBd   = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.10)';
+  const gridLine  = isDark ? 'rgba(0,255,204,0.035)' : 'rgba(0,100,80,0.04)';
+
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#060a14',
+      background: bg,
       backgroundImage: `
-        linear-gradient(rgba(0,255,204,0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,204,0.035) 1px, transparent 1px)
+        linear-gradient(${gridLine} 1px, transparent 1px),
+        linear-gradient(90deg, ${gridLine} 1px, transparent 1px)
       `,
       backgroundSize: '44px 44px',
       position: 'relative',
       overflow: 'hidden',
       fontFamily: 'system-ui, -apple-system, sans-serif',
-      color: '#e2e8f0',
+      color: mainText,
     }}>
       <style>{ANIM}</style>
 
@@ -465,10 +483,12 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
       </div>
 
       {/* ── Vignette nas bordas ── */}
-      <div style={{
-        position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 3,
-        background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)',
-      }} />
+      {isDark && (
+        <div style={{
+          position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 3,
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)',
+        }} />
+      )}
 
       <div style={{ position: 'relative', zIndex: 10, maxWidth: 960, margin: '0 auto', padding: '0 20px 60px' }}>
 
@@ -483,12 +503,12 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               background: 'none', border: '1.5px solid rgba(0,255,204,0.25)',
-              color: '#64748b', cursor: 'pointer', padding: '8px 16px',
+              color: subText, cursor: 'pointer', padding: '8px 16px',
               fontFamily: "'Press Start 2P', monospace", fontSize: 8,
               borderRadius: 4, transition: 'all .15s',
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#00ffcc'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,255,204,0.6)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#64748b'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,255,204,0.25)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = subText; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,255,204,0.25)'; }}
           >
             <ChevronLeft size={14} /> VOLTAR AO HUB
           </button>
@@ -506,7 +526,7 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
                   <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#00ffcc' }}>
                     {currentUser.name}
                   </div>
-                  <div style={{ fontSize: 11, color: '#475569', marginTop: 3 }}>
+                  <div style={{ fontSize: 11, color: subText, marginTop: 3 }}>
                     <span style={{ color: '#fbbf24', fontWeight: 700 }}>{currentUser.points.toLocaleString('pt-BR')}</span> pts
                     &nbsp;·&nbsp;
                     <span style={{ color: '#a78bfa', fontWeight: 700 }}>{currentUser.coins.toLocaleString('pt-BR')}</span> moedas
@@ -550,7 +570,7 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
 
         {/* ════ HERO TITLE ════ */}
         <div style={{ textAlign: 'center', marginBottom: 52, animation: 'hubSlideIn .6s ease both' }}>
-          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: '#334155', letterSpacing: '0.25em', marginBottom: 14 }}>
+          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: mutedText, letterSpacing: '0.25em', marginBottom: 14 }}>
             CTRL + PLAY PRESENTS
           </div>
           <h1 style={{
@@ -587,6 +607,7 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             glowColor2="#7c3aed"
             accentText="#a78bfa"
             onPlay={onOpenDetetive}
+            isDark={isDark}
           />
           <GameCard
             title="CSS BATTLE"
@@ -598,6 +619,7 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             glowColor2="#ef4444"
             accentText="#f87171"
             onPlay={onOpenCssBattle}
+            isDark={isDark}
           />
           <GameCard
             title="FOGUETES NA ÓRBITA"
@@ -609,6 +631,7 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             glowColor2="#00ccaa"
             accentText="#00ffcc"
             onPlay={onOpenFlexRocket}
+            isDark={isDark}
           />
         </div>
 
@@ -626,13 +649,13 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             <div key={s.label} style={{
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '10px 18px',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.07)',
+              background: panelBg,
+              border: `1px solid ${panelBd}`,
               borderRadius: 8, flexShrink: 0,
             }}>
               {s.icon}
-              <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: '#e2e8f0' }}>{s.val}</span>
-              <span style={{ fontSize: 11, color: '#334155' }}>{s.label}</span>
+              <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: mainText }}>{s.val}</span>
+              <span style={{ fontSize: 11, color: mutedText }}>{s.label}</span>
             </div>
           ))}
         </div>
@@ -650,20 +673,20 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
           {leaderboard.length === 0 ? (
             <div style={{
               padding: '32px', textAlign: 'center',
-              background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+              background: panelBg, border: `1px solid ${panelBd}`,
               borderRadius: 8,
             }}>
-              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: '#334155', marginBottom: 10 }}>
+              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: mutedText, marginBottom: 10 }}>
                 SEM JOGADORES AINDA
               </div>
-              <div style={{ fontSize: 13, color: '#334155' }}>
+              <div style={{ fontSize: 13, color: mutedText }}>
                 Seja o primeiro a criar uma conta e entrar no ranking!
               </div>
             </div>
           ) : (
             <div style={{
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.07)',
+              background: panelBg,
+              border: `1px solid ${panelBd}`,
               borderRadius: 8, overflow: 'hidden',
             }}>
               {/* Cabeçalho */}
@@ -671,10 +694,10 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px',
                 background: 'rgba(251,191,36,0.06)', borderBottom: '1px solid rgba(251,191,36,0.12)',
               }}>
-                <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: '#475569', flex: 1 }}>
+                <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: subText, flex: 1 }}>
                   # &nbsp; JOGADOR
                 </span>
-                <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: '#475569' }}>
+                <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: subText }}>
                   PONTOS
                 </span>
               </div>
@@ -686,12 +709,13 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
                     rank={i + 1}
                     user={u}
                     isMe={currentUser?.id === u.id}
+                    isDark={isDark}
                   />
                 ))}
                 {currentUser && myRank > 15 && (
                   <>
-                    <div style={{ textAlign: 'center', padding: '6px', color: '#334155', fontSize: 11 }}>• • •</div>
-                    <RankRow rank={myRank} user={currentUser} isMe={true} />
+                    <div style={{ textAlign: 'center', padding: '6px', color: mutedText, fontSize: 11 }}>• • •</div>
+                    <RankRow rank={myRank} user={currentUser} isMe={true} isDark={isDark} />
                   </>
                 )}
               </div>
@@ -711,7 +735,7 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: '#00ffcc', marginBottom: 10 }}>
               SALVE SEU PROGRESSO
             </div>
-            <p style={{ fontSize: 13, color: '#475569', marginBottom: 20, lineHeight: 1.7 }}>
+            <p style={{ fontSize: 13, color: subText, marginBottom: 20, lineHeight: 1.7 }}>
               Crie uma conta para guardar sua pontuação, aparecer no ranking e acumular moedas para usar nas dicas.
             </p>
             <button
