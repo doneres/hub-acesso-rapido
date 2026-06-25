@@ -71,11 +71,12 @@ const AVATARS = ['🕵', '🔍', '🧠', '🤖', '💻', '🎯', '⚡', '🦊', 
 /* ═══════════════════════════════════════════════════════════
    AUTH MODAL
 ═══════════════════════════════════════════════════════════ */
-function AuthModal({ users, onLogin, onRegister, onClose }: {
+function AuthModal({ users, onLogin, onRegister, onClose, isDark }: {
   users: any[];
   onLogin: (n: string, p: string) => Promise<LoginResult>;
   onRegister: (n: string, av: string, p: string) => Promise<string>;
   onClose: () => void;
+  isDark: boolean;
 }) {
   const [mode, setMode] = useState<'login' | 'register'>(users.length > 0 ? 'login' : 'register');
   const [name, setName]   = useState('');
@@ -85,11 +86,20 @@ function AuthModal({ users, onLogin, onRegister, onClose }: {
   const [err, setErr]     = useState('');
   const [loading, setLoading] = useState(false);
 
+  const modalAccent = isDark ? '#00ffcc' : '#0d9488';
+  const modalBg     = isDark ? '#0a0e1a' : '#ffffff';
+  const modalText   = isDark ? '#e2e8f0' : '#1e293b';
+  const modalSub    = isDark ? '#475569' : '#64748b';
+  const modalInpBg  = isDark ? '#060a14' : '#f8fafc';
+  const modalInpBd  = isDark ? 'rgba(0,255,204,0.22)' : 'rgba(0,0,0,0.18)';
+  const modalAvatBg = isDark ? 'rgba(255,255,255,0.03)' : '#f1f5f9';
+  const modalAvatBd = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.12)';
+
   const inp: React.CSSProperties = {
     width: '100%', boxSizing: 'border-box',
     padding: '9px 12px 9px 34px',
-    background: '#060a14', border: '1.5px solid rgba(0,255,204,0.22)',
-    color: '#e2e8f0', fontSize: 13, fontFamily: 'inherit', outline: 'none',
+    background: modalInpBg, border: `1.5px solid ${modalInpBd}`,
+    color: modalText, fontSize: 13, fontFamily: 'inherit', outline: 'none',
     borderRadius: 4, transition: 'border-color .15s',
   };
 
@@ -123,39 +133,42 @@ function AuthModal({ users, onLogin, onRegister, onClose }: {
       padding: 16, background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(6px)',
     }}>
       <div style={{
-        width: '100%', maxWidth: 400, background: '#0a0e1a',
-        border: '2px solid rgba(0,255,204,0.4)',
-        boxShadow: '0 0 40px rgba(0,255,204,0.2), 6px 6px 0 rgba(0,255,204,0.12)',
+        width: '100%', maxWidth: 400, background: modalBg,
+        border: `2px solid ${isDark ? 'rgba(0,255,204,0.4)' : 'rgba(13,148,136,0.35)'}`,
+        boxShadow: isDark
+          ? '0 0 40px rgba(0,255,204,0.2), 6px 6px 0 rgba(0,255,204,0.12)'
+          : '0 8px 40px rgba(0,0,0,0.15)',
       }}>
         {/* Header */}
         <div style={{
           padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          background: 'rgba(0,255,204,0.06)', borderBottom: '1.5px solid rgba(0,255,204,0.15)',
+          background: isDark ? 'rgba(0,255,204,0.06)' : 'rgba(13,148,136,0.07)',
+          borderBottom: `1.5px solid ${isDark ? 'rgba(0,255,204,0.15)' : 'rgba(13,148,136,0.2)'}`,
         }}>
           <div>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#00ffcc', marginBottom: 6 }}>
+            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: modalAccent, marginBottom: 6 }}>
               ARENA DE DESAFIOS
             </div>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 11, color: '#e2e8f0' }}>
+            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 11, color: modalText }}>
               {mode === 'login' ? 'IDENTIFICAÇÃO' : 'CRIAR CONTA'}
             </div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: modalSub }}>
             <X size={18} />
           </button>
         </div>
 
         {/* Tabs */}
         {users.length > 0 && (
-          <div style={{ display: 'flex', borderBottom: '1.5px solid rgba(0,255,204,0.1)' }}>
+          <div style={{ display: 'flex', borderBottom: `1.5px solid ${isDark ? 'rgba(0,255,204,0.1)' : 'rgba(0,0,0,0.1)'}` }}>
             {(['login', 'register'] as const).map(m => (
               <button key={m} onClick={() => { setMode(m); setErr(''); }}
                 style={{
                   flex: 1, padding: '10px', border: 'none', cursor: 'pointer',
-                  background: mode === m ? 'rgba(0,255,204,0.08)' : 'transparent',
-                  borderBottom: mode === m ? '2px solid #00ffcc' : '2px solid transparent',
+                  background: mode === m ? (isDark ? 'rgba(0,255,204,0.08)' : 'rgba(13,148,136,0.07)') : 'transparent',
+                  borderBottom: mode === m ? `2px solid ${modalAccent}` : '2px solid transparent',
                   fontFamily: "'Press Start 2P', monospace", fontSize: 8,
-                  color: mode === m ? '#00ffcc' : '#475569',
+                  color: mode === m ? modalAccent : modalSub,
                 }}>
                 {m === 'login' ? 'ENTRAR' : 'CADASTRAR'}
               </button>
@@ -167,7 +180,7 @@ function AuthModal({ users, onLogin, onRegister, onClose }: {
           {/* Avatar */}
           {mode === 'register' && (
             <div>
-              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#475569', marginBottom: 8 }}>
+              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: modalSub, marginBottom: 8 }}>
                 AVATAR
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 5 }}>
@@ -175,8 +188,8 @@ function AuthModal({ users, onLogin, onRegister, onClose }: {
                   <button key={a} onClick={() => setAv(a)}
                     style={{
                       height: 36, fontSize: 18,
-                      background: av === a ? 'rgba(0,255,204,0.12)' : 'rgba(255,255,255,0.03)',
-                      border: `1.5px solid ${av === a ? '#00ffcc' : 'rgba(255,255,255,0.08)'}`,
+                      background: av === a ? (isDark ? 'rgba(0,255,204,0.12)' : 'rgba(13,148,136,0.12)') : modalAvatBg,
+                      border: `1.5px solid ${av === a ? modalAccent : modalAvatBd}`,
                       cursor: 'pointer', borderRadius: 4,
                       transform: av === a ? 'translateY(-2px)' : 'none',
                       transition: 'all .1s',
@@ -190,25 +203,25 @@ function AuthModal({ users, onLogin, onRegister, onClose }: {
 
           {/* Usuário */}
           <div>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#475569', marginBottom: 7 }}>USUÁRIO</div>
+            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: modalSub, marginBottom: 7 }}>USUÁRIO</div>
             <div style={{ position: 'relative' }}>
-              <User size={13} style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#475569' }} />
+              <User size={13} style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: modalSub }} />
               <input value={name} onChange={e => { setName(e.target.value); setErr(''); }}
                 placeholder="Seu nome de usuário" maxLength={20} style={inp}
-                onFocus={e => (e.currentTarget.style.borderColor = '#00ffcc')}
-                onBlur={e => (e.currentTarget.style.borderColor = 'rgba(0,255,204,0.22)')} />
+                onFocus={e => (e.currentTarget.style.borderColor = modalAccent)}
+                onBlur={e => (e.currentTarget.style.borderColor = modalInpBd)} />
             </div>
           </div>
 
           {/* Senha */}
           <div>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#475569', marginBottom: 7 }}>SENHA</div>
+            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: modalSub, marginBottom: 7 }}>SENHA</div>
             <div style={{ position: 'relative' }}>
-              <Lock size={13} style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#475569' }} />
+              <Lock size={13} style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: modalSub }} />
               <input type="password" value={pass} onChange={e => { setPass(e.target.value); setErr(''); }}
                 placeholder="Mínimo 4 caracteres" style={inp}
-                onFocus={e => (e.currentTarget.style.borderColor = '#00ffcc')}
-                onBlur={e => (e.currentTarget.style.borderColor = 'rgba(0,255,204,0.22)')}
+                onFocus={e => (e.currentTarget.style.borderColor = modalAccent)}
+                onBlur={e => (e.currentTarget.style.borderColor = modalInpBd)}
                 onKeyDown={e => e.key === 'Enter' && (mode === 'login' ? doLogin() : doRegister())} />
             </div>
           </div>
@@ -216,9 +229,9 @@ function AuthModal({ users, onLogin, onRegister, onClose }: {
           {/* Confirmar senha */}
           {mode === 'register' && (
             <div>
-              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#475569', marginBottom: 7 }}>CONFIRMAR</div>
+              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: modalSub, marginBottom: 7 }}>CONFIRMAR</div>
               <div style={{ position: 'relative' }}>
-                <Lock size={13} style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#475569' }} />
+                <Lock size={13} style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: modalSub }} />
                 <input type="password" value={pass2} onChange={e => { setPass2(e.target.value); setErr(''); }}
                   placeholder="Repita a senha" style={inp}
                   onFocus={e => (e.currentTarget.style.borderColor = '#00ffcc')}
@@ -239,8 +252,8 @@ function AuthModal({ users, onLogin, onRegister, onClose }: {
             disabled={loading}
             style={{
               padding: '12px', border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-              background: loading ? '#1e2a3a' : 'linear-gradient(135deg,#00ffcc,#00ccaa)',
-              color: '#060a14', fontFamily: "'Press Start 2P', monospace", fontSize: 10,
+              background: loading ? (isDark ? '#1e2a3a' : '#e2e8f0') : `linear-gradient(135deg,${modalAccent},${isDark ? '#00ccaa' : '#0f766e'})`,
+              color: isDark ? '#060a14' : '#ffffff', fontFamily: "'Press Start 2P', monospace", fontSize: 10,
               fontWeight: 900, opacity: loading ? 0.7 : 1,
               boxShadow: loading ? 'none' : '0 0 20px rgba(0,255,204,0.4), 4px 4px 0 rgba(0,255,204,0.2)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -285,7 +298,8 @@ function GameCard({ title, subtitle, desc, tags, icon, glowColor, glowColor2, ac
         transition: 'all .22s cubic-bezier(0.4,0,0.2,1)',
         '--gc': glowColor + '55',
         '--gc2': glowColor2 + '33',
-        animation: `hubGlowPulse 3s ease-in-out infinite`,
+        animation: isDark ? `hubGlowPulse 3s ease-in-out infinite` : 'none',
+        boxShadow: !isDark ? (hov ? `0 4px 20px rgba(0,0,0,0.12)` : `0 2px 8px rgba(0,0,0,0.08)`) : undefined,
       } as React.CSSProperties}
       onClick={onPlay}
     >
@@ -397,8 +411,8 @@ function RankRow({ rank, user, isMe, isDark }: { rank: number; user: any; isMe: 
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '9px 14px',
-      background: isMe ? 'rgba(0,255,204,0.07)' : rank % 2 === 0 ? evenBg : 'transparent',
-      border: isMe ? '1px solid rgba(0,255,204,0.25)' : '1px solid transparent',
+      background: isMe ? (isDark ? 'rgba(0,255,204,0.07)' : 'rgba(13,148,136,0.07)') : rank % 2 === 0 ? evenBg : 'transparent',
+      border: isMe ? `1px solid ${isDark ? 'rgba(0,255,204,0.25)' : 'rgba(13,148,136,0.3)'}` : '1px solid transparent',
       borderRadius: 6,
       animation: `hubRankRow .35s ease ${rank * 0.05}s both`,
     }}>
@@ -443,9 +457,17 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
   const mainText  = isDark ? '#e2e8f0'  : '#1e293b';
   const subText   = isDark ? '#64748b'  : '#475569';
   const mutedText = isDark ? '#334155'  : '#64748b';
-  const panelBg   = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.7)';
-  const panelBd   = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.10)';
+  const panelBg   = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.75)';
+  const panelBd   = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.12)';
   const gridLine  = isDark ? 'rgba(0,255,204,0.035)' : 'rgba(0,100,80,0.04)';
+
+  /* Cores accent — neon no escuro, sólidas/legíveis no claro */
+  const accent    = isDark ? '#00ffcc' : '#0d9488'; // teal
+  const accent2   = isDark ? '#a78bfa' : '#7c3aed'; // purple
+  const accentRd  = isDark ? '#f87171' : '#dc2626'; // red
+  const accentGd  = isDark ? '#fbbf24' : '#d97706'; // gold
+  const topBd     = isDark ? 'rgba(0,255,204,0.1)'  : 'rgba(0,0,0,0.12)';
+  const accentBd  = isDark ? 'rgba(0,255,204,0.25)' : 'rgba(0,0,0,0.18)';
 
   return (
     <div style={{
@@ -463,12 +485,14 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
     }}>
       <style>{ANIM}</style>
 
-      {/* ── Scanline animada ── */}
-      <div style={{
-        position: 'fixed', left: 0, right: 0, height: 2, zIndex: 5, pointerEvents: 'none',
-        background: 'linear-gradient(90deg, transparent, rgba(0,255,204,0.18), transparent)',
-        animation: 'hubScanline 6s linear infinite',
-      }} />
+      {/* ── Scanline animada — apenas modo escuro ── */}
+      {isDark && (
+        <div style={{
+          position: 'fixed', left: 0, right: 0, height: 2, zIndex: 5, pointerEvents: 'none',
+          background: 'linear-gradient(90deg, transparent, rgba(0,255,204,0.18), transparent)',
+          animation: 'hubScanline 6s linear infinite',
+        }} />
+      )}
 
       {/* ── Partículas flutuantes ── */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 2 }}>
@@ -476,7 +500,8 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
           <div key={p.id} style={{
             position: 'absolute', left: p.left, bottom: '5%',
             width: p.sz, height: p.sz, borderRadius: '50%',
-            background: p.color, boxShadow: `0 0 ${p.sz * 3}px ${p.color}`,
+            background: p.color, boxShadow: isDark ? `0 0 ${p.sz * 3}px ${p.color}` : 'none',
+            opacity: isDark ? 1 : 0.35,
             animation: `hubFloat ${p.dur}s linear ${p.delay}s infinite`,
           }} />
         ))}
@@ -495,20 +520,20 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
         {/* ════ TOP BAR ════ */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '20px 0', borderBottom: '1px solid rgba(0,255,204,0.1)',
+          padding: '20px 0', borderBottom: `1px solid ${topBd}`,
           marginBottom: 40, flexWrap: 'wrap', gap: 12,
         }}>
           <button
             onClick={onBackToHub}
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              background: 'none', border: '1.5px solid rgba(0,255,204,0.25)',
+              background: 'none', border: `1.5px solid ${accentBd}`,
               color: subText, cursor: 'pointer', padding: '8px 16px',
               fontFamily: "'Press Start 2P', monospace", fontSize: 8,
               borderRadius: 4, transition: 'all .15s',
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#00ffcc'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,255,204,0.6)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = subText; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,255,204,0.25)'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = accent; (e.currentTarget as HTMLElement).style.borderColor = accent; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = subText; (e.currentTarget as HTMLElement).style.borderColor = accentBd; }}
           >
             <ChevronLeft size={14} /> VOLTAR AO HUB
           </button>
@@ -518,20 +543,22 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 10,
-                padding: '7px 14px', background: 'rgba(0,255,204,0.07)',
-                border: '1.5px solid rgba(0,255,204,0.2)', borderRadius: 6,
+                padding: '7px 14px',
+                background: isDark ? 'rgba(0,255,204,0.07)' : 'rgba(13,148,136,0.07)',
+                border: `1.5px solid ${isDark ? 'rgba(0,255,204,0.2)' : 'rgba(13,148,136,0.25)'}`,
+                borderRadius: 6,
               }}>
                 <span style={{ fontSize: 22 }}>{currentUser.avatar}</span>
                 <div>
-                  <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: '#00ffcc' }}>
+                  <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: accent }}>
                     {currentUser.name}
                   </div>
                   <div style={{ fontSize: 11, color: subText, marginTop: 3 }}>
-                    <span style={{ color: '#fbbf24', fontWeight: 700 }}>{currentUser.points.toLocaleString('pt-BR')}</span> pts
+                    <span style={{ color: accentGd, fontWeight: 700 }}>{currentUser.points.toLocaleString('pt-BR')}</span> pts
                     &nbsp;·&nbsp;
-                    <span style={{ color: '#a78bfa', fontWeight: 700 }}>{currentUser.coins.toLocaleString('pt-BR')}</span> moedas
+                    <span style={{ color: accent2, fontWeight: 700 }}>{currentUser.coins.toLocaleString('pt-BR')}</span> moedas
                     {myRank > 0 && (
-                      <>&nbsp;·&nbsp;<span style={{ color: '#00ffcc', fontWeight: 700 }}>#{myRank}</span> rank</>
+                      <>&nbsp;·&nbsp;<span style={{ color: accent, fontWeight: 700 }}>#{myRank}</span> rank</>
                     )}
                   </div>
                 </div>
@@ -555,13 +582,15 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
               onClick={() => setShowAuth(true)}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                background: 'rgba(0,255,204,0.1)', border: '1.5px solid rgba(0,255,204,0.4)',
-                color: '#00ffcc', cursor: 'pointer', padding: '9px 18px',
+                background: isDark ? 'rgba(0,255,204,0.1)' : 'rgba(13,148,136,0.1)',
+                border: `1.5px solid ${isDark ? 'rgba(0,255,204,0.4)' : 'rgba(13,148,136,0.5)'}`,
+                color: accent, cursor: 'pointer', padding: '9px 18px',
                 fontFamily: "'Press Start 2P', monospace", fontSize: 9, borderRadius: 4,
-                boxShadow: '0 0 14px rgba(0,255,204,0.2)', transition: 'all .15s',
+                boxShadow: isDark ? '0 0 14px rgba(0,255,204,0.2)' : 'none',
+                transition: 'all .15s',
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 0 28px rgba(0,255,204,0.4)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 0 14px rgba(0,255,204,0.2)'; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = isDark ? '0 0 28px rgba(0,255,204,0.4)' : '0 2px 8px rgba(13,148,136,0.3)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = isDark ? '0 0 14px rgba(0,255,204,0.2)' : 'none'; }}
             >
               <LogIn size={14} /> ENTRAR / CRIAR CONTA
             </button>
@@ -576,15 +605,15 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
           <h1 style={{
             fontFamily: "'Press Start 2P', monospace",
             fontSize: 'clamp(20px, 4vw, 34px)',
-            color: '#00ffcc', margin: '0 0 14px',
-            animation: 'hubFlicker 8s ease-in-out infinite',
+            color: accent, margin: '0 0 14px',
+            animation: isDark ? 'hubFlicker 8s ease-in-out infinite' : 'hubSlideIn .6s ease both',
             lineHeight: 1.4,
           }}>
             ARENA DE<br />DESAFIOS
           </h1>
           <div style={{
             fontFamily: "'Press Start 2P', monospace", fontSize: 11,
-            color: '#a78bfa', animation: 'hubCoin 1.1s step-end infinite',
+            color: accent2, animation: 'hubCoin 1.1s step-end infinite',
             letterSpacing: '0.15em',
           }}>
             *** INSERT COIN ***
@@ -602,10 +631,10 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             subtitle="MODO SOLO"
             desc="Resolva casos de lógica, programação e matemática. Avance por níveis e conquiste o topo do ranking."
             tags={['Lógica', 'Algoritmos', 'Sequências', '70+ casos']}
-            icon={<Search size={26} color="#a78bfa" />}
-            glowColor="#a78bfa"
-            glowColor2="#7c3aed"
-            accentText="#a78bfa"
+            icon={<Search size={26} color={accent2} />}
+            glowColor={isDark ? '#a78bfa' : '#7c3aed'}
+            glowColor2={isDark ? '#7c3aed' : '#5b21b6'}
+            accentText={accent2}
             onPlay={onOpenDetetive}
             isDark={isDark}
           />
@@ -614,10 +643,10 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             subtitle="SOLO & MULTIPLAYER"
             desc="Recrie layouts com CSS puro contra o relógio. Enfrente outros jogadores em batalhas de código em tempo real."
             tags={['CSS', 'Multiplayer', 'Solo', '60+ desafios']}
-            icon={<Swords size={26} color="#f87171" />}
-            glowColor="#f87171"
-            glowColor2="#ef4444"
-            accentText="#f87171"
+            icon={<Swords size={26} color={accentRd} />}
+            glowColor={isDark ? '#f87171' : '#dc2626'}
+            glowColor2={isDark ? '#ef4444' : '#b91c1c'}
+            accentText={accentRd}
             onPlay={onOpenCssBattle}
             isDark={isDark}
           />
@@ -627,9 +656,9 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             desc="Aprenda CSS Flexbox guiando foguetes para estações espaciais. 15 missões progressivas do básico ao avançado."
             tags={['Flexbox', 'CSS', 'Solo', '15 missões']}
             icon={<span style={{ fontSize: 26 }}>🚀</span>}
-            glowColor="#00ffcc"
-            glowColor2="#00ccaa"
-            accentText="#00ffcc"
+            glowColor={isDark ? '#00ffcc' : '#0d9488'}
+            glowColor2={isDark ? '#00ccaa' : '#0f766e'}
+            accentText={accent}
             onPlay={onOpenFlexRocket}
             isDark={isDark}
           />
@@ -641,10 +670,10 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
           marginBottom: 44, animation: 'hubSlideIn .7s ease .15s both',
         }}>
           {[
-            { icon: <Users size={15} color="#00ffcc" />, label: 'Jogadores', val: leaderboard.length },
-            { icon: <Star size={15} color="#fbbf24" />, label: 'Casos disponíveis', val: '70+' },
-            { icon: <Zap size={15} color="#f87171" />, label: 'Desafios CSS', val: '60+' },
-            { icon: <Shield size={15} color="#a78bfa" />, label: 'Níveis de dificuldade', val: 4 },
+            { icon: <Users size={15} color={accent} />, label: 'Jogadores', val: leaderboard.length },
+            { icon: <Star size={15} color={accentGd} />, label: 'Casos disponíveis', val: '70+' },
+            { icon: <Zap size={15} color={accentRd} />, label: 'Desafios CSS', val: '60+' },
+            { icon: <Shield size={15} color={accent2} />, label: 'Níveis de dificuldade', val: 4 },
           ].map(s => (
             <div key={s.label} style={{
               display: 'flex', alignItems: 'center', gap: 10,
@@ -727,12 +756,12 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
         {!currentUser && (
           <div style={{
             marginTop: 36, padding: '24px 28px',
-            background: 'rgba(0,255,204,0.04)',
-            border: '2px solid rgba(0,255,204,0.2)',
+            background: isDark ? 'rgba(0,255,204,0.04)' : 'rgba(13,148,136,0.06)',
+            border: `2px solid ${isDark ? 'rgba(0,255,204,0.2)' : 'rgba(13,148,136,0.3)'}`,
             borderRadius: 10, textAlign: 'center',
             animation: 'hubSlideIn .7s ease .3s both',
           }}>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: '#00ffcc', marginBottom: 10 }}>
+            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: accent, marginBottom: 10 }}>
               SALVE SEU PROGRESSO
             </div>
             <p style={{ fontSize: 13, color: subText, marginBottom: 20, lineHeight: 1.7 }}>
@@ -763,6 +792,7 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
           onLogin={login}
           onRegister={registerUser}
           onClose={() => setShowAuth(false)}
+          isDark={isDark}
         />
       )}
     </div>
