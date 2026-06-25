@@ -373,7 +373,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
       <a
         href={tool.url} target="_blank" rel="noopener noreferrer"
         onClick={handleCardClick}
-        className="tool-card relative group flex flex-col items-center justify-center bg-white dark:bg-slate-800 rounded-2xl p-5 overflow-hidden border-2 border-transparent shadow-sm hover:shadow-xl hover:shadow-ctrl-blue/10 hover:-translate-y-2 hover:border-gray-100 dark:hover:border-slate-700 transition-all duration-300 min-h-[180px] border-b-[3px] border-b-ctrl-blue/30 hover:border-b-ctrl-blue"
+        className="tool-card relative group flex flex-col items-center justify-center bg-white dark:bg-slate-800 rounded-2xl p-5 overflow-hidden border-2 border-slate-200 dark:border-transparent shadow-md dark:shadow-sm hover:shadow-xl hover:shadow-ctrl-blue/10 hover:-translate-y-2 hover:border-ctrl-blue/30 dark:hover:border-slate-700 transition-all duration-300 min-h-[180px] border-b-[3px] border-b-ctrl-blue/40 hover:border-b-ctrl-blue"
         onMouseEnter={() => onMouseEnter(tool)} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
       >
         <button onClick={handleFavoriteClick}

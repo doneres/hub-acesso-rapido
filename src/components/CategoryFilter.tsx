@@ -80,7 +80,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ active, onChange, count
               focus:outline-none focus-visible:ring-2 focus-visible:ring-ctrl-blue
               ${isActive
                 ? `${cat.activeColor} text-white shadow-md -translate-y-0.5`
-                : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-2 border-gray-200 dark:border-slate-700 hover:border-ctrl-blue/30 hover:-translate-y-0.5 hover:shadow-sm'
+                : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-2 border-gray-300 dark:border-slate-700 hover:border-ctrl-blue/50 hover:-translate-y-0.5 hover:shadow-sm'
               }
             `}
           >
@@ -96,7 +96,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ active, onChange, count
 
             {/* Número para categorias normais */}
             {showNumber && (
-              <span className={`ml-0.5 text-[10px] font-bold tabular-nums ${isActive ? 'opacity-70' : 'text-gray-400 dark:text-slate-500'}`}>
+              <span className={`ml-0.5 text-[10px] font-bold tabular-nums ${isActive ? 'opacity-70' : 'text-gray-500 dark:text-slate-500'}`}>
                 {count}
               </span>
             )}

@@ -46,7 +46,7 @@ const ToolListItem: React.FC<ToolListItemProps> = ({
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleClick}
-        className="group flex items-center gap-4 bg-white dark:bg-slate-800 rounded-2xl px-4 py-3.5 border-2 border-transparent hover:border-ctrl-blue/20 dark:hover:border-slate-600 shadow-sm hover:shadow-md transition-all duration-200"
+        className="group flex items-center gap-4 bg-white dark:bg-slate-800 rounded-2xl px-4 py-3.5 border-2 border-slate-200 dark:border-transparent hover:border-ctrl-blue/40 dark:hover:border-slate-600 shadow-sm hover:shadow-md transition-all duration-200"
       >
         {/* Ícone */}
         <div className={`w-11 h-11 flex items-center justify-center ${tool.iconBg} dark:bg-slate-700 rounded-xl shrink-0 group-hover:scale-105 transition-transform duration-200`}>
@@ -78,7 +78,7 @@ const ToolListItem: React.FC<ToolListItemProps> = ({
               </span>
             )}
           </div>
-          <p className="text-xs text-gray-500 dark:text-slate-400 line-clamp-1">
+          <p className="text-xs text-gray-600 dark:text-slate-400 line-clamp-1">
             <HighlightText text={tool.tooltip.desc} query={searchQuery} />
           </p>
         </div>

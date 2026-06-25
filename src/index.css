@@ -632,7 +632,7 @@
     background-size: 200% 100%;
   }
   .bg-dot-pattern {
-    background-image: radial-gradient(circle, #cbd5e1 1.5px, transparent 1.5px);
+    background-image: radial-gradient(circle, #94a3b8 1.5px, transparent 1.5px);
     background-size: 32px 32px;
   }
   .dark .bg-dot-pattern {

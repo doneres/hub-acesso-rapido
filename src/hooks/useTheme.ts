@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 
 export function useTheme() {
   const [isDark, setIsDark] = useState<boolean>(() => {
-    return localStorage.getItem('theme') === 'dark';
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') return false;
+    return true; // padrão: modo escuro
   });
 
   useEffect(() => {

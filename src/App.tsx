@@ -1942,7 +1942,7 @@ const App: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen flex flex-col transition-colors duration-300 ${activeCosmetic ? '' : 'bg-[#eef2f6] dark:bg-[#0f172a] bg-dot-pattern'}`}
+      className={`min-h-screen flex flex-col transition-colors duration-300 ${activeCosmetic ? '' : 'bg-[#dde4ef] dark:bg-[#0f172a] bg-dot-pattern'}`}
       style={activeCosmetic ? { backgroundColor: isDark ? activeCosmetic.darkBg : activeCosmetic.lightBg } : undefined}
     >
       {/* Backgrounds temáticos */}
@@ -2006,7 +2006,7 @@ const App: React.FC = () => {
           <div className="flex items-center gap-1.5 flex-wrap min-h-[32px]">
             {showLevelFilter && (
               <>
-                <span className="text-xs font-semibold text-gray-400 dark:text-slate-500 mr-1 shrink-0">
+                <span className="text-xs font-semibold text-gray-600 dark:text-slate-500 mr-1 shrink-0">
                   Nível:
                 </span>
                 {LEVELS.map(level => {
@@ -2019,7 +2019,7 @@ const App: React.FC = () => {
                       className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all duration-200
                         ${isActive
                           ? styles.active + ' shadow-sm'
-                          : 'bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 hover:border-ctrl-blue/30 hover:-translate-y-0.5'
+                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-400 border border-gray-300 dark:border-slate-700 hover:border-ctrl-blue/30 hover:-translate-y-0.5'
                         }`}
                     >
                       {!isActive && styles.dot && (
@@ -2038,12 +2038,12 @@ const App: React.FC = () => {
 
             {/* Ordenação */}
             <div className="relative flex items-center">
-              <ArrowUpDown className="absolute left-2.5 w-3 h-3 text-gray-400 pointer-events-none" />
+              <ArrowUpDown className="absolute left-2.5 w-3 h-3 text-gray-500 pointer-events-none" />
               <select
                 value={sortOption}
                 onChange={e => setSortOption(e.target.value as SortOption)}
                 title="Ordenar ferramentas"
-                className="pl-7 pr-3 py-1.5 text-xs font-bold bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 rounded-full hover:border-ctrl-blue/30 focus:outline-none focus:border-ctrl-blue transition-colors cursor-pointer appearance-none"
+                className="pl-7 pr-3 py-1.5 text-xs font-bold bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-400 border border-gray-300 dark:border-slate-700 rounded-full hover:border-ctrl-blue/30 focus:outline-none focus:border-ctrl-blue transition-colors cursor-pointer appearance-none"
               >
                 <option value="default">Padrão</option>
                 <option value="az">A → Z</option>
@@ -2057,7 +2057,7 @@ const App: React.FC = () => {
             <button
               onClick={toggleViewMode}
               title={viewMode === 'grid' ? 'Mudar para lista' : 'Mudar para grade'}
-              className="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:border-ctrl-blue/30 hover:text-ctrl-blue dark:hover:text-blue-400 hover:-translate-y-0.5 transition-all duration-200"
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-400 hover:border-ctrl-blue/50 hover:text-ctrl-blue dark:hover:text-blue-400 hover:-translate-y-0.5 transition-all duration-200"
               aria-label={viewMode === 'grid' ? 'Mudar para lista' : 'Mudar para grade'}
             >
               {viewMode === 'grid'
@@ -2070,7 +2070,7 @@ const App: React.FC = () => {
             <button
               onClick={handleRandomTool}
               title="Abrir uma ferramenta aleatória"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 hover:border-ctrl-orange/40 hover:text-ctrl-orange hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-400 border border-gray-300 dark:border-slate-700 hover:border-ctrl-orange/40 hover:text-ctrl-orange hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200"
             >
               <Shuffle className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden sm:inline">Me surpreenda</span>
@@ -2080,7 +2080,7 @@ const App: React.FC = () => {
             <button
               onClick={() => setShareModalOpen(true)}
               title="Compartilhar uma coleção de ferramentas"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200 dark:border-slate-700 hover:border-ctrl-blue/40 hover:text-ctrl-blue hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-400 border border-gray-300 dark:border-slate-700 hover:border-ctrl-blue/40 hover:text-ctrl-blue hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200"
             >
               <Share2 className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden sm:inline">Compartilhar</span>
@@ -2094,7 +2094,7 @@ const App: React.FC = () => {
             <div className="flex items-center gap-2 min-w-0">
               <Share2 className="w-4 h-4 text-ctrl-blue shrink-0" />
               <span className="text-sm font-bold text-ctrl-blue">Coleção compartilhada</span>
-              <span className="text-xs text-gray-500 dark:text-slate-400 truncate">
+              <span className="text-xs text-gray-600 dark:text-slate-400 truncate">
                 · {sharedCollectionIds.length} ferramenta{sharedCollectionIds.length !== 1 ? 's' : ''} selecionada{sharedCollectionIds.length !== 1 ? 's' : ''}
               </span>
             </div>
@@ -2103,7 +2103,7 @@ const App: React.FC = () => {
                 setSharedCollectionIds(null);
                 window.history.replaceState(null, '', window.location.pathname);
               }}
-              className="flex items-center gap-1 text-xs font-bold text-gray-400 dark:text-slate-500 hover:text-ctrl-blue dark:hover:text-blue-400 transition-colors shrink-0"
+              className="flex items-center gap-1 text-xs font-bold text-gray-600 dark:text-slate-500 hover:text-ctrl-blue dark:hover:text-blue-400 transition-colors shrink-0"
             >
               <XIcon className="w-3.5 h-3.5" />
               Sair
@@ -2166,14 +2166,14 @@ const App: React.FC = () => {
                activeCategory === 'novos'     ? '✨' :
                searchQuery ? '🔍' : '📭'}
             </div>
-            <h3 className="text-xl font-bold text-gray-500 dark:text-slate-400 mb-2">
+            <h3 className="text-xl font-bold text-gray-700 dark:text-slate-400 mb-2">
               {activeCategory === 'favoritos' ? 'Nenhum favorito ainda' :
                activeCategory === 'recentes'  ? 'Nenhuma ferramenta recente' :
                activeCategory === 'populares' ? 'Nenhuma ferramenta popular ainda' :
                activeCategory === 'novos'     ? 'Nenhuma ferramenta nova' :
                'Nada encontrado aqui'}
             </h3>
-            <p className="text-gray-400 dark:text-slate-500 text-sm mb-5 max-w-xs">
+            <p className="text-gray-600 dark:text-slate-500 text-sm mb-5 max-w-xs">
               {activeCategory === 'favoritos'
                 ? 'Clique no ❤️ nos cards para salvar suas ferramentas favoritas.'
                : activeCategory === 'recentes'
