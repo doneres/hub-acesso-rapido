@@ -1671,7 +1671,8 @@ const App: React.FC = () => {
       else if (hash === '#desafios')  setCurrentPage('desafios');
       else if (hash === '#detetive')  setCurrentPage('detetive');
       else if (hash === '#cssbattle')  setCurrentPage('cssbattle');
-      else if (hash === '#flexrocket') setCurrentPage('flexrocket');
+      else if (hash === '#flexrocket')     setCurrentPage('flexrocket');
+      else if (hash === '#reactbughunter') setCurrentPage('reactbughunter');
       else setCurrentPage('hub');
     };
     window.addEventListener('popstate', handlePopstate);
