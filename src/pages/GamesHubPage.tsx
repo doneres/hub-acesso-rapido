@@ -418,9 +418,10 @@ interface GamesHubPageProps {
   onBackToHub: () => void;
   onOpenDetetive: () => void;
   onOpenCssBattle: () => void;
+  onOpenFlexRocket: () => void;
 }
 
-export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle }: GamesHubPageProps) {
+export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket }: GamesHubPageProps) {
   const { currentUser, leaderboard, users, login, registerUser, logout } = useGameState();
   const [showAuth, setShowAuth] = useState(false);
 
@@ -597,6 +598,17 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             glowColor2="#ef4444"
             accentText="#f87171"
             onPlay={onOpenCssBattle}
+          />
+          <GameCard
+            title="FOGUETES NA ÓRBITA"
+            subtitle="TUTORIAL FLEXBOX"
+            desc="Aprenda CSS Flexbox guiando foguetes para estações espaciais. 15 missões progressivas do básico ao avançado."
+            tags={['Flexbox', 'CSS', 'Solo', '15 missões']}
+            icon={<span style={{ fontSize: 26 }}>🚀</span>}
+            glowColor="#00ffcc"
+            glowColor2="#00ccaa"
+            accentText="#00ffcc"
+            onPlay={onOpenFlexRocket}
           />
         </div>
 
