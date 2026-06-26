@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Trophy, Swords, Search, LogIn, UserPlus, LogOut,
-  Crown, Medal, Lock, User, Zap, ChevronLeft, Star, Users, Shield, X, Bug, Cpu,
+  Crown, Medal, Lock, User, Zap, ChevronLeft, Star, Users, Shield, X, Bug, Cpu, Gamepad2,
 } from 'lucide-react';
 import { useGameState, LoginResult } from '../hooks/useGameState';
 
@@ -467,10 +467,11 @@ interface GamesHubPageProps {
   onOpenFlexRocket: () => void;
   onOpenReactBugHunter: () => void;
   onOpenBlockCode: () => void;
+  onOpenGodotArena: () => void;
   isDark?: boolean;
 }
 
-export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, onOpenReactBugHunter, onOpenBlockCode, isDark = true }: GamesHubPageProps) {
+export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, onOpenReactBugHunter, onOpenBlockCode, onOpenGodotArena, isDark = true }: GamesHubPageProps) {
   const { currentUser, leaderboard, users, login, registerUser, logout } = useGameState();
   const [showAuth, setShowAuth] = useState(false);
 
@@ -719,6 +720,27 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             glowColor2={isDark ? '#3a6e22' : '#2d5219'}
             accentText={isDark ? '#5D9E40' : '#3a6e22'}
             onPlay={onOpenBlockCode}
+            isDark={isDark}
+          />
+          <GameCard
+            title="GODOT ARENA"
+            subtitle="QUIZ MULTIPLAYER — CT"
+            desc="Quiz de GDScript em tempo real! Crie uma sala, desafie a turma e veja quem domina o Godot. Solo ou em grupo."
+            tags={['GDScript', 'Godot', 'Multiplayer', 'CT', '25 questões']}
+            icon={
+              <svg width="26" height="26" viewBox="0 0 400 400" fill="none">
+                <circle cx="200" cy="200" r="195" fill="#478cbf"/>
+                <ellipse cx="200" cy="185" rx="80" ry="75" fill="white" opacity="0.97"/>
+                <ellipse cx="200" cy="185" rx="55" ry="50" fill="#478cbf"/>
+                <circle cx="175" cy="168" r="14" fill="white"/>
+                <circle cx="225" cy="168" r="14" fill="white"/>
+                <path d="M160 240 Q200 275 240 240 L245 265 Q200 305 155 265Z" fill="white" opacity="0.95"/>
+              </svg>
+            }
+            glowColor={isDark ? '#478cbf' : '#2a6496'}
+            glowColor2={isDark ? '#2a6496' : '#1a4a70'}
+            accentText={isDark ? '#6cb6ff' : '#0366d6'}
+            onPlay={onOpenGodotArena}
             isDark={isDark}
           />
         </div>

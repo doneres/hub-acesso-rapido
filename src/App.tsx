@@ -31,6 +31,7 @@ import GamesHubPage from './pages/GamesHubPage';
 import FlexRocketPage from './pages/FlexRocketPage';
 import ReactBugHunterPage from './pages/ReactBugHunterPage';
 import BlockCodePage from './pages/BlockCodePage';
+import GodotArenaPage from './pages/GodotArenaPage';
 import PasswordModal from './components/PasswordModal';
 import FloatingNav from './components/FloatingNav';
 import { COSMETICS, CosmeticDef, getActiveCosmeticId } from './data/cosmetics';
@@ -1585,7 +1586,7 @@ const App: React.FC = () => {
     new URLSearchParams(window.location.search).get('sala')?.toUpperCase() ?? ''
   );
 
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'reactbughunter' | 'blockcode'>(() => {
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'reactbughunter' | 'blockcode' | 'godotar'>(() => {
     if (window.location.hash === '#roadmaps')       return 'roadmaps';
     if (window.location.hash === '#suporte')        return 'suporte';
     if (window.location.hash === '#maker')          return 'maker';
@@ -1596,6 +1597,7 @@ const App: React.FC = () => {
     if (window.location.hash === '#flexrocket')     return 'flexrocket';
     if (window.location.hash === '#reactbughunter') return 'reactbughunter';
     if (window.location.hash === '#blockcode')      return 'blockcode';
+    if (window.location.hash === '#godotar')        return 'godotar';
     if (new URLSearchParams(window.location.search).get('sala'))  return 'cssbattle';
     // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
@@ -1659,6 +1661,8 @@ const App: React.FC = () => {
       window.location.hash = 'reactbughunter';
     } else if (currentPage === 'blockcode') {
       window.location.hash = 'blockcode';
+    } else if (currentPage === 'godotar') {
+      window.location.hash = 'godotar';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -1678,6 +1682,7 @@ const App: React.FC = () => {
       else if (hash === '#flexrocket')     setCurrentPage('flexrocket');
       else if (hash === '#reactbughunter') setCurrentPage('reactbughunter');
       else if (hash === '#blockcode')      setCurrentPage('blockcode');
+      else if (hash === '#godotar')        setCurrentPage('godotar');
       else setCurrentPage('hub');
     };
     window.addEventListener('popstate', handlePopstate);
@@ -1933,6 +1938,7 @@ const App: React.FC = () => {
         onOpenFlexRocket={() => setCurrentPage('flexrocket')}
         onOpenReactBugHunter={() => setCurrentPage('reactbughunter')}
         onOpenBlockCode={() => setCurrentPage('blockcode')}
+        onOpenGodotArena={() => setCurrentPage('godotar')}
         isDark={isDark}
       />
     );
@@ -1961,6 +1967,11 @@ const App: React.FC = () => {
   /* Programação em Blocos — CK */
   if (currentPage === 'blockcode') {
     return <BlockCodePage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
+  }
+
+  /* Godot Arena — Quiz multiplayer CT */
+  if (currentPage === 'godotar') {
+    return <GodotArenaPage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
   }
 
   return (
