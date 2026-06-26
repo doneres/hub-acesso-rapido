@@ -30,6 +30,7 @@ import CssBattlePage from './pages/CssBattlePage';
 import GamesHubPage from './pages/GamesHubPage';
 import FlexRocketPage from './pages/FlexRocketPage';
 import ReactBugHunterPage from './pages/ReactBugHunterPage';
+import BlockCodePage from './pages/BlockCodePage';
 import PasswordModal from './components/PasswordModal';
 import FloatingNav from './components/FloatingNav';
 import { COSMETICS, CosmeticDef, getActiveCosmeticId } from './data/cosmetics';
@@ -1584,7 +1585,7 @@ const App: React.FC = () => {
     new URLSearchParams(window.location.search).get('sala')?.toUpperCase() ?? ''
   );
 
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'reactbughunter'>(() => {
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'reactbughunter' | 'blockcode'>(() => {
     if (window.location.hash === '#roadmaps')       return 'roadmaps';
     if (window.location.hash === '#suporte')        return 'suporte';
     if (window.location.hash === '#maker')          return 'maker';
@@ -1594,6 +1595,7 @@ const App: React.FC = () => {
     if (window.location.hash === '#cssbattle')      return 'cssbattle';
     if (window.location.hash === '#flexrocket')     return 'flexrocket';
     if (window.location.hash === '#reactbughunter') return 'reactbughunter';
+    if (window.location.hash === '#blockcode')      return 'blockcode';
     if (new URLSearchParams(window.location.search).get('sala'))  return 'cssbattle';
     // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
@@ -1655,6 +1657,8 @@ const App: React.FC = () => {
       window.location.hash = 'flexrocket';
     } else if (currentPage === 'reactbughunter') {
       window.location.hash = 'reactbughunter';
+    } else if (currentPage === 'blockcode') {
+      window.location.hash = 'blockcode';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -1673,6 +1677,7 @@ const App: React.FC = () => {
       else if (hash === '#cssbattle')  setCurrentPage('cssbattle');
       else if (hash === '#flexrocket')     setCurrentPage('flexrocket');
       else if (hash === '#reactbughunter') setCurrentPage('reactbughunter');
+      else if (hash === '#blockcode')      setCurrentPage('blockcode');
       else setCurrentPage('hub');
     };
     window.addEventListener('popstate', handlePopstate);
@@ -1927,6 +1932,7 @@ const App: React.FC = () => {
         onOpenCssBattle={() => setCurrentPage('cssbattle')}
         onOpenFlexRocket={() => setCurrentPage('flexrocket')}
         onOpenReactBugHunter={() => setCurrentPage('reactbughunter')}
+        onOpenBlockCode={() => setCurrentPage('blockcode')}
         isDark={isDark}
       />
     );
@@ -1950,6 +1956,11 @@ const App: React.FC = () => {
   /* React Bug Hunter */
   if (currentPage === 'reactbughunter') {
     return <ReactBugHunterPage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
+  }
+
+  /* Programação em Blocos — CK */
+  if (currentPage === 'blockcode') {
+    return <BlockCodePage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
   }
 
   return (

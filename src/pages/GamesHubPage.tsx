@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Trophy, Swords, Search, LogIn, UserPlus, LogOut,
-  Crown, Medal, Lock, User, Zap, ChevronLeft, Star, Users, Shield, X,
+  Crown, Medal, Lock, User, Zap, ChevronLeft, Star, Users, Shield, X, Bug, Cpu,
 } from 'lucide-react';
 import { useGameState, LoginResult } from '../hooks/useGameState';
 
@@ -66,7 +66,30 @@ const PTCL = Array.from({ length: 22 }, (_, i) => ({
   color: ['#00ffcc', '#a78bfa', '#f87171', '#fbbf24', '#60a5fa'][i % 5],
 }));
 
-const AVATARS = ['🕵', '🔍', '🧠', '🤖', '💻', '🎯', '⚡', '🦊', '🐉', '🚀', '🎲', '🦁'];
+const AVATAR_COLORS = ['#ef4444','#f97316','#f59e0b','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#6366f1','#84cc16','#dc2626'];
+
+function stringToColor(str: string): string {
+  const colors = ['#ef4444','#3b82f6','#22c55e','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#f97316'];
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = hash * 31 + str.charCodeAt(i);
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function AvatarDisplay({ avatar, name, size = 28 }: { avatar: string; name: string; size?: number }) {
+  const isColor = avatar?.startsWith('#');
+  const color = isColor ? avatar : stringToColor(name);
+  return (
+    <div style={{
+      width: size, height: size, background: color, flexShrink: 0,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      border: '2px solid rgba(255,255,255,0.2)',
+    }}>
+      <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: size * 0.35, color: '#fff', lineHeight: 1 }}>
+        {name.charAt(0).toUpperCase()}
+      </span>
+    </div>
+  );
+}
 
 /* ═══════════════════════════════════════════════════════════
    AUTH MODAL
@@ -82,7 +105,7 @@ function AuthModal({ users, onLogin, onRegister, onClose, isDark }: {
   const [name, setName]   = useState('');
   const [pass, setPass]   = useState('');
   const [pass2, setPass2] = useState('');
-  const [av, setAv]       = useState(AVATARS[0]);
+  const [av, setAv]       = useState(AVATAR_COLORS[0]);
   const [err, setErr]     = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -184,17 +207,18 @@ function AuthModal({ users, onLogin, onRegister, onClose, isDark }: {
                 AVATAR
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 5 }}>
-                {AVATARS.map(a => (
+                {AVATAR_COLORS.map(a => (
                   <button key={a} onClick={() => setAv(a)}
                     style={{
-                      height: 36, fontSize: 18,
+                      height: 36,
                       background: av === a ? (isDark ? 'rgba(0,255,204,0.12)' : 'rgba(13,148,136,0.12)') : modalAvatBg,
                       border: `1.5px solid ${av === a ? modalAccent : modalAvatBd}`,
                       cursor: 'pointer', borderRadius: 4,
                       transform: av === a ? 'translateY(-2px)' : 'none',
                       transition: 'all .1s',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                    {a}
+                    <div style={{ width: 22, height: 22, background: a, border: '2px solid rgba(255,255,255,0.3)' }} />
                   </button>
                 ))}
               </div>
@@ -419,7 +443,7 @@ function RankRow({ rank, user, isMe, isDark }: { rank: number; user: any; isMe: 
       <div style={{ width: 22, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
         {medal}
       </div>
-      <span style={{ fontSize: 18, flexShrink: 0 }}>{user.avatar}</span>
+      <AvatarDisplay avatar={user.avatar} name={user.name} size={28} />
       <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: isMe ? '#00ffcc' : nameclr, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {user.name}{isMe ? ' (você)' : ''}
       </span>
@@ -442,10 +466,11 @@ interface GamesHubPageProps {
   onOpenCssBattle: () => void;
   onOpenFlexRocket: () => void;
   onOpenReactBugHunter: () => void;
+  onOpenBlockCode: () => void;
   isDark?: boolean;
 }
 
-export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, onOpenReactBugHunter, isDark = true }: GamesHubPageProps) {
+export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, onOpenReactBugHunter, onOpenBlockCode, isDark = true }: GamesHubPageProps) {
   const { currentUser, leaderboard, users, login, registerUser, logout } = useGameState();
   const [showAuth, setShowAuth] = useState(false);
 
@@ -549,7 +574,7 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
                 border: `1.5px solid ${isDark ? 'rgba(0,255,204,0.2)' : 'rgba(13,148,136,0.25)'}`,
                 borderRadius: 6,
               }}>
-                <span style={{ fontSize: 22 }}>{currentUser.avatar}</span>
+                <AvatarDisplay avatar={currentUser.avatar} name={currentUser.name} size={32} />
                 <div>
                   <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: accent }}>
                     {currentUser.name}
@@ -656,7 +681,16 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             subtitle="TUTORIAL FLEXBOX"
             desc="Aprenda CSS Flexbox guiando foguetes para estações espaciais. 15 missões progressivas do básico ao avançado."
             tags={['Flexbox', 'CSS', 'Solo', '15 missões']}
-            icon={<span style={{ fontSize: 26 }}>🚀</span>}
+            icon={
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <path d="M13 2C13 2 18 6 18 13C18 17 16 20 13 22C10 20 8 17 8 13C8 6 13 2 13 2Z" fill={accent} opacity="0.9"/>
+                <rect x="11" y="12" width="4" height="8" rx="1" fill={accent}/>
+                <path d="M9 18L6 22L10 21Z" fill={accentGd}/>
+                <path d="M17 18L20 22L16 21Z" fill={accentGd}/>
+                <circle cx="13" cy="10" r="2" fill="#fff" opacity="0.7"/>
+                <path d="M10 22L13 25L16 22" stroke={accentRd} strokeWidth="1.5" fill="none"/>
+              </svg>
+            }
             glowColor={isDark ? '#00ffcc' : '#0d9488'}
             glowColor2={isDark ? '#00ccaa' : '#0f766e'}
             accentText={accent}
@@ -668,11 +702,23 @@ export default function GamesHubPage({ onBackToHub, onOpenDetetive, onOpenCssBat
             subtitle="PRÁTICA REACT"
             desc="Encontre e corrija bugs reais em componentes React. Veja o resultado ao vivo enquanto resolve os 20 desafios progressivos."
             tags={['React', 'Bugs', 'useState', 'useEffect', '20 desafios']}
-            icon={<span style={{ fontSize: 26 }}>🐛</span>}
+            icon={<Bug size={26} color={isDark ? '#61dafb' : '#0891b2'} />}
             glowColor={isDark ? '#61dafb' : '#0891b2'}
             glowColor2={isDark ? '#38bdf8' : '#0284c7'}
             accentText={isDark ? '#61dafb' : '#0891b2'}
             onPlay={onOpenReactBugHunter}
+            isDark={isDark}
+          />
+          <GameCard
+            title="PROGRAMAÇÃO EM BLOCOS"
+            subtitle="TURMAS CK"
+            desc="Monte programas arrastando blocos de código e guie o Steve pelo mundo Minecraft! Aprenda lógica, loops e condicionais."
+            tags={['Blocos', 'Lógica', 'Loops', 'CK', '5 níveis']}
+            icon={<Cpu size={26} color={isDark ? '#5D9E40' : '#3a6e22'} />}
+            glowColor={isDark ? '#5D9E40' : '#3a6e22'}
+            glowColor2={isDark ? '#3a6e22' : '#2d5219'}
+            accentText={isDark ? '#5D9E40' : '#3a6e22'}
+            onPlay={onOpenBlockCode}
             isDark={isDark}
           />
         </div>
