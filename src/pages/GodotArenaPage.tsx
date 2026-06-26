@@ -587,11 +587,17 @@ export default function GodotArenaPage({ onBack, isDark=true }: Props) {
   const [reviewing, setReviewing] = useState(false);
 
   /* Refs */
-  const playerIdRef    = useRef('');
+  const playerIdRef    = useRef<string>((() => {
+    let pid = sessionStorage.getItem('godot_arena_pid');
+    if (!pid) { pid=`p_${Date.now()}_${Math.random().toString(36).slice(2,7)}`; sessionStorage.setItem('godot_arena_pid',pid); }
+    return pid;
+  })());
   const unsubRef       = useRef<(()=>void)|null>(null);
   const timerRef       = useRef<ReturnType<typeof setInterval>|null>(null);
   const reviewRef      = useRef<ReturnType<typeof setTimeout>|null>(null);
   const hostAdvRef     = useRef<ReturnType<typeof setTimeout>|null>(null);
+  const soloQRef       = useRef(0);
+  const soloIndicesRef = useRef<number[]>([]);
 
   const isHost = mode === 'create';
 
@@ -670,11 +676,14 @@ export default function GodotArenaPage({ onBack, isDark=true }: Props) {
     return () => { if (reviewRef.current) clearTimeout(reviewRef.current); };
   }, [isHost,view,mpStatus]);
 
-  /* MP state sync */
+  /* MP state sync — also transitions non-host players from lobby → game */
   useEffect(() => {
     if (mode==='solo') return;
     if (mpStatus==='review')   { setReviewing(true); }
-    else if (mpStatus==='question') { setReviewing(false); setAnswered(false); setSelected(null); setTimeLeft(QUESTION_TIME); }
+    else if (mpStatus==='question') {
+      setReviewing(false); setAnswered(false); setSelected(null); setTimeLeft(QUESTION_TIME);
+      setView('game');
+    }
     else if (mpStatus==='finished') { setView('results'); }
   }, [mpStatus,mode]);
 
@@ -682,13 +691,15 @@ export default function GodotArenaPage({ onBack, isDark=true }: Props) {
   function doSoloTimeUp() {
     if (answered) return;
     if (timerRef.current) clearInterval(timerRef.current);
+    const q = soloQRef.current;
     setAnswered(true); setReviewing(true);
-    setSoloAnswers(p=>({...p,[soloQ]:{opt:-1,correct:false,ms:QUESTION_TIME*1000}}));
+    setSoloAnswers(p=>({...p,[q]:{opt:-1,correct:false,ms:QUESTION_TIME*1000}}));
     reviewRef.current = setTimeout(doSoloNext, REVIEW_TIME*1000);
   }
   function doSoloNext() {
-    const next = soloQ+1;
-    if (next>=TOTAL_Q) { setView('results'); return; }
+    const next = soloQRef.current + 1;
+    if (next >= soloIndicesRef.current.length) { setView('results'); return; }
+    soloQRef.current = next;
     setSoloQ(next); setSoloQStart(Date.now()); setSelected(null); setAnswered(false); setReviewing(false); setTimeLeft(QUESTION_TIME);
   }
 
@@ -727,6 +738,7 @@ export default function GodotArenaPage({ onBack, isDark=true }: Props) {
     const pool = filteredIndices(selCats,selDiff);
     if (pool.length<3) { setError('Selecione mais categorias ou mude a dificuldade.'); return; }
     const idx = shuffle(pool).slice(0,Math.min(TOTAL_Q,pool.length));
+    soloIndicesRef.current = idx; soloQRef.current = 0;
     setSoloIndices(idx); setSoloQ(0); setSoloScore(0); setSoloAnswers({});
     setSelected(null); setAnswered(false); setReviewing(false); setTimeLeft(QUESTION_TIME); setSoloQStart(Date.now());
     setMode('solo'); setView('game');
@@ -784,9 +796,10 @@ export default function GodotArenaPage({ onBack, isDark=true }: Props) {
     if (timerRef.current) clearInterval(timerRef.current);
     const ms = Date.now()-soloQStart;
     const correct = opt===soloQuestion.ans;
+    const q = soloQRef.current;
     setSelected(opt); setAnswered(true); setReviewing(true);
     setSoloScore(s=>s+calcScore(correct,ms));
-    setSoloAnswers(p=>({...p,[soloQ]:{opt,correct,ms}}));
+    setSoloAnswers(p=>({...p,[q]:{opt,correct,ms}}));
     reviewRef.current = setTimeout(doSoloNext, REVIEW_TIME*1000);
   }
 
