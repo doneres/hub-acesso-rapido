@@ -1963,7 +1963,7 @@ const App: React.FC = () => {
 
   /* Flex Tower Defense */
   if (currentPage === 'flextower') {
-    return <FlexTowerPage onBackToHub={() => setCurrentPage('desafios')} isDark={isDark} />;
+    return <FlexTowerPage onBackToHub={() => setCurrentPage('desafios')} isDark={isDark} onToggleTheme={toggleTheme} />;
   }
 
   /* React Bug Hunter */

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ChevronLeft, Heart, Shield, Zap, Trophy, RefreshCw,
-  ChevronRight, Lightbulb, CheckCircle2,
+  ChevronRight, Lightbulb, CheckCircle2, Sun, Moon,
 } from 'lucide-react';
 import { gameTheme } from '../lib/gameTheme';
 import { useGameState } from '../hooks/useGameState';
@@ -10,16 +10,16 @@ import { useGameState } from '../hooks/useGameState';
    CONSTANTS — game physics (do not change without re-verifying column math)
 ═══════════════════════════════════════════════════════════ */
 const COLS    = 8;
-const BW      = 560;  // 8 cols × 70px — fits on 1024px screens
-const BH      = 350;
-const CW      = BW / COLS;   // 70px
-const TW      = 48;
-const TH      = 54;
-const TOW_Y   = 318;  // BH-70+TH/2 — top of tower zone + half tower
-const SPAWN_Y = -20;
-const EXIT_Y  = BH + 10;
+const BW      = 640;
+const BH      = 400;
+const CW      = BW / COLS;   // 80px
+const TW      = 56;
+const TH      = 60;
+const TOW_Y   = 330;
+const SPAWN_Y = -22;
+const EXIT_Y  = BH + 12;
 const FIRE_S  = 0.85;
-const RANGE   = CW * 0.72;   // 50.4px — same column fires
+const RANGE   = CW * 0.72;   // 57.6px — same column fires
 const MAX_LIVES = 5;
 const COINS_PER_KILL = 3;
 
@@ -45,13 +45,13 @@ interface Beam     { id:number; x:number;  fromY:number; toY:number; life:number
 
 /* ═══════════════════════════════════════════════════════════
    LEVEL DATA
-   Tower centers (BW=560, TW=48, CW=70) — all verified:
-   flex-end (1):         center=536 → col 7
-   center   (1):         center=280 → within RANGE of both col 3(245) and col 4(315)
-   space-between (2):    24, 536 → cols 0, 7
-   space-around  (2):    179, 381 → cols 2, 5
-   space-evenly  (3):    128, 280, 432 → cols 1, 4, 6
-   space-between (4):    24, 195, 365, 536 → cols 0, 2, 5, 7
+   Tower centers (BW=640, TW=56, CW=80, RANGE=57.6) — all verified:
+   flex-end (1):         center=612 → col 7
+   center   (1):         center=320 → within RANGE of cols 3(280) and 4(360) ±40<57.6
+   space-between (2):    28, 612 → cols 0, 7
+   space-around  (2):    204, 436 → cols 2(200), 5(440) ±4<57.6
+   space-evenly  (3):    146, 320, 494 → cols 1(120), 3-4, 6(520) ±26<57.6
+   space-between (4):    28, 223, 417, 612 → cols 0, 2(200), 5(440), 7
 ═══════════════════════════════════════════════════════════ */
 interface WaveDef { cols:number[]; count:number; speed:number; hp:number; interval:number }
 interface LevelDef {
@@ -156,9 +156,9 @@ function CoinBadge({ count, dark }: { count:number; dark:boolean }) {
 /* ═══════════════════════════════════════════════════════════
    MAIN COMPONENT
 ═══════════════════════════════════════════════════════════ */
-interface Props { onBackToHub:()=>void; isDark?:boolean }
+interface Props { onBackToHub:()=>void; isDark?:boolean; onToggleTheme?:()=>void }
 
-export default function FlexTowerPage({ onBackToHub, isDark: isDarkProp }: Props) {
+export default function FlexTowerPage({ onBackToHub, isDark: isDarkProp, onToggleTheme }: Props) {
   const { addCoins, addPoints } = useGameState();
 
   const dark = isDarkProp ?? true;
@@ -385,6 +385,14 @@ export default function FlexTowerPage({ onBackToHub, isDark: isDarkProp }: Props
             ))}
           </div>
           <span style={{ fontFamily:"'Press Start 2P',monospace", fontSize:8, color:muted }}>NÍV {levelIdx+1}/{LEVELS.length}</span>
+          {onToggleTheme && (
+            <button onClick={onToggleTheme} title={dark ? 'Modo claro' : 'Modo escuro'}
+              style={{ display:'flex', alignItems:'center', gap:5, background:'none', border:`1.5px solid ${accentBd}`, color:dark?'#fbbf24':subText, cursor:'pointer', padding:'6px 10px', borderRadius:4, transition:'all .15s' }}
+              onMouseEnter={e=>{const el=e.currentTarget as HTMLElement;el.style.borderColor=accent;el.style.color=accent;}}
+              onMouseLeave={e=>{const el=e.currentTarget as HTMLElement;el.style.borderColor=accentBd;el.style.color=dark?'#fbbf24':subText;}}>
+              {dark ? <Sun size={13}/> : <Moon size={13}/>}
+            </button>
+          )}
         </div>
       </div>
 
@@ -524,7 +532,7 @@ export default function FlexTowerPage({ onBackToHub, isDark: isDarkProp }: Props
         </div>
 
         {/* ════ RIGHT PANEL — Game Board ════ */}
-        <div className="ft-right" style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', background: dark ? '#040810' : '#1a1a2e', overflow:'auto', padding:'16px' }}>
+        <div className="ft-right" style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', background: dark ? '#040810' : '#e8eef8', overflow:'auto', padding:'16px' }}>
 
           <div ref={boardRef} style={{ width:BW, height:BH, position:'relative', background:'#060c18', border:`2px solid rgba(0,255,204,.2)`, borderRadius:4, overflow:'hidden', boxShadow:'0 0 40px rgba(0,255,204,.06)', userSelect:'none', flexShrink:0 }}>
 
