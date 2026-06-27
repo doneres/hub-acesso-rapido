@@ -14,3 +14,6 @@ dist-ssr/
 
 # Arquivos de ambiente local
 *.local
+.env
+.env.*
+!.env.example

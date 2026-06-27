@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { ChevronLeft, RotateCcw, Lightbulb, CheckCircle2, Lock, Play, ChevronRight } from 'lucide-react';
+import { gameTheme } from '../lib/gameTheme';
 
 /* ══════════════════════════════════════════════════════════════
    ANIMATIONS + RESPONSIVE
@@ -473,9 +474,9 @@ function LevelSelect({ completed, onSelect, onBack, isDark }: {
   const firstLocked = LEVELS.findIndex(l => !completed.has(l.id));
   const nextIdx     = firstLocked === -1 ? LEVELS.length - 1 : firstLocked;
 
-  const bg       = isDark ? '#060a14'  : '#dde4ef';
-  const mainText = isDark ? '#e2e8f0'  : '#1e293b';
-  const subText  = isDark ? '#64748b'  : '#475569';
+  const { bg, text: mainText } = gameTheme(isDark);
+  // subText mantém valor original (#64748b) — contraste mais forte que gameTheme.sub (#8b949e)
+  const subText  = isDark ? '#64748b' : '#475569';
   const muted    = isDark ? '#334155'  : '#64748b';
   const accent   = isDark ? '#00ffcc'  : '#0d9488';
   const accentBd = isDark ? 'rgba(0,255,204,.22)' : 'rgba(0,0,0,0.18)';
@@ -747,9 +748,8 @@ export default function FlexRocketPage({ onBack, isDark = true }: { onBack: () =
   const isUnlocked = levelIdx === 0 || completed.has(LEVELS[levelIdx - 1].id);
 
   /* ── Tema ── */
-  const bg       = isDark ? '#060a14'  : '#dde4ef';
-  const mainText = isDark ? '#e2e8f0'  : '#1e293b';
-  const subText  = isDark ? '#64748b'  : '#475569';
+  const { bg, text: mainText } = gameTheme(isDark);
+  const subText  = isDark ? '#64748b' : '#475569'; // original — contraste mais forte
   const muted    = isDark ? '#334155'  : '#64748b';
   const accent   = isDark ? '#00ffcc'  : '#0d9488';
   const accentBd = isDark ? 'rgba(0,255,204,.22)' : 'rgba(0,0,0,0.18)';

@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronLeft, Play, RotateCcw, Star, Lock, ChevronDown, ChevronUp, X, Plus, Minus } from 'lucide-react';
+import { gameTheme } from '../lib/gameTheme';
 
 /* ── CSS Animations ─────────────────────────────────────────────────────── */
 const ANIM = `
@@ -668,12 +669,10 @@ export default function BlockCodePage({ onBack, isDark = true }: Props) {
     ));
   }
 
-  // Theme
-  const bg     = isDark ? '#0d1117' : '#f0f4ff';
-  const panel  = isDark ? '#161b22' : '#ffffff';
-  const border = isDark ? '#30363d' : '#d0d7de';
-  const text   = isDark ? '#e6edf3' : '#1c2128';
-  const sub    = isDark ? '#8b949e' : '#57606a';
+  // Theme — bg/panel mantêm cores originais da página; border/text/sub do tema compartilhado
+  const { border, text, sub } = gameTheme(isDark);
+  const bg    = isDark ? '#0d1117' : '#f0f4ff';
+  const panel = isDark ? '#161b22' : '#ffffff';
 
   return (
     <div style={{ minHeight:'100vh', background: bg, color: text, fontFamily:'system-ui,-apple-system,sans-serif' }}>

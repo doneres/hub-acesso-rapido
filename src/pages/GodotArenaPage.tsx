@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { ref, set, update as dbUpdate, onValue, get } from 'firebase/database';
+import { gameTheme } from '../lib/gameTheme';
 
 /* ── Constants ─────────────────────────────────────────────────────────── */
 const QUESTION_TIME = 25;
@@ -810,7 +811,8 @@ export default function GodotArenaPage({ onBack, isDark=true }: Props) {
     const correct = opt===mpQuestion.ans;
     const pts = calcScore(correct,ms);
     const pid = playerIdRef.current;
-    const newScore = (roomPlayers[pid]?.score??0)+pts;
+    // Cap: máximo possível = TOTAL_Q questões × 300 pts cada
+    const newScore = Math.min((roomPlayers[pid]?.score??0)+pts, TOTAL_Q * 300);
     setSelected(opt); setAnswered(true);
     await dbUpdate(ref(db,`${FB_PATH}/${roomCode}/players/${pid}`),{
       answered:true, score:newScore, [`answers/${currentQMp}`]:{opt,correct,ms},
@@ -825,13 +827,10 @@ export default function GodotArenaPage({ onBack, isDark=true }: Props) {
   function copyCode() { navigator.clipboard.writeText(roomCode); setCopied(true); setTimeout(()=>setCopied(false),2000); }
 
   /* ── Theme ── */
-  const bg    = isDark?'#060a14':'#eef2ff';
-  const panel = isDark?'#0d1117':'#ffffff';
-  const pnl2  = isDark?'#161b22':'#f0f4ff';
-  const bdr   = isDark?'#30363d':'#d0d7de';
-  const tx    = isDark?'#e6edf3':'#1c2128';
-  const sub   = isDark?'#8b949e':'#57606a';
-  const acc   = '#478cbf';
+  const { bg: _baseBg, panel, panel2: pnl2, border: bdr, text: tx, sub } = gameTheme(isDark);
+  // Light-mode usa #eef2ff (azul-índigo da marca Godot); dark usa o tema base
+  const bg  = isDark ? _baseBg : '#eef2ff';
+  const acc = '#478cbf';
 
   /* ═══════════════════════════════════════════
      MENU

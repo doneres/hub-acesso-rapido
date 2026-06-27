@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { ref, set, get, onValue } from 'firebase/database';
 import { db } from '../lib/firebase';
 import { setActiveCosmeticId } from '../data/cosmetics';
+import { PUZZLES } from '../data/puzzles';
 
 export interface Powerups {
   shield: number;    // "Escudo de Streak" — próximo erro não zera streak
@@ -33,6 +34,19 @@ const STORAGE_KEY = 'ctrlplay_desafios_v2';
 const ADMIN_ID    = 'u_admin';
 const FB_USERS    = 'desafios_users';
 
+// Pontuação máxima possível: soma de todos os puzzles + bônus de streak máximo
+// Recalculado dinamicamente para se manter correto mesmo se novos puzzles forem adicionados
+const MAX_PUZZLE_POINTS = PUZZLES.reduce((acc, p) => acc + p.points, 0);
+// Bônus de streak: 1 bônus a cada 5 acertos, +10 pts cada. Com ~60 puzzles → ~12 bônus × 10 = 120 extra
+const MAX_SCORE = MAX_PUZZLE_POINTS + Math.floor(PUZZLES.length / 5) * 10 + 200; // margem de 200 para segurança
+
+const VALID_PUZZLE_IDS = new Set(PUZZLES.map(p => p.id));
+// Mapa id → pontos canônicos para evitar que o caller passe pontos adulterados
+const PUZZLE_POINTS_MAP = new Map(PUZZLES.map(p => [p.id, p.points]));
+
+// Limite por operação única de addCoins (ex: CSS Battle)
+const MAX_COINS_PER_OPERATION = 500;
+
 function fbKey(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]/g, '_');
 }
@@ -47,19 +61,49 @@ function hashPassword(s: string): string {
   return (h >>> 0).toString(36);
 }
 
-/** Garante que usuários antigos (sem os novos campos) tenham defaults */
+/** Garante que usuários antigos (sem os novos campos) tenham defaults + caps de segurança */
 function migrateUser(u: Partial<GameUser> & Pick<GameUser, 'id' | 'name'>): GameUser {
-  const pts = (u as any).points ?? 0;
+  // Admin é gerenciado pelo sistema — não aplica caps de pontuação
+  if (u.id === ADMIN_ID) {
+    return {
+      id: u.id, name: u.name,
+      avatar: u.avatar ?? '👑',
+      passwordHash: u.passwordHash ?? '',
+      points: (u as any).points ?? ADMIN_MIN_POINTS,
+      coins: (u as any).coins ?? ADMIN_MIN_POINTS,
+      solvedPuzzles: [], hintsUsed: [], streak: 0,
+      wrongAttempts: {},
+      powerups: (u as any).powerups ?? { shield: 5, eliminate: 5 },
+      purchasedCosmetics: (u as any).purchasedCosmetics ?? [],
+      activeCosmeticId: (u as any).activeCosmeticId ?? null,
+    };
+  }
+  const rawPts = (u as any).points ?? 0;
+  const rawCoins = (u as any).coins ?? rawPts;
+  // Filtra solvedPuzzles para aceitar apenas IDs conhecidos — evita que
+  // um aluno injete IDs falsos para inflar o progresso
+  const rawSolved: string[] = u.solvedPuzzles ?? [];
+  const safeSolved = rawSolved.filter(id => VALID_PUZZLE_IDS.has(id));
+  // Pontos máximos possíveis com os puzzles que o usuário diz ter resolvido.
+  // Margem de 200 só se aplica quando há puzzles resolvidos — evita que usuário
+  // com 0 puzzles tenha 200 pts "de graça" por conta do offset incondicional.
+  const solvedBase = safeSolved.reduce((acc, id) => acc + (PUZZLE_POINTS_MAP.get(id) ?? 0), 0);
+  const solvedMax  = safeSolved.length === 0
+    ? 0
+    : solvedBase + Math.floor(safeSolved.length / 5) * 10 + 200;
+  // Se os pontos excederem o máximo possível, é sinal de adulteração
+  const safePoints = Math.min(rawPts, MAX_SCORE, solvedMax);
+  const safeCoins  = Math.min(rawCoins, MAX_SCORE * 2); // coins podem ser maiores (CSS Battle)
   return {
     id:                 u.id,
     name:               u.name,
     avatar:             u.avatar             ?? '🕵',
     passwordHash:       u.passwordHash       ?? '',
-    points:             pts,
-    coins:              (u as any).coins     ?? pts,  // migração: começa com coins = pontos atuais
-    solvedPuzzles:      u.solvedPuzzles      ?? [],
-    hintsUsed:          u.hintsUsed          ?? [],
-    streak:             u.streak             ?? 0,
+    points:             Math.max(0, safePoints),
+    coins:              Math.max(0, safeCoins),
+    solvedPuzzles:      safeSolved,
+    hintsUsed:          (u.hintsUsed ?? []).filter((id: string) => VALID_PUZZLE_IDS.has(id)),
+    streak:             Math.min((u.streak ?? 0), PUZZLES.length),
     wrongAttempts:      (u as any).wrongAttempts      ?? {},
     powerups:           (u as any).powerups           ?? { shield: 0, eliminate: 0 },
     purchasedCosmetics: (u as any).purchasedCosmetics ?? [],
@@ -82,9 +126,15 @@ function ensureAdmin(state: GameState): GameState {
     }
     return state;
   }
+  const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD as string | undefined;
+  // Se a env var não estiver definida, usa sentinela impossível de produzir via hashPassword()
+  // para impedir login admin com senha vazia previsível
+  const adminHash = adminPassword
+    ? hashPassword(adminPassword)
+    : 'ADMIN_DISABLED_DEFINA_VITE_ADMIN_PASSWORD';
   const admin: GameUser = {
     id: ADMIN_ID, name: 'admin', avatar: '👑',
-    passwordHash: hashPassword('Ctrl@2026'),
+    passwordHash: adminHash,
     points: ADMIN_MIN_POINTS, coins: ADMIN_MIN_POINTS,
     solvedPuzzles: [], hintsUsed: [],
     streak: 0, wrongAttempts: {}, powerups: { shield: 5, eliminate: 5 },
@@ -244,9 +294,13 @@ export function useGameState() {
   const recordAnswer = useCallback((
     puzzleId: string,
     correct: boolean,
-    puzzlePoints: number,
+    _callerPoints: number, // ignorado — sempre usamos os pontos canônicos do PUZZLES
   ): { bonus: number; shieldUsed: boolean } => {
     if (!currentUser) return { bonus: 0, shieldUsed: false };
+
+    // Rejeita puzzles desconhecidos — impede injeção de IDs fictícios
+    const puzzlePoints = PUZZLE_POINTS_MAP.get(puzzleId);
+    if (puzzlePoints === undefined) return { bonus: 0, shieldUsed: false };
 
     const wrongCount = currentUser.wrongAttempts[puzzleId] ?? 0;
 
@@ -334,7 +388,9 @@ export function useGameState() {
 
   const addCoins = useCallback((amount: number): void => {
     if (!currentUser || amount <= 0) return;
-    update({ ...currentUser, coins: currentUser.coins + amount });
+    // Cap por operação — impede que uma única chamada inflacione moedas sem limite
+    const safeAmount = Math.min(amount, MAX_COINS_PER_OPERATION);
+    update({ ...currentUser, coins: currentUser.coins + safeAmount });
   }, [currentUser, update]);
 
   // Firebase tem prioridade no leaderboard (tempo real); fallback local

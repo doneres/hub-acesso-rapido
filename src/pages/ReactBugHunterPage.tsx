@@ -3,6 +3,8 @@ import {
   ChevronLeft, CheckCircle2, XCircle, Lightbulb, Zap, Trophy,
   Bug, X, RotateCcw, Code2, Flame, Star,
 } from 'lucide-react';
+import { useGameState } from '../hooks/useGameState';
+import { gameTheme } from '../lib/gameTheme';
 
 /* ── Animações ──────────────────────────────────────────────────────────── */
 const ANIM_CSS = `
@@ -25,18 +27,21 @@ const R = '#61DAFB'; // react blue
 const RD = 'rgba(97,218,251,0.13)';
 
 function T(dark: boolean) {
+  const base = gameTheme(dark);
+  // bg, panel e card mantêm a identidade visual React-blue da página;
+  // apenas border/text/sub vêm do tema compartilhado
   return dark ? {
     bg: '#080d18', panel: '#0c1220', code: '#060a10',
-    card: '#0f1825', border: '#1a2540', text: '#e2e8f0',
-    sub: '#64748b', mut: '#2d3748', accent: R, accentDim: RD,
-    inp: '#060a10', inpBd: '#1a2540',
+    card: '#0f1825', border: base.border, text: base.text,
+    sub: base.sub, mut: '#2d3748', accent: R, accentDim: RD,
+    inp: '#060a10', inpBd: base.border,
     bugBg: 'rgba(239,68,68,0.15)', bugBd: '#ef4444',
     okBg: 'rgba(34,197,94,0.12)', okBd: '#22c55e',
   } : {
-    bg: '#eef2f8', panel: '#ffffff', code: '#1e1e2e',
-    card: '#ffffff', border: '#dde4ef', text: '#0f172a',
-    sub: '#475569', mut: '#94a3b8', accent: '#0891b2', accentDim: 'rgba(8,145,178,0.1)',
-    inp: '#f8fafc', inpBd: '#dde4ef',
+    bg: base.bg, panel: base.panel, code: '#1e1e2e',
+    card: base.panel, border: base.border, text: base.text,
+    sub: base.sub, mut: '#94a3b8', accent: '#0891b2', accentDim: 'rgba(8,145,178,0.1)',
+    inp: '#f8fafc', inpBd: base.border,
     bugBg: 'rgba(239,68,68,0.1)', bugBd: '#dc2626',
     okBg: 'rgba(34,197,94,0.09)', okBd: '#16a34a',
   };
@@ -1417,7 +1422,11 @@ interface Props { onBack: () => void; isDark?: boolean; }
 
 export default function ReactBugHunterPage({ onBack, isDark = true }: Props) {
   const th = T(isDark);
+  const { addCoins } = useGameState();
   const [currentId, setCurrentId] = useState(CHALLENGES[0].id);
+  // ref síncrono para evitar double-click conceder moedas em dobro
+  // (useState é assíncrono e não reflete no mesmo ciclo de evento)
+  const solvedRef = useRef(new Set<string>());
   const [userInput, setUserInput]   = useState('');
   const [submitted, setSubmitted]   = useState(false);
   const [correct, setCorrect]       = useState(false);
@@ -1445,13 +1454,16 @@ export default function ReactBugHunterPage({ onBack, isDark = true }: Props) {
     const ok = ch.validate(userInput);
     setSubmitted(true);
     setCorrect(ok);
-    if (ok && !solved.has(ch.id)) {
+    if (ok && !solvedRef.current.has(ch.id)) {
+      solvedRef.current.add(ch.id); // marca imediatamente (síncrono) — previne double-click
       const pts = hintShown ? Math.floor(ch.points / 2) : ch.points;
       const newCombo = combo + 1;
       const bonus = newCombo >= 3 ? Math.floor(pts * 0.5) : 0;
-      setTotalPts(p => p + pts + bonus);
+      const earned = pts + bonus;
+      setTotalPts(p => p + earned);
       setCombo(newCombo);
       setSolved(s => new Set([...s, ch.id]));
+      addCoins(earned); // credita moedas para uso na loja (não altera ranking de pontos)
       setPreviewFixed(true);
       setTimeout(() => setShowWin(true), 400);
     } else if (!ok) {
