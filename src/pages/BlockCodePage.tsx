@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronLeft, Play, RotateCcw, Star, Lock, ChevronDown, ChevronUp, X, Plus, Minus } from 'lucide-react';
 import { gameTheme } from '../lib/gameTheme';
+import { useGameState } from '../hooks/useGameState';
 
 /* ── CSS Animations ─────────────────────────────────────────────────────── */
 const ANIM = `
@@ -533,6 +534,7 @@ function WorldGrid({ level, pos, dir, grid, running, flash }:
 interface Props { onBack: () => void; isDark?: boolean; }
 
 export default function BlockCodePage({ onBack, isDark = true }: Props) {
+  const { addCoins, addPoints } = useGameState();
   const [levelIdx, setLevelIdx]     = useState(0);
   const [program, setProgram]       = useState<Block[]>([]);
   const [running, setRunning]       = useState(false);
@@ -624,6 +626,10 @@ export default function BlockCodePage({ onBack, isDark = true }: Props) {
       if (!completedLevels.includes(level.id)) {
         setCompletedLevels(c => [...c, level.id]);
         setUnlockedUp(u => Math.max(u, levelIdx + 2));
+        const coinsR = stars === 3 ? 18 : stars === 2 ? 12 : 8;
+        const ptsR   = stars === 3 ? 12 : stars === 2 ? 8 : 5;
+        addCoins(coinsR);
+        addPoints(ptsR);
       }
     } else if (bumped) {
       setShake(true);

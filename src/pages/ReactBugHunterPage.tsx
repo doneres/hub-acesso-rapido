@@ -1422,7 +1422,7 @@ interface Props { onBack: () => void; isDark?: boolean; }
 
 export default function ReactBugHunterPage({ onBack, isDark = true }: Props) {
   const th = T(isDark);
-  const { addCoins } = useGameState();
+  const { addCoins, addPoints } = useGameState();
   const [currentId, setCurrentId] = useState(CHALLENGES[0].id);
   // ref síncrono para evitar double-click conceder moedas em dobro
   // (useState é assíncrono e não reflete no mesmo ciclo de evento)
@@ -1463,7 +1463,8 @@ export default function ReactBugHunterPage({ onBack, isDark = true }: Props) {
       setTotalPts(p => p + earned);
       setCombo(newCombo);
       setSolved(s => new Set([...s, ch.id]));
-      addCoins(earned); // credita moedas para uso na loja (não altera ranking de pontos)
+      addCoins(earned);
+      addPoints(earned); // credita pontos no ranking de pontuação
       setPreviewFixed(true);
       setTimeout(() => setShowWin(true), 400);
     } else if (!ok) {

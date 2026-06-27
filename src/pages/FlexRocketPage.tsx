@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ChevronLeft, RotateCcw, Lightbulb, CheckCircle2, Lock, Play, ChevronRight } from 'lucide-react';
 import { gameTheme } from '../lib/gameTheme';
+import { useGameState } from '../hooks/useGameState';
 
 /* ══════════════════════════════════════════════════════════════
    ANIMATIONS + RESPONSIVE
@@ -669,6 +670,8 @@ function LevelSelect({ completed, onSelect, onBack, isDark }: {
    MAIN PAGE
 ══════════════════════════════════════════════════════════════ */
 export default function FlexRocketPage({ onBack, isDark = true }: { onBack: () => void; isDark?: boolean }) {
+  const { addCoins, addPoints } = useGameState();
+
   /* — persistence — */
   const [completed, setCompleted] = useState<Set<number>>(() => {
     try {
@@ -715,7 +718,9 @@ export default function FlexRocketPage({ onBack, isDark = true }: { onBack: () =
     setChecked(true);
     if (isWin) {
       setWon(true); setWrong(false);
+      const isNew = !completed.has(level.id);
       markCompleted(level.id);
+      if (isNew) { addCoins(12); addPoints(8); }
     } else {
       setWrong(true);
       setTimeout(() => setWrong(false), 500);

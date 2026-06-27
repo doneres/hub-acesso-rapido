@@ -7,6 +7,7 @@ import {
 import { db } from '../lib/firebase';
 import { ref, set, update as dbUpdate, onValue, get } from 'firebase/database';
 import { gameTheme } from '../lib/gameTheme';
+import { useGameState } from '../hooks/useGameState';
 
 /* ── Constants ─────────────────────────────────────────────────────────── */
 const QUESTION_TIME = 25;
@@ -557,6 +558,8 @@ type Mode = 'solo' | 'create' | 'join';
 interface Props { onBack:()=>void; isDark?:boolean; }
 
 export default function GodotArenaPage({ onBack, isDark=true }: Props) {
+  const { addCoins, addPoints } = useGameState();
+
   /* UI */
   const [view,        setView]        = useState<View>('menu');
   const [mode,        setMode]        = useState<Mode>('solo');
@@ -801,6 +804,7 @@ export default function GodotArenaPage({ onBack, isDark=true }: Props) {
     setSelected(opt); setAnswered(true); setReviewing(true);
     setSoloScore(s=>s+calcScore(correct,ms));
     setSoloAnswers(p=>({...p,[q]:{opt,correct,ms}}));
+    if (correct) { addCoins(5); addPoints(3); }
     reviewRef.current = setTimeout(doSoloNext, REVIEW_TIME*1000);
   }
 
@@ -814,6 +818,7 @@ export default function GodotArenaPage({ onBack, isDark=true }: Props) {
     // Cap: máximo possível = TOTAL_Q questões × 300 pts cada
     const newScore = Math.min((roomPlayers[pid]?.score??0)+pts, TOTAL_Q * 300);
     setSelected(opt); setAnswered(true);
+    if (correct) { addCoins(5); addPoints(3); }
     await dbUpdate(ref(db,`${FB_PATH}/${roomCode}/players/${pid}`),{
       answered:true, score:newScore, [`answers/${currentQMp}`]:{opt,correct,ms},
     });

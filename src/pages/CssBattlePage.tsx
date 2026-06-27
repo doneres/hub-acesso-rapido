@@ -1550,7 +1550,8 @@ function buildObfuscatedDoc(html: string, css: string, seed: string): string {
   return buildDoc(oHtml, oCss + ' body *{user-select:none!important;pointer-events:none!important;}');
 }
 function earnCoinsForScore(score: number, difficulty: Challenge['difficulty']): number {
-  const base = difficulty === 'Fácil' ? 10 : difficulty === 'Médio' ? 18 : 28;
+  // Fácil: 20 | Médio: 35 | Difícil: 55 — balanceado com custo total de dicas (0+10+20=30)
+  const base = difficulty === 'Fácil' ? 20 : difficulty === 'Médio' ? 35 : 55;
   if (score >= 80) return base;
   if (score >= 60) return Math.floor(base * 0.5);
   if (score >= 40) return Math.floor(base * 0.25);
@@ -1593,7 +1594,7 @@ const TEMP_COINS_KEY = 'cssbattle_temp_coins';
 
 const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: string }> = ({ onBackToHub, initialJoinCode }) => {
   const { isDark } = useTheme();
-  const { currentUser, spendCoins, addCoins } = useGameState();
+  const { currentUser, spendCoins, addCoins, addPoints } = useGameState();
   const [tempCoins, setTempCoins] = useState<number>(()=>{
     const s = localStorage.getItem(TEMP_COINS_KEY);
     return s ? Math.max(0, parseInt(s,10)) : 50;
@@ -1864,10 +1865,10 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
       setSubmitted(true);
       setTimeTaken(Math.floor((Date.now() - battleStartRef.current) / 1000));
 
-      /* award coins */
+      /* award coins + points */
       const earned = earnCoinsForScore(score, getCh(challengeIdx).difficulty);
       if (earned > 0) {
-        if (currentUser) { addCoins(earned); }
+        if (currentUser) { addCoins(earned); addPoints(earned); }
         else { setTempCoins(prev => { const n = prev+earned; localStorage.setItem(TEMP_COINS_KEY, String(n)); return n; }); }
         setCoinsEarned(earned);
         setTimeout(() => setCoinsEarned(0), 3200);
@@ -2196,12 +2197,15 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   /* ── Hint unlock ── */
   const unlockHint = (level: 1|2|3)=>{
     if (hintLevel >= level) return;
-    const cost = HINT_COSTS[level-1];
-    if (cost > 0) {
-      const ok = currentUser ? spendCoins(cost) : spendTempCoins(cost);
-      if (!ok){ setHintMsg(`Moedas insuficientes — esta dica custa ${cost} moedas.`); return; }
+    // Cobra o custo acumulado de todos os níveis ainda não desbloqueados até este
+    // (garante que pular a dica 1 para ir direto à dica 2 não economiza moedas)
+    let totalCost = 0;
+    for (let l = hintLevel + 1; l <= level; l++) totalCost += HINT_COSTS[(l-1) as 0|1|2];
+    if (totalCost > 0) {
+      const ok = currentUser ? spendCoins(totalCost) : spendTempCoins(totalCost);
+      if (!ok){ setHintMsg(`Moedas insuficientes — esta dica custa ${totalCost} moeda${totalCost!==1?'s':''}.`); return; }
     }
-    setHintLevel(level);
+    setHintLevel(level); // auto-revela todas as dicas anteriores (hintLevel >= n)
     setHintMsg('');
   };
 

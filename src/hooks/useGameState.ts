@@ -46,6 +46,10 @@ const PUZZLE_POINTS_MAP = new Map(PUZZLES.map(p => [p.id, p.points]));
 
 // Limite por operação única de addCoins (ex: CSS Battle)
 const MAX_COINS_PER_OPERATION = 500;
+// Limite por operação única de addPoints (mini-games)
+const MAX_POINTS_PER_OPERATION = 60;
+// Orçamento de pontos de mini-games: permite acumular pontos mesmo sem puzzles do quiz resolvidos
+const MINI_GAME_BUDGET = 500;
 
 function fbKey(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]/g, '_');
@@ -88,9 +92,9 @@ function migrateUser(u: Partial<GameUser> & Pick<GameUser, 'id' | 'name'>): Game
   // Margem de 200 só se aplica quando há puzzles resolvidos — evita que usuário
   // com 0 puzzles tenha 200 pts "de graça" por conta do offset incondicional.
   const solvedBase = safeSolved.reduce((acc, id) => acc + (PUZZLE_POINTS_MAP.get(id) ?? 0), 0);
-  const solvedMax  = safeSolved.length === 0
-    ? 0
-    : solvedBase + Math.floor(safeSolved.length / 5) * 10 + 200;
+  // MINI_GAME_BUDGET garante que pontos de mini-games (CSS Battle, FlexRocket, etc.)
+  // não sejam zerados pelo anti-cheat mesmo sem puzzles do quiz resolvidos
+  const solvedMax  = solvedBase + Math.floor(safeSolved.length / 5) * 10 + MINI_GAME_BUDGET;
   // Se os pontos excederem o máximo possível, é sinal de adulteração
   const safePoints = Math.min(rawPts, MAX_SCORE, solvedMax);
   const safeCoins  = Math.min(rawCoins, MAX_SCORE * 2); // coins podem ser maiores (CSS Battle)
@@ -393,6 +397,12 @@ export function useGameState() {
     update({ ...currentUser, coins: currentUser.coins + safeAmount });
   }, [currentUser, update]);
 
+  const addPoints = useCallback((amount: number): void => {
+    if (!currentUser || amount <= 0) return;
+    const safeAmount = Math.min(amount, MAX_POINTS_PER_OPERATION);
+    update({ ...currentUser, points: currentUser.points + safeAmount });
+  }, [currentUser, update]);
+
   // Firebase tem prioridade no leaderboard (tempo real); fallback local
   const leaderboard = fbLeaderboard.length > 0
     ? fbLeaderboard
@@ -402,6 +412,6 @@ export function useGameState() {
     currentUser, users: state.users, leaderboard,
     registerUser, login, logout,
     useHint, recordAnswer, buyPowerup, useEliminate,
-    buyCosmetic, equipCosmetic, spendCoins, addCoins,
+    buyCosmetic, equipCosmetic, spendCoins, addCoins, addPoints,
   };
 }
