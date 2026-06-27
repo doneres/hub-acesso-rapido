@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ChevronLeft, Heart, Shield, Zap, Trophy, RefreshCw,
-  ChevronRight, Lightbulb, Sun, Moon, CheckCircle2,
+  ChevronRight, Lightbulb, CheckCircle2,
 } from 'lucide-react';
 import { gameTheme } from '../lib/gameTheme';
 import { useGameState } from '../hooks/useGameState';
@@ -10,16 +10,16 @@ import { useGameState } from '../hooks/useGameState';
    CONSTANTS — game physics (do not change without re-verifying column math)
 ═══════════════════════════════════════════════════════════ */
 const COLS    = 8;
-const BW      = 640;
-const BH      = 400;
-const CW      = BW / COLS;   // 80px
-const TW      = 56;
-const TH      = 60;
-const TOW_Y   = 330;          // tower vertical center
-const SPAWN_Y = -22;
-const EXIT_Y  = BH + 12;
+const BW      = 560;  // 8 cols × 70px — fits on 1024px screens
+const BH      = 350;
+const CW      = BW / COLS;   // 70px
+const TW      = 48;
+const TH      = 54;
+const TOW_Y   = 318;  // BH-70+TH/2 — top of tower zone + half tower
+const SPAWN_Y = -20;
+const EXIT_Y  = BH + 10;
 const FIRE_S  = 0.85;
-const RANGE   = CW * 0.72;   // 57.6px — same column to fire
+const RANGE   = CW * 0.72;   // 50.4px — same column fires
 const MAX_LIVES = 5;
 const COINS_PER_KILL = 3;
 
@@ -45,13 +45,13 @@ interface Beam     { id:number; x:number;  fromY:number; toY:number; life:number
 
 /* ═══════════════════════════════════════════════════════════
    LEVEL DATA
-   Tower centers (BW=640, TW=56):
-   flex-end (1):         center 612 → col 7
-   center   (1):         center 320 → col 4 (cols 3,4)
-   space-between (2):    29, 611 → cols 0,7
-   space-around  (2):    163, 477 → cols 2,5
-   space-evenly  (3):    145, 320, 495 → cols 1,4,6
-   space-between (4):    29, 222, 415, 611 → cols 0,2,5,7
+   Tower centers (BW=560, TW=48, CW=70) — all verified:
+   flex-end (1):         center=536 → col 7
+   center   (1):         center=280 → within RANGE of both col 3(245) and col 4(315)
+   space-between (2):    24, 536 → cols 0, 7
+   space-around  (2):    179, 381 → cols 2, 5
+   space-evenly  (3):    128, 280, 432 → cols 1, 4, 6
+   space-between (4):    24, 195, 365, 536 → cols 0, 2, 5, 7
 ═══════════════════════════════════════════════════════════ */
 interface WaveDef { cols:number[]; count:number; speed:number; hp:number; interval:number }
 interface LevelDef {
@@ -161,7 +161,7 @@ interface Props { onBackToHub:()=>void; isDark?:boolean }
 export default function FlexTowerPage({ onBackToHub, isDark: isDarkProp }: Props) {
   const { addCoins, addPoints } = useGameState();
 
-  const [dark, setDark] = useState(isDarkProp ?? true);
+  const dark = isDarkProp ?? true;
 
   // ── Level / phase ───────────────────────────────────────
   const [levelIdx, setLevelIdx] = useState(0);
@@ -385,9 +385,6 @@ export default function FlexTowerPage({ onBackToHub, isDark: isDarkProp }: Props
             ))}
           </div>
           <span style={{ fontFamily:"'Press Start 2P',monospace", fontSize:8, color:muted }}>NÍV {levelIdx+1}/{LEVELS.length}</span>
-          <button onClick={()=>setDark(d=>!d)} title={dark ? 'Modo claro' : 'Modo escuro'} style={{ display:'flex', alignItems:'center', justifyContent:'center', width:34, height:34, background:'none', border:`1.5px solid ${accentBd}`, borderRadius:6, cursor:'pointer', color:subText, transition:'all .15s' }} onMouseEnter={e=>{const el=e.currentTarget as HTMLElement;el.style.color=accent;el.style.borderColor=accent;}} onMouseLeave={e=>{const el=e.currentTarget as HTMLElement;el.style.color=subText;el.style.borderColor=accentBd;}}>
-            {dark ? <Sun size={14}/> : <Moon size={14}/>}
-          </button>
         </div>
       </div>
 
@@ -395,10 +392,10 @@ export default function FlexTowerPage({ onBackToHub, isDark: isDarkProp }: Props
       <div className="ft-split" style={{ display:'flex', flex:1, overflow:'hidden', minHeight:0 }}>
 
         {/* ════ LEFT PANEL ════ */}
-        <div className="ft-left" style={{ width:'46%', display:'flex', flexDirection:'column', background:theme.panel, borderRight:`1px solid ${leftBd}`, overflow:'hidden' }}>
+        <div className="ft-left" style={{ width:360, flexShrink:0, display:'flex', flexDirection:'column', background:theme.panel, borderRight:`1px solid ${leftBd}`, overflow:'hidden' }}>
 
           {/* TOP-LEFT: Story, task, hint, reference, level map */}
-          <div style={{ flex:'0 0 auto', padding:'18px 20px 16px', borderBottom:`1px solid ${leftBd}`, overflowY:'auto', maxHeight:'55%' }}>
+          <div style={{ flex:'0 1 auto', padding:'16px 18px 14px', borderBottom:`1px solid ${leftBd}`, overflowY:'auto', minHeight:0 }}>
 
             {/* Level badge */}
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12, flexWrap:'wrap' }}>

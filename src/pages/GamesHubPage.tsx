@@ -317,11 +317,15 @@ function ShopSidebar({ currentUser, onBuy, onEquip }: {
 /* ═══════════════════════════════════════════════════════════
    GAME CARD
 ═══════════════════════════════════════════════════════════ */
-function GameCard({ title, subtitle, desc, tags, icon, gc, gc2, onPlay }: {
+function GameCard({ title, subtitle, desc, tags, icon, gc, gc2, onPlay, isDark = true }: {
   title:string; subtitle:string; desc:string; tags:string[];
-  icon:React.ReactNode; gc:string; gc2:string; onPlay:()=>void;
+  icon:React.ReactNode; gc:string; gc2:string; onPlay:()=>void; isDark?:boolean;
 }) {
   const [hov,setHov] = useState(false);
+  const cardBg = isDark
+    ? `linear-gradient(145deg, ${gc}0f 0%, #070d1a 55%, ${gc2}0a 100%)`
+    : `linear-gradient(145deg, ${gc}0a 0%, #ffffff 55%, ${gc2}06 100%)`;
+  const titleCol = isDark ? '#e2e8f0' : '#1e293b';
 
   return (
     <div
@@ -329,7 +333,7 @@ function GameCard({ title, subtitle, desc, tags, icon, gc, gc2, onPlay }: {
       onMouseLeave={()=>setHov(false)}
       onClick={onPlay}
       style={{
-        background:`linear-gradient(145deg, ${gc}0f 0%, #070d1a 55%, ${gc2}0a 100%)`,
+        background:cardBg,
         border:`2px solid ${hov?gc:gc+'55'}`,
         cursor:'pointer', position:'relative', overflow:'hidden',
         transform:hov?'translateY(-6px) scale(1.012)':'none',
@@ -360,7 +364,7 @@ function GameCard({ title, subtitle, desc, tags, icon, gc, gc2, onPlay }: {
           </div>
           <div style={{minWidth:0,flex:1}}>
             <div style={{ fontFamily:"'Press Start 2P',monospace", fontSize:6, color:gc, marginBottom:5, letterSpacing:'0.08em', opacity:0.8 }}>{subtitle}</div>
-            <div style={{ fontFamily:"'Press Start 2P',monospace", fontSize:9, color:'#e2e8f0', lineHeight:1.55, textShadow:hov?`0 0 8px ${gc}88`:'none', transition:'text-shadow .2s' }}>{title}</div>
+            <div style={{ fontFamily:"'Press Start 2P',monospace", fontSize:9, color:titleCol, lineHeight:1.55, textShadow:hov?`0 0 8px ${gc}88`:'none', transition:'text-shadow .2s' }}>{title}</div>
           </div>
         </div>
 
@@ -395,7 +399,7 @@ interface GamesHubPageProps {
 
 export default function GamesHubPage({
   onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, onOpenFlexTower,
-  onOpenReactBugHunter, onOpenBlockCode, onOpenGodotArena,
+  onOpenReactBugHunter, onOpenBlockCode, onOpenGodotArena, isDark = true,
 }: GamesHubPageProps) {
   const { currentUser, leaderboard, users, login, registerUser, logout, buyCosmetic, equipCosmetic } = useGameState();
   const [showAuth,setShowAuth] = useState(false);
@@ -403,25 +407,29 @@ export default function GamesHubPage({
   const myRank = currentUser ? leaderboard.findIndex(u=>u.id===currentUser.id)+1 : 0;
   const top3   = leaderboard.slice(0,3);
 
+  // Theme variables — respects global isDark setting
+  const pageBg   = isDark ? '#040810' : '#f0f4f8';
+  const pageCol  = isDark ? '#e2e8f0' : '#1e293b';
+  const cardBg   = isDark ? '#070d1a' : '#ffffff';
+  const subCol   = isDark ? '#64748b' : '#475569';
+  const heroBg   = isDark ? 'linear-gradient(180deg,rgba(0,255,204,0.04) 0%,rgba(0,0,0,0.5) 100%)' : 'linear-gradient(180deg,rgba(0,255,204,0.08) 0%,rgba(240,244,248,0.97) 100%)';
+  const rankBg   = isDark ? 'linear-gradient(180deg,rgba(251,191,36,0.04),rgba(0,0,0,0.4))' : 'linear-gradient(180deg,rgba(251,191,36,0.07),rgba(255,255,255,0.95))';
+
   return (
-    <div style={{ minHeight:'100vh', background:'#040810', backgroundImage:'linear-gradient(rgba(0,255,204,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.025) 1px,transparent 1px)', backgroundSize:'40px 40px', position:'relative', fontFamily:'system-ui,-apple-system,sans-serif', color:'#e2e8f0' }}>
+    <div style={{ minHeight:'100vh', background:pageBg, backgroundImage: isDark ? 'linear-gradient(rgba(0,255,204,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.025) 1px,transparent 1px)' : undefined, backgroundSize:'40px 40px', position:'relative', fontFamily:'system-ui,-apple-system,sans-serif', color:pageCol }}>
       <style>{ANIM}</style>
 
-      {/* Ambient radial glow */}
-      <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:1, background:'radial-gradient(ellipse 70% 50% at 50% 30%,rgba(0,255,204,0.05) 0%,transparent 70%)' }}/>
-
-      {/* Particles */}
-      <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:2 }}>
-        {PTCL.map(p=>(
-          <div key={p.id} style={{ position:'absolute', left:p.left, bottom:'3%', width:p.sz, height:p.sz, borderRadius:'50%', background:p.color, boxShadow:`0 0 ${p.sz*4}px ${p.color}`, animation:`floatUp ${p.dur}s linear ${p.delay}s infinite` }}/>
-        ))}
-      </div>
-
-      {/* Vignette */}
-      <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:3, background:'radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,0.8) 100%)' }}/>
-
-      {/* CRT scanlines */}
-      <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:4, backgroundImage:'linear-gradient(transparent 50%,rgba(0,0,0,0.04) 50%)', backgroundSize:'100% 3px', opacity:0.4 }}/>
+      {/* Dark-only ambient effects */}
+      {isDark && <>
+        <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:1, background:'radial-gradient(ellipse 70% 50% at 50% 30%,rgba(0,255,204,0.05) 0%,transparent 70%)' }}/>
+        <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:2 }}>
+          {PTCL.map(p=>(
+            <div key={p.id} style={{ position:'absolute', left:p.left, bottom:'3%', width:p.sz, height:p.sz, borderRadius:'50%', background:p.color, boxShadow:`0 0 ${p.sz*4}px ${p.color}`, animation:`floatUp ${p.dur}s linear ${p.delay}s infinite` }}/>
+          ))}
+        </div>
+        <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:3, background:'radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,0.8) 100%)' }}/>
+        <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:4, backgroundImage:'linear-gradient(transparent 50%,rgba(0,0,0,0.04) 50%)', backgroundSize:'100% 3px', opacity:0.4 }}/>
+      </>}
 
       {/* ═══ CONTENT ═══ */}
       <div style={{ position:'relative', zIndex:10, maxWidth:1400, margin:'0 auto', padding:'0 16px 60px' }}>
@@ -472,7 +480,7 @@ export default function GamesHubPage({
               <div style={{ flex:1, height:1, background:'linear-gradient(90deg,rgba(251,191,36,0.5),transparent)' }}/>
             </div>
 
-            <div style={{ background:'linear-gradient(180deg,rgba(251,191,36,0.04),rgba(0,0,0,0.4))', border:'1.5px solid rgba(251,191,36,0.18)', borderRadius:6, overflow:'hidden', boxShadow:'0 0 20px rgba(251,191,36,0.07)' }}>
+            <div style={{ background:rankBg, border:'1.5px solid rgba(251,191,36,0.18)', borderRadius:6, overflow:'hidden', boxShadow:'0 0 20px rgba(251,191,36,0.07)' }}>
               {leaderboard.length===0 ? (
                 <div style={{ padding:'28px 16px', textAlign:'center' }}>
                   <Trophy size={28} color="rgba(251,191,36,0.2)" style={{marginBottom:10}}/>
@@ -515,7 +523,7 @@ export default function GamesHubPage({
           <div style={{ flex:1, minWidth:0, animation:'slideUp .45s ease .05s both' }}>
 
             {/* HERO */}
-            <div style={{ textAlign:'center', marginBottom:20, padding:'28px 24px 22px', background:'linear-gradient(180deg,rgba(0,255,204,0.04) 0%,rgba(0,0,0,0.5) 100%)', border:'2px solid rgba(0,255,204,0.15)', position:'relative', overflow:'hidden', animation:'heroGlow 4.5s ease-in-out infinite', borderRadius:4 }}>
+            <div style={{ textAlign:'center', marginBottom:20, padding:'28px 24px 22px', background:heroBg, border:'2px solid rgba(0,255,204,0.15)', position:'relative', overflow:'hidden', animation:'heroGlow 4.5s ease-in-out infinite', borderRadius:4 }}>
               {[{top:0,left:0},{top:0,right:0},{bottom:0,left:0},{bottom:0,right:0}].map((pos,i)=>(
                 <div key={i} style={{ position:'absolute', ...pos, width:20, height:20, borderColor:'rgba(0,255,204,0.5)', borderStyle:'solid', borderWidth:0, ...(i===0?{borderTopWidth:2,borderLeftWidth:2}:i===1?{borderTopWidth:2,borderRightWidth:2}:i===2?{borderBottomWidth:2,borderLeftWidth:2}:{borderBottomWidth:2,borderRightWidth:2}), pointerEvents:'none' }}/>
               ))}
@@ -536,12 +544,12 @@ export default function GamesHubPage({
                 desc="Resolva casos de lógica, programação e matemática. Avance por níveis e conquiste o topo."
                 tags={['Lógica','Algoritmos','70+ casos']}
                 icon={<Search size={26} color="#a78bfa"/>}
-                gc="#a78bfa" gc2="#7c3aed" onPlay={onOpenDetetive}/>
+                gc="#a78bfa" gc2="#7c3aed" isDark={isDark} onPlay={onOpenDetetive}/>
               <GameCard title="CSS BATTLE" subtitle="SOLO & MULTIPLAYER"
                 desc="Recrie layouts com CSS puro contra o relógio. Batalhas em tempo real contra outros jogadores."
                 tags={['CSS','Multiplayer','60+ desafios']}
                 icon={<Swords size={26} color="#f87171"/>}
-                gc="#f87171" gc2="#ef4444" onPlay={onOpenCssBattle}/>
+                gc="#f87171" gc2="#ef4444" isDark={isDark} onPlay={onOpenCssBattle}/>
               <GameCard title="FOGUETES NA ÓRBITA" subtitle="TUTORIAL FLEXBOX"
                 desc="Guie foguetes para estações espaciais aprendendo CSS Flexbox. 15 missões progressivas."
                 tags={['Flexbox','CSS','15 missões']}
@@ -555,7 +563,7 @@ export default function GamesHubPage({
                     <path d="M10 22L13 25L16 22" stroke="#f87171" strokeWidth="1.5" fill="none"/>
                   </svg>
                 }
-                gc="#00ffcc" gc2="#00ccaa" onPlay={onOpenFlexRocket}/>
+                gc="#00ffcc" gc2="#00ccaa" isDark={isDark} onPlay={onOpenFlexRocket}/>
               <GameCard title="FLEX TOWER DEFENSE" subtitle="TOWER DEFENSE FLEXBOX"
                 desc="Posicione torres usando CSS Flexbox para defender sua base de ondas de invasores."
                 tags={['Flexbox','Tower Defense','6 níveis']}
@@ -568,17 +576,17 @@ export default function GamesHubPage({
                     <circle cx="38" cy="32" r="3" fill="#34d399" opacity="0.6"/>
                   </svg>
                 }
-                gc="#34d399" gc2="#059669" onPlay={onOpenFlexTower}/>
+                gc="#34d399" gc2="#059669" isDark={isDark} onPlay={onOpenFlexTower}/>
               <GameCard title="REACT BUG HUNTER" subtitle="PRÁTICA REACT"
                 desc="Encontre e corrija bugs reais em componentes React. Veja o resultado ao vivo enquanto resolve."
                 tags={['React','Bugs','20 desafios']}
                 icon={<Bug size={26} color="#61dafb"/>}
-                gc="#61dafb" gc2="#38bdf8" onPlay={onOpenReactBugHunter}/>
+                gc="#61dafb" gc2="#38bdf8" isDark={isDark} onPlay={onOpenReactBugHunter}/>
               <GameCard title="BLOCOS DE CÓDIGO" subtitle="TURMAS CK"
                 desc="Monte programas com blocos e guie o Steve pelo Minecraft! Lógica, loops e condicionais."
                 tags={['Blocos','Lógica','CK']}
                 icon={<Cpu size={26} color="#5D9E40"/>}
-                gc="#5D9E40" gc2="#3a6e22" onPlay={onOpenBlockCode}/>
+                gc="#5D9E40" gc2="#3a6e22" isDark={isDark} onPlay={onOpenBlockCode}/>
               <GameCard title="GODOT ARENA" subtitle="QUIZ MULTIPLAYER — CT"
                 desc="Quiz de GDScript em tempo real! Crie uma sala e desafie a turma. Solo ou em grupo."
                 tags={['GDScript','Multiplayer','CT']}
@@ -592,7 +600,7 @@ export default function GamesHubPage({
                     <path d="M160 240 Q200 275 240 240 L245 265 Q200 305 155 265Z" fill="white" opacity="0.95"/>
                   </svg>
                 }
-                gc="#478cbf" gc2="#2a6496" onPlay={onOpenGodotArena}/>
+                gc="#478cbf" gc2="#2a6496" isDark={isDark} onPlay={onOpenGodotArena}/>
             </div>
 
             {/* Stats */}
@@ -620,7 +628,7 @@ export default function GamesHubPage({
       </div>
 
       {showAuth&&(
-        <AuthModal users={users} onLogin={login} onRegister={registerUser} onClose={()=>setShowAuth(false)} isDark={true}/>
+        <AuthModal users={users} onLogin={login} onRegister={registerUser} onClose={()=>setShowAuth(false)} isDark={isDark}/>
       )}
     </div>
   );
