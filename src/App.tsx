@@ -29,6 +29,7 @@ import DesafiosPage from './pages/DesafiosPage';
 import CssBattlePage from './pages/CssBattlePage';
 import GamesHubPage from './pages/GamesHubPage';
 import FlexRocketPage from './pages/FlexRocketPage';
+import FlexTowerPage from './pages/FlexTowerPage';
 import ReactBugHunterPage from './pages/ReactBugHunterPage';
 import BlockCodePage from './pages/BlockCodePage';
 import GodotArenaPage from './pages/GodotArenaPage';
@@ -1586,7 +1587,7 @@ const App: React.FC = () => {
     new URLSearchParams(window.location.search).get('sala')?.toUpperCase() ?? ''
   );
 
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'reactbughunter' | 'blockcode' | 'godotar'>(() => {
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'flextower' | 'reactbughunter' | 'blockcode' | 'godotar'>(() => {
     if (window.location.hash === '#roadmaps')       return 'roadmaps';
     if (window.location.hash === '#suporte')        return 'suporte';
     if (window.location.hash === '#maker')          return 'maker';
@@ -1936,6 +1937,7 @@ const App: React.FC = () => {
         onOpenDetetive={() => setCurrentPage('detetive')}
         onOpenCssBattle={() => setCurrentPage('cssbattle')}
         onOpenFlexRocket={() => setCurrentPage('flexrocket')}
+        onOpenFlexTower={() => setCurrentPage('flextower')}
         onOpenReactBugHunter={() => setCurrentPage('reactbughunter')}
         onOpenBlockCode={() => setCurrentPage('blockcode')}
         onOpenGodotArena={() => setCurrentPage('godotar')}
@@ -1957,6 +1959,11 @@ const App: React.FC = () => {
   /* Foguetes na Órbita — jogo de CSS Flexbox */
   if (currentPage === 'flexrocket') {
     return <FlexRocketPage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
+  }
+
+  /* Flex Tower Defense */
+  if (currentPage === 'flextower') {
+    return <FlexTowerPage onBackToHub={() => setCurrentPage('desafios')} isDark={isDark} />;
   }
 
   /* React Bug Hunter */

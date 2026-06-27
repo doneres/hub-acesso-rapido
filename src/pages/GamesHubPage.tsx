@@ -389,12 +389,12 @@ function GameCard({ title, subtitle, desc, tags, icon, gc, gc2, onPlay }: {
 ═══════════════════════════════════════════════════════════ */
 interface GamesHubPageProps {
   onBackToHub:()=>void; onOpenDetetive:()=>void; onOpenCssBattle:()=>void;
-  onOpenFlexRocket:()=>void; onOpenReactBugHunter:()=>void;
+  onOpenFlexRocket:()=>void; onOpenFlexTower:()=>void; onOpenReactBugHunter:()=>void;
   onOpenBlockCode:()=>void; onOpenGodotArena:()=>void; isDark?:boolean;
 }
 
 export default function GamesHubPage({
-  onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket,
+  onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, onOpenFlexTower,
   onOpenReactBugHunter, onOpenBlockCode, onOpenGodotArena,
 }: GamesHubPageProps) {
   const { currentUser, leaderboard, users, login, registerUser, logout, buyCosmetic, equipCosmetic } = useGameState();
@@ -556,6 +556,19 @@ export default function GamesHubPage({
                   </svg>
                 }
                 gc="#00ffcc" gc2="#00ccaa" onPlay={onOpenFlexRocket}/>
+              <GameCard title="FLEX TOWER DEFENSE" subtitle="TOWER DEFENSE FLEXBOX"
+                desc="Posicione torres usando CSS Flexbox para defender sua base de ondas de invasores."
+                tags={['Flexbox','Tower Defense','6 níveis']}
+                icon={
+                  <svg width="26" height="26" viewBox="0 0 58 62" fill="none">
+                    <rect x="10" y="44" width="38" height="16" rx="2" fill="#0d1a2b" stroke="#34d399" strokeWidth="2"/>
+                    <rect x="16" y="22" width="26" height="26" rx="2" fill="#0d1a2b" stroke="#34d399" strokeWidth="2"/>
+                    <rect x="26" y="4" width="6" height="22" rx="2" fill="#34d399" opacity="0.9"/>
+                    <circle cx="20" cy="32" r="3" fill="#34d399" opacity="0.6"/>
+                    <circle cx="38" cy="32" r="3" fill="#34d399" opacity="0.6"/>
+                  </svg>
+                }
+                gc="#34d399" gc2="#059669" onPlay={onOpenFlexTower}/>
               <GameCard title="REACT BUG HUNTER" subtitle="PRÁTICA REACT"
                 desc="Encontre e corrija bugs reais em componentes React. Veja o resultado ao vivo enquanto resolve."
                 tags={['React','Bugs','20 desafios']}
@@ -588,7 +601,7 @@ export default function GamesHubPage({
                 { icon:<Users size={13} color="#00ffcc"/>, val:leaderboard.length, label:'jogadores', gc:'#00ffcc' },
                 { icon:<Star  size={13} color="#fbbf24"/>, val:'70+', label:'casos',        gc:'#fbbf24' },
                 { icon:<Zap   size={13} color="#f87171"/>, val:'60+', label:'CSS desafios', gc:'#f87171' },
-                { icon:<Shield size={13} color="#a78bfa"/>, val:6,    label:'jogos',        gc:'#a78bfa' },
+                { icon:<Shield size={13} color="#a78bfa"/>, val:7,    label:'jogos',        gc:'#a78bfa' },
               ].map(s=>(
                 <div key={s.label} style={{ display:'flex', alignItems:'center', gap:7, padding:'7px 14px', background:`${s.gc}08`, border:`1px solid ${s.gc}30`, borderRadius:4, flexShrink:0, boxShadow:`0 0 8px ${s.gc}18` }}>
                   {s.icon}
