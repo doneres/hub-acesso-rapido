@@ -1023,6 +1023,10 @@ const CHALLENGES: Challenge[] = [
   },
 ];
 
+/* ── Challenge ID lookup (IDs ≠ array indices for IDs 18-34) ─────────────── */
+const CHALLENGE_BY_ID = new Map(CHALLENGES.map(ch => [ch.id, ch]));
+function getCh(id: number): Challenge { return CHALLENGE_BY_ID.get(id) ?? CHALLENGES[0]; }
+
 /* ── Scoring ─────────────────────────────────────────────────────────────── */
 
 function parseRgb(s: string): [number,number,number]|null {
@@ -1228,26 +1232,24 @@ function calcScore(cid: number, iframe: HTMLIFrameElement): { score: number; det
       add('background com gradiente', gs('.cartao','background-image').includes('gradient'), 20);
       break;
     case 35: {
-      const hasAnyBg = Array.from(doc.querySelectorAll('*')).some(el=>{
-        const bg = win.getComputedStyle(el).backgroundColor;
-        return bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent';
-      });
-      add('tem h1 com nome', !!doc.querySelector('h1')?.textContent?.trim(), 30);
-      add('tem parágrafo p', !!doc.querySelector('p'), 25);
-      add('tem destaque mark', !!doc.querySelector('mark'), 25);
-      add('fundo colorido (CSS)', hasAnyBg, 20);
+      // Não usa hasAnyBg — body já tem background do buildDoc, dando 100% grátis
+      const cartaoBg = gs('.cartao','background-color');
+      add('tem h1 com nome', !!doc.querySelector('h1')?.textContent?.trim(), 20);
+      add('tem parágrafo p', !!doc.querySelector('p'), 15);
+      add('tem destaque mark', !!doc.querySelector('mark'), 15);
+      add('.cartao com background aplicado', cartaoBg!==''&&cartaoBg!=='rgba(0, 0, 0, 0)', 25);
+      add('.cartao com padding', px(gs('.cartao','padding-top'))>0, 15);
+      add('.cartao com border-radius', px(gs('.cartao','border-radius'))>0, 10);
       break;
     }
     case 36: {
-      const hasAnyBg36 = Array.from(doc.querySelectorAll('*')).some(el=>{
-        const bg = win.getComputedStyle(el).backgroundColor;
-        return bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent';
-      });
-      add('tem h1 (título)', !!doc.querySelector('h1'), 20);
-      add('tem h2 (subtítulo)', !!doc.querySelector('h2'), 20);
-      add('tem parágrafo p', !!doc.querySelector('p'), 20);
-      add('tem destaque mark', !!doc.querySelector('mark'), 20);
-      add('CSS aplicado', hasAnyBg36, 20);
+      const articleBg = gs('article','background-color');
+      add('tem h1 (título)', !!doc.querySelector('h1'), 15);
+      add('tem h2 (subtítulo)', !!doc.querySelector('h2'), 15);
+      add('tem parágrafo p', !!doc.querySelector('p'), 10);
+      add('tem destaque mark', !!doc.querySelector('mark'), 10);
+      add('article com borda lateral (border-left)', px(gs('article','border-left-width'))>0, 30);
+      add('article com fundo aplicado', articleBg!==''&&articleBg!=='rgba(0, 0, 0, 0)', 20);
       break;
     }
     case 37: {
@@ -1704,7 +1706,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   useEffect(()=>{
     const t = setTimeout(()=>{
       if (previewRef.current) {
-        const ch = CHALLENGES[challengeIdx];
+        const ch = getCh(challengeIdx);
         const html = ch.htmlEditable ? playerHtml : ch.targetHtml;
         previewRef.current.srcdoc = buildDoc(html, playerCode);
       }
@@ -1714,7 +1716,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
 
   useEffect(()=>{
     if (targetRef.current && view==='battle') {
-      const ch = CHALLENGES[challengeIdx];
+      const ch = getCh(challengeIdx);
       targetRef.current.srcdoc = buildObfuscatedDoc(ch.targetHtml, ch.targetCss, obfSeedRef.current);
     }
   }, [challengeIdx, view]);
@@ -1863,7 +1865,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
       setTimeTaken(Math.floor((Date.now() - battleStartRef.current) / 1000));
 
       /* award coins */
-      const earned = earnCoinsForScore(score, CHALLENGES[challengeIdx].difficulty);
+      const earned = earnCoinsForScore(score, getCh(challengeIdx).difficulty);
       if (earned > 0) {
         if (currentUser) { addCoins(earned); }
         else { setTempCoins(prev => { const n = prev+earned; localStorage.setItem(TEMP_COINS_KEY, String(n)); return n; }); }
@@ -1905,7 +1907,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     const nextRound = currentRound + 1;
     if (nextRound >= totalRounds) { setView('results'); return; }
     const nextIdx = challengeIndices[nextRound];
-    const nextCh = CHALLENGES[nextIdx];
+    const nextCh = getCh(nextIdx);
     setCurrentRound(nextRound);
     setChallengeIdx(nextIdx);
     setPlayerCode(nextCh.starterCss);
@@ -1984,7 +1986,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
           /* round avançou → mostra transição e reseta */
           setRoundTransition(true);
           setTimeout(()=>{
-            const nCh = CHALLENGES[cIdx];
+            const nCh = getCh(cIdx);
             setCurrentRound(cRound);
             setChallengeIdx(cIdx);
             setPlayerCode(nCh.starterCss);
@@ -1994,18 +1996,18 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
             submittedRef.current = false;
             hasEditedRef.current = false;
             const elapsed = data.startedAt ? Math.floor((Date.now()-data.startedAt)/1000) : 0;
-            setTimeLeft(Math.max(0, getChallengeTime(CHALLENGES[cIdx]) - elapsed));
+            setTimeLeft(Math.max(0, getChallengeTime(getCh(cIdx)) - elapsed));
             setRoundTransition(false);
           }, 3000);
         } else if (prevRoundRef.current < 0) {
           /* primeira entrada */
-          const nCh = CHALLENGES[cIdx];
+          const nCh = getCh(cIdx);
           setCurrentRound(cRound);
           setChallengeIdx(cIdx);
           const elapsed = data.startedAt ? Math.floor((Date.now()-data.startedAt)/1000) : 0;
           setPlayerCode(nCh.starterCss);
           setPlayerHtml(nCh.starterHtml ?? '');
-          setTimeLeft(Math.max(0, getChallengeTime(CHALLENGES[cIdx]) - elapsed));
+          setTimeLeft(Math.max(0, getChallengeTime(getCh(cIdx)) - elapsed));
           setPlayerScore(-1); setScoreDetails([]); setSubmitted(false);
           setView('battle');
         }
@@ -2117,7 +2119,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
     setCurrentRound(0);
     roundScoresRef.current = {};
     const idx = indices[0];
-    const startCh = CHALLENGES[idx];
+    const startCh = getCh(idx);
     setChallengeIdx(idx);
     setPlayerCode(startCh.starterCss);
     setPlayerHtml(startCh.starterHtml ?? '');
@@ -2219,10 +2221,10 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
   };
   const fmtTime  = (s: number)=>`${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
 
-  const challenge  = CHALLENGES[challengeIdx] ?? CHALLENGES[0];
+  const challenge  = getCh(challengeIdx);
   const myEntry    = allPlayers[playerId.current];
   const opponents  = Object.entries(allPlayers).filter(([id])=>id!==playerId.current);
-  const challengeMaxTime = CHALLENGES[challengeIdx] ? getChallengeTime(CHALLENGES[challengeIdx]) : 180;
+  const challengeMaxTime = getChallengeTime(getCh(challengeIdx));
   const timerPct   = (timeLeft/challengeMaxTime)*100;
   const timerColor = timeLeft>120 ? '#22c55e' : timeLeft>60 ? '#f59e0b' : '#ef4444';
   const catChallenges = catFilter==='todos' ? CHALLENGES : CHALLENGES.filter(c=>c.category===catFilter);
@@ -3039,7 +3041,7 @@ const CssBattlePage: React.FC<{ onBackToHub: () => void; initialJoinCode?: strin
           {!isMulti && roundResults.length>0 && (
             <div style={{marginBottom:22}}>
               {roundResults.map((r,i)=>{
-                const ch = CHALLENGES[r.challengeIdx];
+                const ch = getCh(r.challengeIdx);
                 const Ic = ch?.Icon ?? Circle;
                 return (
                   <div key={i} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 12px',borderRadius:10,background:isDark?'rgba(255,255,255,0.03)':'rgba(0,0,0,0.03)',marginBottom:6,textAlign:'left'}}>
