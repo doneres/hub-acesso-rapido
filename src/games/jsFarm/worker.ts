@@ -1,4 +1,4 @@
-import { DroneAction, MainToWorker, WorkerToMain } from './types';
+import { CropId, DroneAction, MainToWorker, WorkerToMain } from './types';
 
 /* ═══════════════════════════════════════════════════════════════
    FAZENDA.JS — Web Worker que executa o código do jogador
@@ -24,7 +24,7 @@ function sendAction(action: DroneAction): Promise<unknown> {
 
 const drone = {
   move: (dir: 'up' | 'down' | 'left' | 'right') => sendAction({ kind: 'move', dir }),
-  plant: (crop?: 'grama' | 'arbusto' | 'cenoura') => sendAction({ kind: 'plant', crop }),
+  plant: (crop?: CropId) => sendAction({ kind: 'plant', crop }),
   till: () => sendAction({ kind: 'till' }),
   harvest: () => sendAction({ kind: 'harvest' }),
   canHarvest: () => sendAction({ kind: 'canHarvest' }),

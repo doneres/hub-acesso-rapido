@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ChevronLeft, Play, Square, RotateCcw, Eraser, Coins, Terminal, HelpCircle, X, Lock,
-  Sun, Moon, Target, ChevronDown, ChevronUp, Check,
+  Sun, Moon, Target, ChevronDown, ChevronUp, Check, BarChart3,
 } from 'lucide-react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import {
   CROPS, CROP_TO_ITEM, ITEM_NAMES, SHOP_ITEMS, SELL_RATES, EXPAND_LEVELS, MAX_GRID_SIZE, createInitialFarm, applyAction, isCropReady,
-  actionDelayMs, shopItemLevel, canAffordShopItem, buyShopItem, canBuyStructure, buyStructure, canBuyExpand, buyExpand,
+  actionDelayMs, shopItemLevel, canBuyShopItem, buyShopItem, canBuyStructure, buyStructure, canBuyExpand, buyExpand,
 } from '../games/jsFarm/engine';
 import { CropId, ItemId, FarmState, MainToWorker, SaveData, WorkerToMain } from '../games/jsFarm/types';
 import { STRUCTURE_ORDER, STRUCTURES, StructureId, nextStructure, createEmptyUnlocks } from '../games/jsFarm/curriculum';
@@ -83,14 +83,20 @@ const OBJECTIVES: Objective[] = [
   { id: 'harvest1', label: 'Colha qualquer coisa pela primeira vez (a grama já cresce sozinha)', isDone: f => f.stock.feno + f.stock.madeira + f.stock.cenoura > 0 },
   { id: 'lacos', label: 'Desbloqueie "Laços" na loja', isDone: f => f.unlocks.lacos },
   { id: 'arbusto', label: 'Compre "Sementes de arbusto" e colha Madeira', isDone: f => f.stock.madeira > 0 },
-  { id: 'variaveis', label: 'Desbloqueie "Variáveis"', isDone: f => f.unlocks.variaveis },
-  { id: 'operadores', label: 'Desbloqueie "Operadores e condicionais"', isDone: f => f.unlocks.operadores },
+  { id: 'variaveis', label: 'Desbloqueie "Variáveis" e plante uma Árvore sem matar a muda', isDone: f => f.stock.madeira > 0 && f.upgrades.arvore > 0 },
+  { id: 'operadores', label: 'Desbloqueie "Operadores e condicionais" e colha o Girassol de maior valor da região', isDone: f => f.unlocks.operadores },
   { id: 'cenoura', label: 'Compre "Sementes de cenoura", are a terra com till() e colha uma Cenoura', isDone: f => f.stock.cenoura > 0 },
-  { id: 'funcoes', label: 'Desbloqueie "Funções"', isDone: f => f.unlocks.funcoes },
+  { id: 'funcoes', label: 'Desbloqueie "Funções" e feche um bloco 2×2 de Abóbora sincronizado', isDone: f => f.unlocks.funcoes },
   { id: 'expand', label: 'Expanda a fazenda pela primeira vez', isDone: f => f.upgrades.expand > 0 },
-  { id: 'listas', label: 'Desbloqueie "Listas"', isDone: f => f.unlocks.listas },
+  { id: 'listas', label: 'Desbloqueie "Listas" e colha Cacto em ordem crescente de tamanho', isDone: f => f.unlocks.listas },
   { id: 'dicionarios', label: 'Desbloqueie "Dicionários"', isDone: f => f.unlocks.dicionarios },
 ];
+
+/** Eficiência: fração das ações (move/plant/till/harvest) que renderam
+ *  colheita de verdade — base do bônus de pontos na Arena de Desafios. */
+function efficiency(stats: FarmState['stats']): number {
+  return stats.actions === 0 ? 0 : stats.harvests / stats.actions;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    PERSISTÊNCIA
@@ -102,6 +108,13 @@ function loadSave(): SaveData {
       const parsed = JSON.parse(raw) as SaveData;
       if (parsed.farm && typeof parsed.code === 'string') {
         if (!parsed.farm.unlocks) parsed.farm.unlocks = createEmptyUnlocks();
+        // Saves antigos não têm os campos das culturas/placar novos — preenche
+        // com os valores neutros em vez de invalidar o save inteiro.
+        parsed.farm.stock = Object.assign({ feno: 0, madeira: 0, cenoura: 0, oleo: 0, abobora: 0, fibra: 0 }, parsed.farm.stock);
+        parsed.farm.upgrades = Object.assign({ arvore: 0, girassol: 0, abobora: 0, cacto: 0 }, parsed.farm.upgrades);
+        if (!parsed.farm.stats) parsed.farm.stats = { actions: 0, harvests: 0, wasted: 0 };
+        if (parsed.farm.cactoStreak === undefined) parsed.farm.cactoStreak = 0;
+        if (parsed.farm.lastCactoValue === undefined) parsed.farm.lastCactoValue = null;
         return parsed;
       }
     }
@@ -211,13 +224,20 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
             });
             if (coins > 0) {
               if (currentUser) {
+                // Bônus de eficiência: não é só "quanto colheu", é quantas ações
+                // renderam colheita de verdade — código que erra menos ganha mais.
+                const eff = efficiency(farmRef.current.stats);
+                const bonus = Math.round(points * eff);
                 addCoins(coins);
-                addPoints(points);
+                addPoints(points + bonus);
+                if (bonus > 0) {
+                  appendLog(`+${bonus} pontos de bônus por eficiência (${Math.round(eff * 100)}% das ações viraram colheita).`, 'log');
+                }
               } else {
                 appendLog('Faça login na Arena de Desafios pra sua colheita virar moeda de verdade.', 'log');
               }
             }
-            const state = { ...farmRef.current, stock: { feno: 0, madeira: 0, cenoura: 0 } };
+            const state = { ...farmRef.current, stock: { feno: 0, madeira: 0, cenoura: 0, oleo: 0, abobora: 0, fibra: 0 } };
             setFarm(state);
             farmRef.current = state;
             worker.postMessage({ type: 'result', id: msg.id, value: coins } satisfies MainToWorker);
@@ -300,6 +320,7 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
   const now = Date.now();
   const doneCount = OBJECTIVES.filter(o => o.isDone(farm)).length;
   const nextObjective = OBJECTIVES.find(o => !o.isDone(farm));
+  const effValue = efficiency(farm.stats);
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: C.bg, color: C.text, fontFamily: 'system-ui,-apple-system,sans-serif', overflow: 'hidden' }}>
@@ -432,6 +453,18 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
             )}
           </div>
 
+          {/* EFICIÊNCIA — placar da Arena de Desafios: não é só quanto colheu,
+              é quanta ação virou colheita de verdade. */}
+          <div style={{ margin: '10px 16px 0', padding: '9px 12px', border: `1px solid ${C.border}`, borderRadius: 6, background: C.card, display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}
+            title="Ações que renderam colheita ÷ ações totais (move/plant/till/harvest). Vender concede bônus de pontos proporcional a isso.">
+            <BarChart3 size={15} color={C.accent} />
+            <div style={{ fontSize: 12.5, color: C.sub, flex: 1 }}>
+              EFICIÊNCIA <strong style={{ color: C.text }}>{Math.round(effValue * 100)}%</strong>
+              {' '}· {farm.stats.harvests} colheitas / {farm.stats.actions} ações
+              {farm.stats.wasted > 0 && <span> · {farm.stats.wasted} desperdiçadas</span>}
+            </div>
+          </div>
+
           <div style={{ padding: 16, display: 'flex', justifyContent: 'center' }}>
             <FarmGrid farm={farm} now={now} droneMoveMs={actionDelayMs(farm.upgrades)} theme={C} />
           </div>
@@ -467,19 +500,20 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
                 const level = shopItemLevel(farm, item.id);
                 const maxed = level >= item.maxLevel;
                 const cost = item.cost(level);
-                const canBuy = !maxed && canAffordShopItem(farm, item.id);
+                const { allowed, reason } = canBuyShopItem(farm, item.id);
+                const locked = !!item.requiresStructure && !farm.unlocks[item.requiresStructure];
                 const costLabel = (Object.keys(cost) as ItemId[])
                   .map(c => `${cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
                   .join(' + ');
                 return (
-                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 5 }}>
+                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 5, opacity: maxed || allowed || !locked ? 1 : 0.55 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14.5, fontWeight: 700, color: C.text }}>{item.name} {item.maxLevel > 1 && <span style={{ color: C.sub, fontWeight: 400 }}>({level}/{item.maxLevel})</span>}</div>
-                      <div style={{ fontSize: 12.5, color: C.sub }}>{item.desc}</div>
+                      <div style={{ fontSize: 12.5, color: C.sub }}>{maxed ? item.desc : (locked && reason ? reason : item.desc)}</div>
                     </div>
-                    <button onClick={() => buy(item.id)} disabled={!canBuy}
-                      style={{ flexShrink: 0, padding: '8px 13px', background: maxed ? 'transparent' : canBuy ? C.accent : 'transparent', border: `1px solid ${maxed ? C.border : C.accent}`, borderRadius: 4, color: maxed ? C.sub : canBuy ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: canBuy ? 'pointer' : 'not-allowed' }}>
-                      {maxed ? 'MAX' : costLabel}
+                    <button onClick={() => buy(item.id)} disabled={!allowed}
+                      style={{ flexShrink: 0, padding: '8px 13px', background: maxed ? 'transparent' : allowed ? C.accent : 'transparent', border: `1px solid ${maxed ? C.border : allowed ? C.accent : C.border}`, borderRadius: 4, color: maxed ? C.sub : allowed ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: allowed ? 'pointer' : 'not-allowed' }}>
+                      {maxed ? 'MAX' : locked ? <Lock size={13} /> : costLabel}
                     </button>
                   </div>
                 );
@@ -554,25 +588,32 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
             um aviso, sem rodar nada.
           </p>
 
-          {section('AS 3 CULTURAS')}
+          {section('AS 7 CULTURAS')}
           <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
-            <strong style={{ color: CROPS.grama.color }}>Grama</strong> cresce sozinha em qualquer casa vazia
-            não arada — não precisa plantar. <strong style={{ color: CROPS.arbusto.color }}>Arbusto</strong> precisa
+            Cada cultura nova quebra a estratégia que resolvia a anterior — não dá pra usar o mesmo
+            código de novo, precisa evoluir. <strong style={{ color: CROPS.grama.color }}>Grama</strong> cresce
+            sozinha, sem plantio. <strong style={{ color: CROPS.arbusto.color }}>Arbusto</strong> precisa
             de <code>plant('arbusto')</code>. <strong style={{ color: CROPS.cenoura.color }}>Cenoura</strong> só
-            cresce em terra arada — use <code>till()</code> antes de <code>plant('cenoura')</code>. Igual ao jogo
-            original, o item colhido tem nome diferente da planta: Grama vira <strong>Feno</strong>, Arbusto
-            vira <strong>Madeira</strong>, Cenoura vira <strong>Cenoura</strong> mesmo (é o único caso 1-pra-1).
+            cresce em terra arada (<code>till()</code> antes). <strong style={{ color: CROPS.arvore.color }}>Árvore</strong> morre
+            se plantada colada em outra árvore — precisa checar as 4 vizinhas
+            antes. <strong style={{ color: CROPS.girassol.color }}>Girassol</strong> nasce com um valor aleatório —
+            só compensa colher o maior da região, exige comparar vários antes de agir. <strong style={{ color: CROPS.abobora.color }}>Abóbora</strong> só
+            rende bônus se um bloco 2×2 inteiro amadurecer ao mesmo tempo. <strong style={{ color: CROPS.cacto.color }}>Cacto</strong> nasce
+            com um tamanho aleatório e só rende bônus de Fibra se colhido em ordem crescente. Igual ao jogo
+            original, o item colhido tem nome diferente da planta em quase todas: Grama vira <strong>Feno</strong>,
+            Arbusto e Árvore viram <strong>Madeira</strong>, Girassol vira <strong>Óleo</strong>, Cacto
+            vira <strong>Fibra</strong> — só Cenoura e Abóbora mantêm o próprio nome como item.
           </p>
 
           {section('API DO DRONE (sempre disponível)')}
           {apiRow(
             "await drone.move(direcao)",
-            'Move uma casa na direção informada: "up", "down", "left" ou "right". O mapa é um toroide: se sair de um lado do campo, reaparece do outro — nunca trava na borda. Sempre retorna true.',
+            'Move uma casa na direção informada: "up", "down", "left" ou "right". A fazenda é FINITA: tentar sair da borda falha e retorna false, sem mover o drone — trate a posição no seu código (com drone.size()) em vez de repetir uma direção cegamente.',
             "await drone.move('right');"
           )}
           {apiRow(
             'await drone.plant(cultura?)',
-            'Planta na casa atual. Sem argumento planta grama (raramente precisa, nunca gasta nada). Depois de comprar "Sementes de arbusto"/"Sementes de cenoura", aceita plant(\'arbusto\') e plant(\'cenoura\') — essa última só funciona em terra arada. ATENÇÃO: chamar plant(\'arbusto\')/plant(\'cenoura\') numa casa errada (ocupada ou não arada) desperdiça 2 Feno — confira com drone.info() antes de plantar às cegas.',
+            'Planta na casa atual. Sem argumento planta grama (raramente precisa, nunca gasta nada). Cada cultura (\'arbusto\', \'cenoura\', \'arvore\', \'girassol\', \'abobora\', \'cacto\') só fica disponível depois da Ferramenta correspondente comprada. ATENÇÃO: chamar plant() com uma casa errada (ocupada, não arada, ou árvore colada em outra árvore) desperdiça 2 Feno — confira com drone.info() antes de plantar às cegas.',
             "await drone.plant('arbusto');"
           )}
           {apiRow(
@@ -592,7 +633,7 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
           )}
           {apiRow(
             'await drone.info()',
-            'Checagem completa da casa atual, sem custo de tempo: retorna um objeto { crop, ready, tilled }. O jeito certo de decidir o que fazer numa casa antes de agir, em vez de chutar plant()/till() e arriscar desperdiçar semente.',
+            'Checagem completa da casa atual, sem custo de tempo: retorna um objeto { crop, ready, tilled, value }. "value" é o valor/tamanho sorteado ao plantar Girassol ou Cacto (null nas outras culturas) — o jeito de comparar antes de decidir qual colher.',
             "const casa = await drone.info();\nif (casa.crop === null && casa.tilled) { await drone.plant('cenoura'); }"
           )}
           {apiRow(
@@ -602,7 +643,7 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
           )}
           {apiRow(
             'await drone.sell()',
-            'Troca todo o estoque de Feno/Madeira/Cenoura por moedas e pontos na SUA CONTA do hub (visíveis na Arena de Desafios), zerando o estoque. Retorna as moedas ganhas.',
+            'Troca todo o estoque de itens por moedas e pontos na SUA CONTA do hub (visíveis na Arena de Desafios), zerando o estoque. Retorna as moedas ganhas. Concede também um bônus de pontos proporcional à sua EFICIÊNCIA (colheitas ÷ ações totais) — código que erra menos ganha mais, não só quem colhe mais devagar com força bruta.',
             'await drone.sell();'
           )}
           {apiRow(
@@ -662,23 +703,37 @@ while (true) {                                                        // Laços
 
           {section('ECONOMIA')}
           <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
-            Não existe ouro: Feno, Madeira e Cenoura colhidos são a própria moeda. Feno é barato e paga
-            Laços; Madeira e Cenoura pagam o resto das Estruturas — os desbloqueios finais (Funções, Listas,
-            Dicionários) custam tanto que <strong>uma casa só farmando sem parar levaria muitas horas</strong>:
-            o jeito rápido de verdade é expandir a fazenda e escrever um código que cubra várias casas por
-            ciclo, não ficar preso numa única casa. Além disso, <code>plant()</code> chamado sem checar o
-            estado da casa antes (com <code>drone.info()</code>) desperdiça Feno quando erra — então um
-            loop "no escuro" que tenta plantar tudo em toda casa sai caro, mesmo rodando rápido.{' '}
+            Não existe ouro: os itens colhidos são a própria moeda. Feno é barato e paga Laços; os demais
+            pagam o resto das Estruturas — os desbloqueios finais (Funções, Listas, Dicionários) custam
+            tanto que <strong>uma casa só farmando sem parar levaria muitas horas</strong>: o jeito rápido
+            de verdade é expandir a fazenda e escrever um código que cubra várias casas por ciclo, não
+            ficar preso numa única casa. Além disso, <code>plant()</code> chamado sem checar o estado da
+            casa antes (com <code>drone.info()</code>) desperdiça Feno quando erra — então um loop "no
+            escuro" que tenta plantar tudo em toda casa sai caro, mesmo rodando rápido.{' '}
             <code>drone.sell()</code> é diferente — ele troca o estoque atual por moedas e pontos
-            permanentes na sua conta do hub, então cada colheita é uma escolha: investir na loja da fazenda
-            ou vender pra conta.
+            permanentes na sua conta do hub (com bônus de eficiência), então cada colheita é uma escolha:
+            investir na loja da fazenda ou vender pra conta.
+          </p>
+
+          {section('EFICIÊNCIA (ARENA DE DESAFIOS)')}
+          <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
+            O placar de cada venda não é só "quanto colheu" — é quantas das suas ações (mover, plantar,
+            arar, colher) realmente renderam colheita. Um código que erra pouco (confere com
+            <code> info()</code>/<code>canHarvest()</code> antes de agir) tem eficiência alta e ganha
+            bônus de pontos ao vender; um loop cego que fica tentando ações que falham (harvest vazio,
+            plant em casa ocupada, mover pra fora da borda) desperdiça ações e ganha menos, mesmo colhendo
+            a mesma quantidade. O painel "EFICIÊNCIA" ao lado do placar de objetivos mostra esse número em
+            tempo real.
           </p>
 
           {section('EXPANDIR A FAZENDA')}
           <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
             A fazenda começa pequena (3×3) — igual ao jogo original. Compre "Expandir fazenda" nas Ferramentas
             pra aumentar o campo em +1 por vez (até 9×9). Cada expansão limpa as plantações atuais e volta o
-            drone pra (0,0), então planeje: colha e venda antes de expandir.
+            drone pra (0,0), então planeje: colha e venda antes de expandir. Como a fazenda é finita, um
+            código com posições fixas (tipo <code>move('right'); move('right')</code> sempre igual) fica
+            incompleto num grid maior — use <code>drone.size()</code> dentro de um loop pra continuar
+            cobrindo o campo inteiro depois de expandir.
           </p>
         </div>
       </div>
@@ -741,6 +796,11 @@ function FarmGrid({ farm, now, droneMoveMs, theme: C }: { farm: FarmState; now: 
             {tile.crop && (
               <div key={`${i}-${tile.plantedAt}`} style={{ animation: 'jsf-seed-in .25s ease' }}>
                 <CropIcon crop={tile.crop as CropId} ready={ready} />
+              </div>
+            )}
+            {ready && tile.value !== undefined && (
+              <div style={{ position: 'absolute', top: 1, right: 2, fontSize: 9, fontWeight: 700, color: '#fff', textShadow: '0 0 2px #000, 0 0 2px #000' }}>
+                {tile.value}
               </div>
             )}
             {tile.crop && !ready && (
@@ -822,12 +882,56 @@ function CropIcon({ crop, ready }: { crop: CropId; ready: boolean }) {
     );
   }
 
+  if (crop === 'cenoura') {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" style={{ animation: 'jsf-ready-glow 1.4s ease-in-out infinite' }}>
+        <path d="M10 18 L6.3 8 Q10 6 13.7 8 Z" fill={def.color} />
+        <line x1="9" y1="7.5" x2="7.3" y2="2" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
+        <line x1="10" y1="7" x2="10" y2="1.3" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
+        <line x1="11" y1="7.5" x2="12.7" y2="2" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (crop === 'arvore') {
+    return (
+      <svg width="24" height="24" viewBox="0 0 20 20" style={{ animation: 'jsf-ready-glow 1.4s ease-in-out infinite' }}>
+        <rect x="9" y="13" width="2" height="6" fill="#6b4a24" />
+        <path d="M10 2 L4 13 H16 Z" fill={def.color} />
+        <path d="M10 6 L5.5 15 H14.5 Z" fill={def.color} opacity="0.8" />
+      </svg>
+    );
+  }
+
+  if (crop === 'girassol') {
+    return (
+      <svg width="22" height="22" viewBox="0 0 20 20" style={{ animation: 'jsf-ready-glow 1.4s ease-in-out infinite' }}>
+        <line x1="10" y1="18" x2="10" y2="12" stroke="#3f6212" strokeWidth="1.6" />
+        {[0, 45, 90, 135, 180, 225, 270, 315].map(a => (
+          <ellipse key={a} cx="10" cy="6" rx="1.3" ry="3.2" fill={def.color} transform={`rotate(${a} 10 9)`} />
+        ))}
+        <circle cx="10" cy="9" r="2.6" fill="#78350f" />
+      </svg>
+    );
+  }
+
+  if (crop === 'abobora') {
+    return (
+      <svg width="22" height="22" viewBox="0 0 20 20" style={{ animation: 'jsf-ready-glow 1.4s ease-in-out infinite' }}>
+        <line x1="10" y1="4" x2="10" y2="1.5" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
+        <ellipse cx="7" cy="11" rx="3.4" ry="5.2" fill={def.color} />
+        <ellipse cx="10" cy="11" rx="3.4" ry="5.6" fill={def.color} />
+        <ellipse cx="13" cy="11" rx="3.4" ry="5.2" fill={def.color} />
+      </svg>
+    );
+  }
+
+  // cacto
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" style={{ animation: 'jsf-ready-glow 1.4s ease-in-out infinite' }}>
-      <path d="M10 18 L6.3 8 Q10 6 13.7 8 Z" fill={def.color} />
-      <line x1="9" y1="7.5" x2="7.3" y2="2" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
-      <line x1="10" y1="7" x2="10" y2="1.3" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
-      <line x1="11" y1="7.5" x2="12.7" y2="2" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="8.5" y="4" width="3" height="14" rx="1.5" fill={def.color} />
+      <rect x="4" y="8" width="3" height="7" rx="1.5" fill={def.color} />
+      <rect x="13" y="6" width="3" height="9" rx="1.5" fill={def.color} />
     </svg>
   );
 }

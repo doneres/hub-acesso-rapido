@@ -3,12 +3,14 @@
 ═══════════════════════════════════════════════════════════════ */
 import type { StructureId } from './curriculum';
 
-export type CropId = 'grama' | 'arbusto' | 'cenoura';
+export type CropId = 'grama' | 'arbusto' | 'cenoura' | 'arvore' | 'girassol' | 'abobora' | 'cacto';
 
 /** Item colhido — diferente da entidade plantada, igual ao jogo original
  *  (Grama plantada gera o item Feno; Arbusto gera Madeira; Cenoura gera
- *  Cenoura). É essa moeda (não a entidade) que paga Ferramentas/Estruturas. */
-export type ItemId = 'feno' | 'madeira' | 'cenoura';
+ *  Cenoura). É essa moeda (não a entidade) que paga Ferramentas/Estruturas.
+ *  Árvore também rende Madeira (igual Bush e Tree renderem Wood no jogo
+ *  original) — mais de uma entidade pode alimentar o mesmo item. */
+export type ItemId = 'feno' | 'madeira' | 'cenoura' | 'oleo' | 'abobora' | 'fibra';
 
 export interface CropDef {
   id: CropId;
@@ -23,6 +25,7 @@ export interface Tile {
   crop: CropId | null;
   plantedAt: number | null;
   tilled: boolean; // chão arado — cenoura só cresce em terra arada
+  value?: number; // valor/tamanho aleatório sorteado ao plantar — girassol e cacto
 }
 
 export interface DroneState {
@@ -50,6 +53,7 @@ export interface TileInfo {
   crop: CropId | null;
   ready: boolean;
   tilled: boolean;
+  value: number | null; // valor/tamanho da planta (girassol/cacto) — null nas demais
 }
 
 export interface ShopItemDef {
@@ -58,13 +62,26 @@ export interface ShopItemDef {
   desc: string;
   cost: (level: number) => Partial<Record<ItemId, number>>;
   maxLevel: number;
+  requiresStructure?: StructureId; // só fica disponível depois dessa estrutura comprada
 }
 
 export interface Upgrades {
   speed: number;
   arbusto: number; // 0 ou 1 — desbloqueia plant('arbusto')
   cenoura: number; // 0 ou 1 — desbloqueia till() + plant('cenoura')
+  arvore: number; // 0 ou 1 — desbloqueia plant('arvore'), exige "Variáveis"
+  girassol: number; // 0 ou 1 — desbloqueia plant('girassol'), exige "Operadores e condicionais"
+  abobora: number; // 0 ou 1 — desbloqueia plant('abobora'), exige "Funções"
+  cacto: number; // 0 ou 1 — desbloqueia plant('cacto'), exige "Listas"
   expand: number; // nível de expansão da fazenda — cada nível soma +1 no lado do grid
+}
+
+/** Contadores de eficiência — base do placar da Arena de Desafios: não é só
+ *  "quanto colheu", é quantas ações foram desperdiçadas pra chegar lá. */
+export interface FarmStats {
+  actions: number; // move/plant/till/harvest executados (leituras não contam)
+  harvests: number; // colheitas que renderam item de verdade
+  wasted: number; // ações que falharam (harvest vazio, plant/till errado, move na borda)
 }
 
 export interface FarmState {
@@ -74,6 +91,9 @@ export interface FarmState {
   stock: Record<ItemId, number>; // estoque permanente de itens colhidos — a própria moeda, sem teto
   upgrades: Upgrades;
   unlocks: Record<StructureId, boolean>;
+  stats: FarmStats;
+  cactoStreak: number; // sequência de colheitas de cacto em ordem crescente de tamanho
+  lastCactoValue: number | null; // tamanho do último cacto colhido, pra comparar o próximo
 }
 
 export interface SaveData {
