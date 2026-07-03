@@ -5,6 +5,11 @@ import type { StructureId } from './curriculum';
 
 export type CropId = 'grama' | 'arbusto' | 'cenoura';
 
+/** Item colhido — diferente da entidade plantada, igual ao jogo original
+ *  (Grama plantada gera o item Feno; Arbusto gera Madeira; Cenoura gera
+ *  Cenoura). É essa moeda (não a entidade) que paga Ferramentas/Estruturas. */
+export type ItemId = 'feno' | 'madeira' | 'cenoura';
+
 export interface CropDef {
   id: CropId;
   name: string;
@@ -41,7 +46,7 @@ export interface ShopItemDef {
   id: string;
   name: string;
   desc: string;
-  cost: (level: number) => number; // custo em grama
+  cost: (level: number) => number;
   maxLevel: number;
 }
 
@@ -56,7 +61,7 @@ export interface FarmState {
   gridSize: number;
   tiles: Tile[];
   drone: DroneState;
-  stock: Record<CropId, number>; // estoque permanente de colheita — a própria moeda, sem teto
+  stock: Record<ItemId, number>; // estoque permanente de itens colhidos — a própria moeda, sem teto
   upgrades: Upgrades;
   unlocks: Record<StructureId, boolean>;
 }

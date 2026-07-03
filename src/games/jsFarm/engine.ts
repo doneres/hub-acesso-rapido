@@ -1,4 +1,4 @@
-import { CropDef, CropId, DroneAction, FarmState, ShopItemDef, Tile, Upgrades } from './types';
+import { CropDef, CropId, DroneAction, FarmState, ItemId, ShopItemDef, Tile, Upgrades } from './types';
 import { STRUCTURE_ORDER, STRUCTURES, StructureId, createEmptyUnlocks } from './curriculum';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -15,10 +15,25 @@ export const CROPS: Record<CropId, CropDef> = {
   cenoura: { id: 'cenoura', name: 'Cenoura', growMs: 12000, color: '#ea7c1e', seedColor: '#fdba74', requiresTill: true },
 };
 
+/** Item que cada entidade rende ao ser colhida — igual ao jogo original,
+ *  onde a entidade plantada (Grass/Bush/Carrot) não tem o mesmo nome do
+ *  item colhido (Hay/Wood/Carrot). */
+export const CROP_TO_ITEM: Record<CropId, ItemId> = {
+  grama: 'feno',
+  arbusto: 'madeira',
+  cenoura: 'cenoura',
+};
+
+export const ITEM_NAMES: Record<ItemId, string> = {
+  feno: 'Feno',
+  madeira: 'Madeira',
+  cenoura: 'Cenoura',
+};
+
 /** Quanto drone.sell() credita na conta do aluno (useGameState) por unidade vendida. */
-export const SELL_RATES: Record<CropId, { coins: number; points: number }> = {
-  grama:   { coins: 1, points: 1 },
-  arbusto: { coins: 3, points: 2 },
+export const SELL_RATES: Record<ItemId, { coins: number; points: number }> = {
+  feno:    { coins: 1, points: 1 },
+  madeira: { coins: 3, points: 2 },
   cenoura: { coins: 8, points: 5 },
 };
 
@@ -26,21 +41,21 @@ export const BASE_ACTION_DELAY_MS = 420;
 export const MIN_ACTION_DELAY_MS = 120;
 export const SPEED_STEP_MS = 50;
 
-export const SHOP_ITEMS: (ShopItemDef & { costCrop: CropId })[] = [
+export const SHOP_ITEMS: (ShopItemDef & { costItem: ItemId })[] = [
   {
     id: 'speed',
     name: 'Motor do drone',
     desc: 'Reduz o tempo de cada ação.',
     cost: level => Math.round(30 * 2.2 ** level),
-    costCrop: 'grama',
+    costItem: 'feno',
     maxLevel: 6,
   },
   {
     id: 'arbusto',
     name: 'Sementes de arbusto',
-    desc: "Desbloqueia plant('arbusto') — cresce mais devagar que a grama, vale mais.",
+    desc: "Desbloqueia plant('arbusto') — cresce mais devagar que a grama, rende Madeira.",
     cost: () => 200,
-    costCrop: 'grama',
+    costItem: 'feno',
     maxLevel: 1,
   },
   {
@@ -48,19 +63,21 @@ export const SHOP_ITEMS: (ShopItemDef & { costCrop: CropId })[] = [
     name: 'Sementes de cenoura',
     desc: "Desbloqueia till() e plant('cenoura') — só cresce em terra arada.",
     cost: () => 300,
-    costCrop: 'arbusto',
+    costItem: 'madeira',
     maxLevel: 1,
   },
 ];
 
-/** Custo de cada nível de expansão da fazenda (+1 no lado do grid por compra). */
-export const EXPAND_LEVELS: Array<{ cost: Partial<Record<CropId, number>> }> = [
-  { cost: { grama: 80 } },                       // 3x3 -> 4x4
-  { cost: { grama: 150 } },                      // 4x4 -> 5x5
-  { cost: { grama: 200, arbusto: 100 } },        // 5x5 -> 6x6
-  { cost: { arbusto: 500, cenoura: 100 } },      // 6x6 -> 7x7
-  { cost: { cenoura: 3000 } },                   // 7x7 -> 8x8
-  { cost: { cenoura: 12000 } },                  // 8x8 -> 9x9
+/** Custo de cada nível de expansão da fazenda (+1 no lado do grid por compra).
+ *  Propositalmente barato nos primeiros níveis — expandir cedo é o que torna
+ *  viável cobrir várias casas por ciclo, em vez de depender de uma casa só. */
+export const EXPAND_LEVELS: Array<{ cost: Partial<Record<ItemId, number>> }> = [
+  { cost: { feno: 60 } },                     // 3x3 -> 4x4
+  { cost: { feno: 120 } },                    // 4x4 -> 5x5
+  { cost: { feno: 200, madeira: 80 } },       // 5x5 -> 6x6
+  { cost: { madeira: 400, cenoura: 80 } },    // 6x6 -> 7x7
+  { cost: { cenoura: 1500 } },                // 7x7 -> 8x8
+  { cost: { cenoura: 6000 } },                // 8x8 -> 9x9
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -85,7 +102,7 @@ export function createInitialFarm(): FarmState {
     gridSize: MIN_GRID_SIZE,
     tiles: freshTiles(MIN_GRID_SIZE * MIN_GRID_SIZE, now),
     drone: { x: 0, y: 0 },
-    stock: { grama: 0, arbusto: 0, cenoura: 0 },
+    stock: { feno: 0, madeira: 0, cenoura: 0 },
     upgrades: { speed: 0, arbusto: 0, cenoura: 0, expand: 0 },
     unlocks: createEmptyUnlocks(),
   };
@@ -120,12 +137,12 @@ export function buyShopItem(state: FarmState, id: string): { state: FarmState; o
   const level = shopItemLevel(state, id);
   if (level >= def.maxLevel) return { state, ok: false };
   const cost = def.cost(level);
-  if (state.stock[def.costCrop] < cost) return { state, ok: false };
+  if (state.stock[def.costItem] < cost) return { state, ok: false };
   const upgrades: Upgrades = { ...state.upgrades };
   if (id === 'speed') upgrades.speed = level + 1;
   if (id === 'arbusto') upgrades.arbusto = level + 1;
   if (id === 'cenoura') upgrades.cenoura = level + 1;
-  const stock = { ...state.stock, [def.costCrop]: state.stock[def.costCrop] - cost };
+  const stock = { ...state.stock, [def.costItem]: state.stock[def.costItem] - cost };
   return { state: { ...state, stock, upgrades }, ok: true };
 }
 
@@ -138,7 +155,7 @@ export function canBuyExpand(state: FarmState): { allowed: boolean; reason?: str
   const level = state.upgrades.expand;
   if (level >= EXPAND_LEVELS.length) return { allowed: false, reason: 'tamanho máximo' };
   const cost = EXPAND_LEVELS[level].cost;
-  const missing = (Object.keys(cost) as CropId[]).find(c => state.stock[c] < (cost[c] ?? 0));
+  const missing = (Object.keys(cost) as ItemId[]).find(c => state.stock[c] < (cost[c] ?? 0));
   if (missing) return { allowed: false, reason: 'colheita insuficiente' };
   return { allowed: true };
 }
@@ -148,7 +165,7 @@ export function buyExpand(state: FarmState): { state: FarmState; ok: boolean } {
   const level = state.upgrades.expand;
   const cost = EXPAND_LEVELS[level].cost;
   const stock = { ...state.stock };
-  (Object.keys(cost) as CropId[]).forEach(c => { stock[c] -= cost[c] ?? 0; });
+  (Object.keys(cost) as ItemId[]).forEach(c => { stock[c] -= cost[c] ?? 0; });
   const gridSize = state.gridSize + 1;
   const now = Date.now();
   return {
@@ -166,8 +183,11 @@ export function buyExpand(state: FarmState): { state: FarmState; ok: boolean } {
 
 /* ═══════════════════════════════════════════════════════════════
    ESTRUTURAS DE PROGRAMAÇÃO (árvore sequencial, ver curriculum.ts)
-   Custo pago diretamente em colheita — sem moeda abstrata, igual
-   ao jogo original (Loop=Feno, Variáveis=Cenoura, etc).
+   Custo pago diretamente nos itens colhidos — sem moeda abstrata,
+   igual ao jogo original (Loop=Feno, Variáveis=Madeira, etc). Os
+   custos das estruturas finais são altos o bastante pra tornar
+   inviável depender de uma casa só — precisa expandir a fazenda e
+   escrever código que cubra várias casas por ciclo.
 ═══════════════════════════════════════════════════════════════ */
 export function canBuyStructure(state: FarmState, id: StructureId): { allowed: boolean; reason?: string } {
   if (state.unlocks[id]) return { allowed: false, reason: 'já comprado' };
@@ -175,7 +195,7 @@ export function canBuyStructure(state: FarmState, id: StructureId): { allowed: b
   const prereq = STRUCTURE_ORDER[idx - 1];
   if (prereq && !state.unlocks[prereq]) return { allowed: false, reason: `compre "${STRUCTURES[prereq].name}" primeiro` };
   const cost = STRUCTURES[id].cost;
-  const missing = (Object.keys(cost) as CropId[]).find(c => state.stock[c] < (cost[c] ?? 0));
+  const missing = (Object.keys(cost) as ItemId[]).find(c => state.stock[c] < (cost[c] ?? 0));
   if (missing) return { allowed: false, reason: 'colheita insuficiente' };
   return { allowed: true };
 }
@@ -184,7 +204,7 @@ export function buyStructure(state: FarmState, id: StructureId): { state: FarmSt
   if (!canBuyStructure(state, id).allowed) return { state, ok: false };
   const cost = STRUCTURES[id].cost;
   const stock = { ...state.stock };
-  (Object.keys(cost) as CropId[]).forEach(c => { stock[c] -= cost[c] ?? 0; });
+  (Object.keys(cost) as ItemId[]).forEach(c => { stock[c] -= cost[c] ?? 0; });
   return {
     state: { ...state, stock, unlocks: { ...state.unlocks, [id]: true } },
     ok: true,
@@ -246,9 +266,10 @@ export function applyAction(state: FarmState, action: DroneAction, now: number):
       const tile = state.tiles[idx];
       if (!isCropReady(tile, now)) return { state, value: 0 };
       const crop = tile.crop as CropId;
+      const item = CROP_TO_ITEM[crop];
       const tiles = state.tiles.slice();
       tiles[idx] = tileAfterClear(tile.tilled, now);
-      const stock = { ...state.stock, [crop]: state.stock[crop] + 1 };
+      const stock = { ...state.stock, [item]: state.stock[item] + 1 };
       return { state: { ...state, tiles, stock }, value: 1 };
     }
     case 'canHarvest': {

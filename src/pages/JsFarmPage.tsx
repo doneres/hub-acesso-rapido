@@ -7,10 +7,10 @@ import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import {
-  CROPS, SHOP_ITEMS, SELL_RATES, EXPAND_LEVELS, MAX_GRID_SIZE, createInitialFarm, applyAction, isCropReady,
+  CROPS, CROP_TO_ITEM, ITEM_NAMES, SHOP_ITEMS, SELL_RATES, EXPAND_LEVELS, MAX_GRID_SIZE, createInitialFarm, applyAction, isCropReady,
   actionDelayMs, shopItemLevel, buyShopItem, canBuyStructure, buyStructure, canBuyExpand, buyExpand,
 } from '../games/jsFarm/engine';
-import { CropId, FarmState, MainToWorker, SaveData, WorkerToMain } from '../games/jsFarm/types';
+import { CropId, ItemId, FarmState, MainToWorker, SaveData, WorkerToMain } from '../games/jsFarm/types';
 import { STRUCTURE_ORDER, STRUCTURES, StructureId, nextStructure, createEmptyUnlocks } from '../games/jsFarm/curriculum';
 import { validateCode, formatViolation } from '../games/jsFarm/validator';
 import { useGameState } from '../hooks/useGameState';
@@ -40,7 +40,7 @@ await drone.move('left');
 await drone.harvest();
 
 // Cansativo controlar isso na mão, né? Compre "Laços" na loja (custa
-// só grama) e use drone.canHarvest() pra checar sem gastar tempo,
+// só Feno, o item que a grama rende) e use drone.canHarvest() pra checar,
 // decidindo no seu código quando esperar ou seguir em frente.
 // Depois compre "Sementes de arbusto" (plant('arbusto')) e mais
 // tarde "Sementes de cenoura" — essa precisa de till() (arar) antes.
@@ -80,12 +80,12 @@ const STYLES = `
 ═══════════════════════════════════════════════════════════════ */
 interface Objective { id: string; label: string; isDone: (farm: FarmState) => boolean }
 const OBJECTIVES: Objective[] = [
-  { id: 'harvest1', label: 'Colha qualquer coisa pela primeira vez (a grama já cresce sozinha)', isDone: f => f.stock.grama + f.stock.arbusto + f.stock.cenoura > 0 },
+  { id: 'harvest1', label: 'Colha qualquer coisa pela primeira vez (a grama já cresce sozinha)', isDone: f => f.stock.feno + f.stock.madeira + f.stock.cenoura > 0 },
   { id: 'lacos', label: 'Desbloqueie "Laços" na loja', isDone: f => f.unlocks.lacos },
-  { id: 'arbusto', label: 'Compre "Sementes de arbusto" e colha um arbusto', isDone: f => f.stock.arbusto > 0 },
+  { id: 'arbusto', label: 'Compre "Sementes de arbusto" e colha Madeira', isDone: f => f.stock.madeira > 0 },
   { id: 'variaveis', label: 'Desbloqueie "Variáveis"', isDone: f => f.unlocks.variaveis },
   { id: 'operadores', label: 'Desbloqueie "Operadores e condicionais"', isDone: f => f.unlocks.operadores },
-  { id: 'cenoura', label: 'Compre "Sementes de cenoura", are a terra com till() e colha uma cenoura', isDone: f => f.stock.cenoura > 0 },
+  { id: 'cenoura', label: 'Compre "Sementes de cenoura", are a terra com till() e colha uma Cenoura', isDone: f => f.stock.cenoura > 0 },
   { id: 'funcoes', label: 'Desbloqueie "Funções"', isDone: f => f.unlocks.funcoes },
   { id: 'expand', label: 'Expanda a fazenda pela primeira vez', isDone: f => f.upgrades.expand > 0 },
   { id: 'listas', label: 'Desbloqueie "Listas"', isDone: f => f.unlocks.listas },
@@ -204,7 +204,7 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
           if (msg.action.kind === 'sell') {
             const stock = farmRef.current.stock;
             let coins = 0, points = 0;
-            (Object.keys(stock) as CropId[]).forEach(c => {
+            (Object.keys(stock) as ItemId[]).forEach(c => {
               coins += stock[c] * SELL_RATES[c].coins;
               points += stock[c] * SELL_RATES[c].points;
             });
@@ -216,7 +216,7 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
                 appendLog('Faça login na Arena de Desafios pra sua colheita virar moeda de verdade.', 'log');
               }
             }
-            const state = { ...farmRef.current, stock: { grama: 0, arbusto: 0, cenoura: 0 } };
+            const state = { ...farmRef.current, stock: { feno: 0, madeira: 0, cenoura: 0 } };
             setFarm(state);
             farmRef.current = state;
             worker.postMessage({ type: 'result', id: msg.id, value: coins } satisfies MainToWorker);
@@ -314,15 +314,15 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
           FAZENDA.JS
         </span>
         <div style={{ flex: 1 }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title="Grama colhida">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={`${ITEM_NAMES.feno} — item da Grama`}>
           <CropIcon crop="grama" ready />
-          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: CROPS.grama.color }}>{farm.stock.grama}</span>
+          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: CROPS.grama.color }}>{farm.stock.feno}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title="Arbusto colhido">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={`${ITEM_NAMES.madeira} — item do Arbusto`}>
           <CropIcon crop="arbusto" ready />
-          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: CROPS.arbusto.color }}>{farm.stock.arbusto}</span>
+          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: CROPS.arbusto.color }}>{farm.stock.madeira}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title="Cenoura colhida">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={`${ITEM_NAMES.cenoura} — item da Cenoura`}>
           <CropIcon crop="cenoura" ready />
           <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: CROPS.cenoura.color }}>{farm.stock.cenoura}</span>
         </div>
@@ -442,8 +442,8 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
                 const def = STRUCTURES[id];
                 const owned = farm.unlocks[id];
                 const { allowed, reason } = canBuyStructure(farm, id);
-                const costLabel = (Object.keys(def.cost) as CropId[])
-                  .map(c => `${def.cost[c]} ${CROPS[c].name.toLowerCase()}`)
+                const costLabel = (Object.keys(def.cost) as ItemId[])
+                  .map(c => `${def.cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
                   .join(' + ');
                 return (
                   <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${owned ? C.borderStrong : C.border}`, borderRadius: 5, opacity: owned || allowed || reason === 'colheita insuficiente' ? 1 : 0.55 }}>
@@ -466,7 +466,7 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
                 const level = shopItemLevel(farm, item.id);
                 const maxed = level >= item.maxLevel;
                 const cost = item.cost(level);
-                const canBuy = !maxed && farm.stock[item.costCrop] >= cost;
+                const canBuy = !maxed && farm.stock[item.costItem] >= cost;
                 return (
                   <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 5 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -475,7 +475,7 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
                     </div>
                     <button onClick={() => buy(item.id)} disabled={!canBuy}
                       style={{ flexShrink: 0, padding: '8px 13px', background: maxed ? 'transparent' : canBuy ? C.accent : 'transparent', border: `1px solid ${maxed ? C.border : C.accent}`, borderRadius: 4, color: maxed ? C.sub : canBuy ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: canBuy ? 'pointer' : 'not-allowed' }}>
-                      {maxed ? 'MAX' : `${cost} ${CROPS[item.costCrop].name.toLowerCase()}`}
+                      {maxed ? 'MAX' : `${cost} ${ITEM_NAMES[item.costItem].toLowerCase()}`}
                     </button>
                   </div>
                 );
@@ -485,8 +485,8 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
                 const expandLevel = farm.upgrades.expand;
                 const maxed = expandLevel >= EXPAND_LEVELS.length;
                 const { allowed } = canBuyExpand(farm);
-                const costLabel = maxed ? null : (Object.keys(EXPAND_LEVELS[expandLevel].cost) as CropId[])
-                  .map(c => `${EXPAND_LEVELS[expandLevel].cost[c]} ${CROPS[c].name.toLowerCase()}`)
+                const costLabel = maxed ? null : (Object.keys(EXPAND_LEVELS[expandLevel].cost) as ItemId[])
+                  .map(c => `${EXPAND_LEVELS[expandLevel].cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
                   .join(' + ');
                 return (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 5 }}>
@@ -555,7 +555,9 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
             <strong style={{ color: CROPS.grama.color }}>Grama</strong> cresce sozinha em qualquer casa vazia
             não arada — não precisa plantar. <strong style={{ color: CROPS.arbusto.color }}>Arbusto</strong> precisa
             de <code>plant('arbusto')</code>. <strong style={{ color: CROPS.cenoura.color }}>Cenoura</strong> só
-            cresce em terra arada — use <code>till()</code> antes de <code>plant('cenoura')</code>.
+            cresce em terra arada — use <code>till()</code> antes de <code>plant('cenoura')</code>. Igual ao jogo
+            original, o item colhido tem nome diferente da planta: Grama vira <strong>Feno</strong>, Arbusto
+            vira <strong>Madeira</strong>, Cenoura vira <strong>Cenoura</strong> mesmo (é o único caso 1-pra-1).
           </p>
 
           {section('API DO DRONE (sempre disponível)')}
@@ -586,7 +588,7 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
           )}
           {apiRow(
             'await drone.sell()',
-            'Troca todo o estoque de grama/arbusto/cenoura por moedas e pontos na SUA CONTA do hub (visíveis na Arena de Desafios), zerando o estoque. Retorna as moedas ganhas.',
+            'Troca todo o estoque de Feno/Madeira/Cenoura por moedas e pontos na SUA CONTA do hub (visíveis na Arena de Desafios), zerando o estoque. Retorna as moedas ganhas.',
             'await drone.sell();'
           )}
           {apiRow(
@@ -615,7 +617,7 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
               <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
                 <strong style={{ color: C.gold }}>{STRUCTURES[next].name}</strong> — {STRUCTURES[next].desc} Custa{' '}
                 <strong style={{ color: C.gold }}>
-                  {(Object.keys(STRUCTURES[next].cost) as CropId[]).map(c => `${STRUCTURES[next].cost[c]} ${CROPS[c].name.toLowerCase()}`).join(' + ')}
+                  {(Object.keys(STRUCTURES[next].cost) as ItemId[]).map(c => `${STRUCTURES[next].cost[c]} ${ITEM_NAMES[c].toLowerCase()}`).join(' + ')}
                 </strong> na loja.
               </p>
             </>
@@ -623,11 +625,13 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
 
           {section('ECONOMIA')}
           <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
-            Não existe ouro: grama, arbusto e cenoura colhidos são a própria moeda. Grama é barata e paga
-            Laços; arbusto e cenoura pagam o resto das Estruturas — os desbloqueios finais custam bastante
-            mesmo, igual no jogo original. <code>drone.sell()</code> é diferente — ele troca o estoque atual
-            por moedas e pontos permanentes na sua conta do hub, então cada colheita é uma escolha: investir
-            na loja da fazenda ou vender pra conta.
+            Não existe ouro: Feno, Madeira e Cenoura colhidos são a própria moeda. Feno é barato e paga
+            Laços; Madeira e Cenoura pagam o resto das Estruturas — os desbloqueios finais (Funções, Listas,
+            Dicionários) custam tanto que <strong>uma casa só farmando sem parar levaria muitas horas</strong>:
+            o jeito rápido de verdade é expandir a fazenda e escrever um código que cubra várias casas por
+            ciclo, não ficar preso numa única casa. <code>drone.sell()</code> é diferente — ele troca o
+            estoque atual por moedas e pontos permanentes na sua conta do hub, então cada colheita é uma
+            escolha: investir na loja da fazenda ou vender pra conta.
           </p>
 
           {section('EXPANDIR A FAZENDA')}
