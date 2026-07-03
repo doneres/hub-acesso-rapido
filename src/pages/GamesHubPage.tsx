@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Trophy, Swords, Search, LogIn, LogOut, Crown, Medal,
   Lock, User, ChevronLeft, Users, Shield, X, Bug, Cpu,
-  ShoppingBag, Check, Palette, Star,
+  ShoppingBag, Check, Palette, Star, Sprout,
 } from 'lucide-react';
 import { useGameState, GameUser, LoginResult } from '../hooks/useGameState';
 import { COSMETICS, CosmeticDef } from '../data/cosmetics';
@@ -358,12 +358,12 @@ function GameCard({ title, subtitle, desc, tags, icon, color, onPlay }: {
 interface GamesHubPageProps {
   onBackToHub: () => void; onOpenDetetive: () => void; onOpenCssBattle: () => void;
   onOpenFlexRocket: () => void; onOpenFlexTower: () => void; onOpenReactBugHunter: () => void;
-  onOpenBlockCode: () => void; onOpenGodotArena: () => void; isDark?: boolean;
+  onOpenBlockCode: () => void; onOpenGodotArena: () => void; onOpenJsFarm: () => void; isDark?: boolean;
 }
 
 export default function GamesHubPage({
   onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, onOpenFlexTower,
-  onOpenReactBugHunter, onOpenBlockCode, onOpenGodotArena, isDark = true,
+  onOpenReactBugHunter, onOpenBlockCode, onOpenGodotArena, onOpenJsFarm, isDark = true,
 }: GamesHubPageProps) {
   const { currentUser, leaderboard, users, login, registerUser, logout, buyCosmetic, equipCosmetic } = useGameState();
   const [showAuth, setShowAuth] = useState(false);
@@ -447,6 +447,12 @@ export default function GamesHubPage({
         </svg>
       ),
       color: C.sky, onPlay: onOpenGodotArena,
+    },
+    {
+      id: 'jsfarm', title: 'FAZENDA.JS', subtitle: 'AUTOMAÇÃO COM JAVASCRIPT',
+      desc: 'Escreva JavaScript de verdade pra controlar um drone que planta, colhe e vende — automatize a fazenda com loops e condicionais.',
+      tags: ['JavaScript', 'Automação', 'Loops'],
+      icon: <Sprout size={20} color={C.lime} />, color: C.lime, onPlay: onOpenJsFarm,
     },
   ];
 
@@ -576,7 +582,7 @@ export default function GamesHubPage({
             <div style={{ display: 'flex', gap: 14 }}>
               {[
                 { icon: <Users size={11} color={C.accent} />, val: leaderboard.length, label: 'jogadores' },
-                { icon: <Shield size={11} color={C.purple} />, val: 7, label: 'jogos' },
+                { icon: <Shield size={11} color={C.purple} />, val: 8, label: 'jogos' },
                 { icon: <Star size={11} color={C.gold} />, val: '70+', label: 'casos' },
               ].map(s => (
                 <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: C.sub }}>

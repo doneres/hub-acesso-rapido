@@ -30,6 +30,7 @@ import CssBattlePage from './pages/CssBattlePage';
 import GamesHubPage from './pages/GamesHubPage';
 import FlexRocketPage from './pages/FlexRocketPage';
 import FlexTowerPage from './pages/FlexTowerPage';
+import JsFarmPage from './pages/JsFarmPage';
 import ReactBugHunterPage from './pages/ReactBugHunterPage';
 import BlockCodePage from './pages/BlockCodePage';
 import GodotArenaPage from './pages/GodotArenaPage';
@@ -1587,7 +1588,7 @@ const App: React.FC = () => {
     new URLSearchParams(window.location.search).get('sala')?.toUpperCase() ?? ''
   );
 
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'flextower' | 'reactbughunter' | 'blockcode' | 'godotar'>(() => {
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'flextower' | 'reactbughunter' | 'blockcode' | 'godotar' | 'jsfarm'>(() => {
     if (window.location.hash === '#roadmaps')       return 'roadmaps';
     if (window.location.hash === '#suporte')        return 'suporte';
     if (window.location.hash === '#maker')          return 'maker';
@@ -1598,7 +1599,9 @@ const App: React.FC = () => {
     if (window.location.hash === '#flexrocket')     return 'flexrocket';
     if (window.location.hash === '#reactbughunter') return 'reactbughunter';
     if (window.location.hash === '#blockcode')      return 'blockcode';
+    if (window.location.hash === '#flextower')      return 'flextower';
     if (window.location.hash === '#godotar')        return 'godotar';
+    if (window.location.hash === '#jsfarm')         return 'jsfarm';
     if (new URLSearchParams(window.location.search).get('sala'))  return 'cssbattle';
     // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
@@ -1664,6 +1667,8 @@ const App: React.FC = () => {
       window.location.hash = 'blockcode';
     } else if (currentPage === 'godotar') {
       window.location.hash = 'godotar';
+    } else if (currentPage === 'jsfarm') {
+      window.location.hash = 'jsfarm';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -1683,7 +1688,9 @@ const App: React.FC = () => {
       else if (hash === '#flexrocket')     setCurrentPage('flexrocket');
       else if (hash === '#reactbughunter') setCurrentPage('reactbughunter');
       else if (hash === '#blockcode')      setCurrentPage('blockcode');
+      else if (hash === '#flextower')      setCurrentPage('flextower');
       else if (hash === '#godotar')        setCurrentPage('godotar');
+      else if (hash === '#jsfarm')         setCurrentPage('jsfarm');
       else setCurrentPage('hub');
     };
     window.addEventListener('popstate', handlePopstate);
@@ -1941,6 +1948,7 @@ const App: React.FC = () => {
         onOpenReactBugHunter={() => setCurrentPage('reactbughunter')}
         onOpenBlockCode={() => setCurrentPage('blockcode')}
         onOpenGodotArena={() => setCurrentPage('godotar')}
+        onOpenJsFarm={() => setCurrentPage('jsfarm')}
         isDark={isDark}
       />
     );
@@ -1979,6 +1987,11 @@ const App: React.FC = () => {
   /* Godot Arena — Quiz multiplayer CT */
   if (currentPage === 'godotar') {
     return <GodotArenaPage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
+  }
+
+  /* Fazenda.js — automação com JavaScript */
+  if (currentPage === 'jsfarm') {
+    return <JsFarmPage onBack={() => setCurrentPage('desafios')} />;
   }
 
   return (

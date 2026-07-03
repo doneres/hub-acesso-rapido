@@ -228,10 +228,23 @@ export function useGameState() {
     saveState(next);
   }, []);
 
-  const update = useCallback((updated: GameUser) => {
-    persist({ ...state, users: state.users.map(u => u.id === updated.id ? updated : u) });
-    fbSaveUser(updated); // fire-and-forget
-  }, [state, persist]);
+  // Recebe uma função (usuário atual -> usuário atualizado) e aplica via setState
+  // funcional, lendo sempre o estado mais recente. Isso evita que duas chamadas
+  // síncronas (ex: addCoins seguido de addPoints no mesmo handler) se pisem —
+  // se `update` recebesse o objeto já pronto (calculado a partir de um `currentUser`
+  // fechado antes da primeira chamada aplicar), a segunda chamada sobrescreveria
+  // o resultado da primeira com um valor desatualizado do campo que ela não mexeu.
+  const update = useCallback((updater: GameUser | ((u: GameUser) => GameUser)) => {
+    setState(prev => {
+      const cur = prev.users.find(u => u.id === prev.currentUserId);
+      if (!cur) return prev;
+      const updated = typeof updater === 'function' ? updater(cur) : updater;
+      const next = { ...prev, users: prev.users.map(u => u.id === updated.id ? updated : u) };
+      saveState(next);
+      fbSaveUser(updated); // fire-and-forget
+      return next;
+    });
+  }, []);
 
   /* ── Auth ──────────────────────────────────────────────────────── */
 
@@ -289,7 +302,7 @@ export function useGameState() {
   const useHint = useCallback((puzzleId: string): boolean => {
     if (!currentUser) return false;
     if (currentUser.hintsUsed.includes(puzzleId)) return true;
-    update({ ...currentUser, hintsUsed: [...currentUser.hintsUsed, puzzleId] });
+    update(u => ({ ...u, hintsUsed: [...u.hintsUsed, puzzleId] }));
     return true;
   }, [currentUser, update]);
 
@@ -310,14 +323,14 @@ export function useGameState() {
 
     if (!correct) {
       const hasShield = currentUser.powerups.shield > 0;
-      update({
-        ...currentUser,
-        streak: hasShield ? currentUser.streak : 0,
-        wrongAttempts: { ...currentUser.wrongAttempts, [puzzleId]: wrongCount + 1 },
+      update(u => ({
+        ...u,
+        streak: hasShield ? u.streak : 0,
+        wrongAttempts: { ...u.wrongAttempts, [puzzleId]: wrongCount + 1 },
         powerups: hasShield
-          ? { ...currentUser.powerups, shield: currentUser.powerups.shield - 1 }
-          : currentUser.powerups,
-      });
+          ? { ...u.powerups, shield: u.powerups.shield - 1 }
+          : u.powerups,
+      }));
       return { bonus: 0, shieldUsed: hasShield };
     }
 
@@ -329,13 +342,13 @@ export function useGameState() {
     const bonus     = newStreak % 5 === 0 ? 10 : 0;
     const total     = earned + bonus;
 
-    update({
-      ...currentUser,
-      points: currentUser.points + total,
-      coins:  currentUser.coins  + total,  // moedas ganhas na mesma proporção que pontos
-      solvedPuzzles: [...currentUser.solvedPuzzles, puzzleId],
+    update(u => ({
+      ...u,
+      points: u.points + total,
+      coins:  u.coins  + total,  // moedas ganhas na mesma proporção que pontos
+      solvedPuzzles: [...u.solvedPuzzles, puzzleId],
       streak: newStreak,
-    });
+    }));
     return { bonus, shieldUsed: false };
   }, [currentUser, update]);
 
@@ -343,11 +356,11 @@ export function useGameState() {
 
   const buyPowerup = useCallback((key: keyof Powerups, cost: number): boolean => {
     if (!currentUser || currentUser.coins < cost) return false;
-    update({
-      ...currentUser,
-      coins: currentUser.coins - cost,
-      powerups: { ...currentUser.powerups, [key]: currentUser.powerups[key] + 1 },
-    });
+    update(u => ({
+      ...u,
+      coins: u.coins - cost,
+      powerups: { ...u.powerups, [key]: u.powerups[key] + 1 },
+    }));
     return true;
   }, [currentUser, update]);
 
@@ -356,20 +369,19 @@ export function useGameState() {
   const buyCosmetic = useCallback((cosmeticId: string, cost: number): boolean => {
     if (!currentUser || currentUser.coins < cost) return false;
     if (currentUser.purchasedCosmetics.includes(cosmeticId)) return false;
-    const updated: GameUser = {
-      ...currentUser,
-      coins: currentUser.coins - cost,
-      purchasedCosmetics: [...currentUser.purchasedCosmetics, cosmeticId],
+    update(u => ({
+      ...u,
+      coins: u.coins - cost,
+      purchasedCosmetics: [...u.purchasedCosmetics, cosmeticId],
       activeCosmeticId: cosmeticId,
-    };
-    update(updated);
+    }));
     setActiveCosmeticId(cosmeticId);
     return true;
   }, [currentUser, update]);
 
   const equipCosmetic = useCallback((cosmeticId: string | null): void => {
     if (!currentUser) return;
-    update({ ...currentUser, activeCosmeticId: cosmeticId });
+    update(u => ({ ...u, activeCosmeticId: cosmeticId }));
     setActiveCosmeticId(cosmeticId);
   }, [currentUser, update]);
 
@@ -377,16 +389,16 @@ export function useGameState() {
 
   const useEliminate = useCallback((): boolean => {
     if (!currentUser || currentUser.powerups.eliminate <= 0) return false;
-    update({
-      ...currentUser,
-      powerups: { ...currentUser.powerups, eliminate: currentUser.powerups.eliminate - 1 },
-    });
+    update(u => ({
+      ...u,
+      powerups: { ...u.powerups, eliminate: u.powerups.eliminate - 1 },
+    }));
     return true;
   }, [currentUser, update]);
 
   const spendCoins = useCallback((amount: number): boolean => {
     if (!currentUser || currentUser.coins < amount) return false;
-    update({ ...currentUser, coins: currentUser.coins - amount });
+    update(u => ({ ...u, coins: u.coins - amount }));
     return true;
   }, [currentUser, update]);
 
@@ -394,13 +406,13 @@ export function useGameState() {
     if (!currentUser || amount <= 0) return;
     // Cap por operação — impede que uma única chamada inflacione moedas sem limite
     const safeAmount = Math.min(amount, MAX_COINS_PER_OPERATION);
-    update({ ...currentUser, coins: currentUser.coins + safeAmount });
+    update(u => ({ ...u, coins: u.coins + safeAmount }));
   }, [currentUser, update]);
 
   const addPoints = useCallback((amount: number): void => {
     if (!currentUser || amount <= 0) return;
     const safeAmount = Math.min(amount, MAX_POINTS_PER_OPERATION);
-    update({ ...currentUser, points: currentUser.points + safeAmount });
+    update(u => ({ ...u, points: u.points + safeAmount }));
   }, [currentUser, update]);
 
   // Firebase tem prioridade no leaderboard (tempo real); fallback local
