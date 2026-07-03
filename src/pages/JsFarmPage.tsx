@@ -195,9 +195,10 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
     worker.onmessage = (ev: MessageEvent<WorkerToMain>) => {
       const msg = ev.data;
       if (msg.type === 'action') {
-        // canHarvest() é uma leitura pura, praticamente de graça — sem o
-        // delay normal de ação, igual ao can_harvest() do jogo original.
-        const delay = msg.action.kind === 'canHarvest' ? 0 : actionDelayMs(farmRef.current.upgrades);
+        // Leituras puras (canHarvest/info/size) são praticamente de graça —
+        // sem o delay normal de ação, igual ao can_harvest() do jogo original.
+        const isReadOnly = msg.action.kind === 'canHarvest' || msg.action.kind === 'info' || msg.action.kind === 'size';
+        const delay = isReadOnly ? 0 : actionDelayMs(farmRef.current.upgrades);
         window.setTimeout(() => {
           if (workerRef.current !== worker) return; // worker já parado
 
@@ -571,7 +572,7 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
           )}
           {apiRow(
             'await drone.plant(cultura?)',
-            'Planta na casa atual. Sem argumento planta grama (raramente precisa). Depois de comprar "Sementes de arbusto"/"Sementes de cenoura", aceita plant(\'arbusto\') e plant(\'cenoura\') — essa última só funciona em terra arada. Retorna true/false.',
+            'Planta na casa atual. Sem argumento planta grama (raramente precisa, nunca gasta nada). Depois de comprar "Sementes de arbusto"/"Sementes de cenoura", aceita plant(\'arbusto\') e plant(\'cenoura\') — essa última só funciona em terra arada. ATENÇÃO: chamar plant(\'arbusto\')/plant(\'cenoura\') numa casa errada (ocupada ou não arada) desperdiça 2 Feno — confira com drone.info() antes de plantar às cegas.',
             "await drone.plant('arbusto');"
           )}
           {apiRow(
@@ -588,6 +589,16 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
             'await drone.canHarvest()',
             'Checagem sem custo de tempo (diferente das outras ações): retorna true se a casa atual tem uma plantação pronta pra colher agora.',
             "if (await drone.canHarvest()) { await drone.harvest(); }"
+          )}
+          {apiRow(
+            'await drone.info()',
+            'Checagem completa da casa atual, sem custo de tempo: retorna um objeto { crop, ready, tilled }. O jeito certo de decidir o que fazer numa casa antes de agir, em vez de chutar plant()/till() e arriscar desperdiçar semente.',
+            "const casa = await drone.info();\nif (casa.crop === null && casa.tilled) { await drone.plant('cenoura'); }"
+          )}
+          {apiRow(
+            'await drone.size()',
+            'Checagem sem custo de tempo: retorna o tamanho atual do lado da fazenda (3 a 9). Junto com um loop, dá pra escrever um código que cobre o campo inteiro e continua funcionando depois de expandir, sem precisar reescrever nada.',
+            'const lado = await drone.size();\nfor (let i = 0; i < lado * lado; i++) { /* ... */ }'
           )}
           {apiRow(
             'await drone.sell()',
@@ -626,15 +637,41 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
             </>
           )}
 
+          {section('PADRÃO RECOMENDADO')}
+          <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: '0 0 10px' }}>
+            Depois de ter Laços + Operadores + Funções + Listas, o jeito eficiente de cobrir a fazenda
+            inteira parece com isto — repare que cada estrutura tem um motivo real de estar aí, não é só
+            burocracia pra desbloquear:
+          </p>
+          <code style={{ display: 'block', color: C.text, fontSize: 13, fontFamily: 'monospace', background: C.bg, padding: '10px 12px', borderRadius: 3, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{
+`async function cuidarDaCasa() {           // Funções: uma decisão, reaproveitada em cada casa
+  const casa = await drone.info();        // olha antes de agir — sem isso, plant()/till() no chute desperdiça semente
+  if (casa.ready) { await drone.harvest(); return; }
+  if (casa.crop === null && !casa.tilled) { await drone.till(); return; }
+  if (casa.crop === null && casa.tilled) { await drone.plant('cenoura'); }
+}
+
+const direcoes = ['right', 'right', 'down', 'left', 'left', 'down']; // Listas: o caminho pra varrer o campo
+while (true) {                                                        // Laços
+  for (const dir of direcoes) {                                       // Laços + Listas juntos
+    await cuidarDaCasa();
+    await drone.move(dir);
+  }
+}`
+          }</code>
+
           {section('ECONOMIA')}
           <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
             Não existe ouro: Feno, Madeira e Cenoura colhidos são a própria moeda. Feno é barato e paga
             Laços; Madeira e Cenoura pagam o resto das Estruturas — os desbloqueios finais (Funções, Listas,
             Dicionários) custam tanto que <strong>uma casa só farmando sem parar levaria muitas horas</strong>:
             o jeito rápido de verdade é expandir a fazenda e escrever um código que cubra várias casas por
-            ciclo, não ficar preso numa única casa. <code>drone.sell()</code> é diferente — ele troca o
-            estoque atual por moedas e pontos permanentes na sua conta do hub, então cada colheita é uma
-            escolha: investir na loja da fazenda ou vender pra conta.
+            ciclo, não ficar preso numa única casa. Além disso, <code>plant()</code> chamado sem checar o
+            estado da casa antes (com <code>drone.info()</code>) desperdiça Feno quando erra — então um
+            loop "no escuro" que tenta plantar tudo em toda casa sai caro, mesmo rodando rápido.{' '}
+            <code>drone.sell()</code> é diferente — ele troca o estoque atual por moedas e pontos
+            permanentes na sua conta do hub, então cada colheita é uma escolha: investir na loja da fazenda
+            ou vender pra conta.
           </p>
 
           {section('EXPANDIR A FAZENDA')}

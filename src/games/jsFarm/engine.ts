@@ -41,6 +41,11 @@ export const BASE_ACTION_DELAY_MS = 420;
 export const MIN_ACTION_DELAY_MS = 120;
 export const SPEED_STEP_MS = 50;
 
+/** Quanto Feno se perde ao tentar plant('arbusto'/'cenoura') numa casa errada
+ *  (ocupada ou não arada) sem checar antes com drone.info(). Só existe pra dar
+ *  motivo real de usar condicional — plantar "no escuro" deixa de ser de graça. */
+export const SEED_WASTE_COST = 2;
+
 /** Custo de cada nível do Motor do drone — começa só em Feno (barato, cedo),
  *  mas a partir do nível 3 passa a exigir Madeira também, e do nível 5 em
  *  diante Cenoura também, igual às Estruturas/Expansão: nada fica pago numa
@@ -258,11 +263,17 @@ export function applyAction(state: FarmState, action: DroneAction, now: number):
       const tile = state.tiles[idx];
       // Grama é "livre" — dá pra plantar outra cultura por cima dela. Arbusto/cenoura
       // cultivados protegem a casa até serem colhidos.
-      if (tile.crop !== null && tile.crop !== 'grama') return { state, value: false };
       if (crop === 'arbusto' && state.upgrades.arbusto < 1) return { state, value: false };
-      if (crop === 'cenoura') {
-        if (state.upgrades.cenoura < 1) return { state, value: false };
-        if (!tile.tilled) return { state, value: false }; // precisa arar antes (till())
+      if (crop === 'cenoura' && state.upgrades.cenoura < 1) return { state, value: false };
+      const occupied = tile.crop !== null && tile.crop !== 'grama';
+      const notTilled = crop === 'cenoura' && !tile.tilled;
+      if (crop !== 'grama' && (occupied || notTilled)) {
+        // Semente desperdiçada: plantar sem checar o estado da casa antes (com
+        // drone.info()) tem custo de verdade — não é mais uma tentativa de graça.
+        // Grama não gasta nada porque nunca precisa de semente (cresce sozinha).
+        const waste = Math.min(SEED_WASTE_COST, state.stock.feno);
+        const stock = waste > 0 ? { ...state.stock, feno: state.stock.feno - waste } : state.stock;
+        return { state: { ...state, stock }, value: false };
       }
       const tiles = state.tiles.slice();
       tiles[idx] = { crop, plantedAt: now, tilled: tile.tilled };
@@ -295,6 +306,19 @@ export function applyAction(state: FarmState, action: DroneAction, now: number):
       // Leitura pura, não muda o estado — resolvida na página com custo de tempo ~0.
       const idx = tileIndex(state, state.drone.x, state.drone.y);
       return { state, value: isCropReady(state.tiles[idx], now) };
+    }
+    case 'info': {
+      // Leitura completa da casa atual — o jeito de checar antes de agir, em vez
+      // de plantar/arar "no escuro" e arriscar desperdiçar semente.
+      const idx = tileIndex(state, state.drone.x, state.drone.y);
+      const tile = state.tiles[idx];
+      return { state, value: { crop: tile.crop, ready: isCropReady(tile, now), tilled: tile.tilled } };
+    }
+    case 'size': {
+      // Tamanho atual do grid — necessário pra escrever um loop que cobre a
+      // fazenda inteira mesmo depois de expandida (sem isso não dá pra saber
+      // onde o campo termina, exceto contando por tentativa e erro).
+      return { state, value: state.gridSize };
     }
     case 'home': {
       return { state: { ...state, drone: { x: 0, y: 0 } }, value: true };

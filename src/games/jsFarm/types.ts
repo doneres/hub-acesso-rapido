@@ -38,9 +38,19 @@ export type DroneAction =
   | { kind: 'till' }
   | { kind: 'harvest' }
   | { kind: 'canHarvest' }
+  | { kind: 'info' }
+  | { kind: 'size' }
   | { kind: 'sell' }
   | { kind: 'home' }
   | { kind: 'clear' };
+
+/** Retorno de drone.info() — leitura completa da casa atual, pra decidir
+ *  o que fazer sem "chutar" a ação (que agora tem custo se errar). */
+export interface TileInfo {
+  crop: CropId | null;
+  ready: boolean;
+  tilled: boolean;
+}
 
 export interface ShopItemDef {
   id: string;
