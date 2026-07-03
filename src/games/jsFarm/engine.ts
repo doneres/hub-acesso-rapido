@@ -41,29 +41,39 @@ export const BASE_ACTION_DELAY_MS = 420;
 export const MIN_ACTION_DELAY_MS = 120;
 export const SPEED_STEP_MS = 50;
 
-export const SHOP_ITEMS: (ShopItemDef & { costItem: ItemId })[] = [
+/** Custo de cada nível do Motor do drone — começa só em Feno (barato, cedo),
+ *  mas a partir do nível 3 passa a exigir Madeira também, e do nível 5 em
+ *  diante Cenoura também, igual às Estruturas/Expansão: nada fica pago numa
+ *  moeda só até o fim. */
+const SPEED_COSTS: Partial<Record<ItemId, number>>[] = [
+  { feno: 30 },
+  { feno: 70 },
+  { feno: 120, madeira: 40 },
+  { feno: 220, madeira: 130 },
+  { madeira: 300, cenoura: 90 },
+  { madeira: 600, cenoura: 300 },
+];
+
+export const SHOP_ITEMS: ShopItemDef[] = [
   {
     id: 'speed',
     name: 'Motor do drone',
-    desc: 'Reduz o tempo de cada ação.',
-    cost: level => Math.round(30 * 2.2 ** level),
-    costItem: 'feno',
-    maxLevel: 6,
+    desc: 'Reduz o tempo de cada ação. A partir do nível 3 passa a cobrar Madeira também, e do 5 Cenoura também.',
+    cost: level => SPEED_COSTS[level] ?? {},
+    maxLevel: SPEED_COSTS.length,
   },
   {
     id: 'arbusto',
     name: 'Sementes de arbusto',
     desc: "Desbloqueia plant('arbusto') — cresce mais devagar que a grama, rende Madeira.",
-    cost: () => 200,
-    costItem: 'feno',
+    cost: () => ({ feno: 200 }),
     maxLevel: 1,
   },
   {
     id: 'cenoura',
     name: 'Sementes de cenoura',
     desc: "Desbloqueia till() e plant('cenoura') — só cresce em terra arada.",
-    cost: () => 300,
-    costItem: 'madeira',
+    cost: () => ({ madeira: 300 }),
     maxLevel: 1,
   },
 ];
@@ -131,18 +141,27 @@ export function shopItemLevel(state: FarmState, id: string): number {
   return 0;
 }
 
+export function canAffordShopItem(state: FarmState, id: string): boolean {
+  const def = SHOP_ITEMS.find(s => s.id === id);
+  if (!def) return false;
+  const level = shopItemLevel(state, id);
+  if (level >= def.maxLevel) return false;
+  const cost = def.cost(level);
+  return !(Object.keys(cost) as ItemId[]).some(c => state.stock[c] < (cost[c] ?? 0));
+}
+
 export function buyShopItem(state: FarmState, id: string): { state: FarmState; ok: boolean } {
   const def = SHOP_ITEMS.find(s => s.id === id);
   if (!def) return { state, ok: false };
   const level = shopItemLevel(state, id);
-  if (level >= def.maxLevel) return { state, ok: false };
+  if (level >= def.maxLevel || !canAffordShopItem(state, id)) return { state, ok: false };
   const cost = def.cost(level);
-  if (state.stock[def.costItem] < cost) return { state, ok: false };
   const upgrades: Upgrades = { ...state.upgrades };
   if (id === 'speed') upgrades.speed = level + 1;
   if (id === 'arbusto') upgrades.arbusto = level + 1;
   if (id === 'cenoura') upgrades.cenoura = level + 1;
-  const stock = { ...state.stock, [def.costItem]: state.stock[def.costItem] - cost };
+  const stock = { ...state.stock };
+  (Object.keys(cost) as ItemId[]).forEach(c => { stock[c] -= cost[c] ?? 0; });
   return { state: { ...state, stock, upgrades }, ok: true };
 }
 

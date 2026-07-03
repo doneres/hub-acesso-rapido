@@ -8,7 +8,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import {
   CROPS, CROP_TO_ITEM, ITEM_NAMES, SHOP_ITEMS, SELL_RATES, EXPAND_LEVELS, MAX_GRID_SIZE, createInitialFarm, applyAction, isCropReady,
-  actionDelayMs, shopItemLevel, buyShopItem, canBuyStructure, buyStructure, canBuyExpand, buyExpand,
+  actionDelayMs, shopItemLevel, canAffordShopItem, buyShopItem, canBuyStructure, buyStructure, canBuyExpand, buyExpand,
 } from '../games/jsFarm/engine';
 import { CropId, ItemId, FarmState, MainToWorker, SaveData, WorkerToMain } from '../games/jsFarm/types';
 import { STRUCTURE_ORDER, STRUCTURES, StructureId, nextStructure, createEmptyUnlocks } from '../games/jsFarm/curriculum';
@@ -466,7 +466,10 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
                 const level = shopItemLevel(farm, item.id);
                 const maxed = level >= item.maxLevel;
                 const cost = item.cost(level);
-                const canBuy = !maxed && farm.stock[item.costItem] >= cost;
+                const canBuy = !maxed && canAffordShopItem(farm, item.id);
+                const costLabel = (Object.keys(cost) as ItemId[])
+                  .map(c => `${cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
+                  .join(' + ');
                 return (
                   <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 5 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -475,7 +478,7 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
                     </div>
                     <button onClick={() => buy(item.id)} disabled={!canBuy}
                       style={{ flexShrink: 0, padding: '8px 13px', background: maxed ? 'transparent' : canBuy ? C.accent : 'transparent', border: `1px solid ${maxed ? C.border : C.accent}`, borderRadius: 4, color: maxed ? C.sub : canBuy ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: canBuy ? 'pointer' : 'not-allowed' }}>
-                      {maxed ? 'MAX' : `${cost} ${ITEM_NAMES[item.costItem].toLowerCase()}`}
+                      {maxed ? 'MAX' : costLabel}
                     </button>
                   </div>
                 );

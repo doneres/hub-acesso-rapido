@@ -46,7 +46,7 @@ export interface ShopItemDef {
   id: string;
   name: string;
   desc: string;
-  cost: (level: number) => number;
+  cost: (level: number) => Partial<Record<ItemId, number>>;
   maxLevel: number;
 }
 
