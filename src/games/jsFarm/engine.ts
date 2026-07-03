@@ -54,15 +54,25 @@ export const SELL_RATES: Record<ItemId, { coins: number; points: number }> = {
   fibra:   { coins: 6,  points: 4 },
 };
 
-/** Bloco N×N que precisa estar maduro ao mesmo tempo pra virar "mega-abóbora"
- *  (bônus de rendimento) — colher uma antes da hora não estraga as vizinhas,
- *  só não gera o bônus. */
+/** Bloco N×N que precisa amadurecer DENTRO da mesma janela de tempo pra virar
+ *  "mega-abóbora" — as 4 têm que ser plantadas em sequência próxima de verdade
+ *  (não só esperar todas ficarem prontas, não importa quando plantadas: se o
+ *  intervalo entre o plantio da primeira e da última passar da janela, o bloco
+ *  nunca sincroniza, mesmo que todas acabem maduras ao mesmo tempo depois).
+ *  Colher com o bloco sincronizado colhe as 4 casas de uma vez, cada uma com
+ *  o bônus — colher fora de sincronia rende só a casa atual, valor normal. */
 export const ABOBORA_BLOCK = 2;
 export const ABOBORA_BLOCK_BONUS = 5;
+export const ABOBORA_SYNC_WINDOW_MS = 4000;
 
 /** Tamanho de valor sorteado ao plantar girassol/cacto (drone.info().value). */
 export const GIRASSOL_VALUE_RANGE: [number, number] = [1, 5];
 export const CACTO_VALUE_RANGE: [number, number] = [1, 10];
+/** Colher o girassol de MAIOR valor entre os prontos agora em toda a fazenda
+ *  rende esse bônus — colher o primeiro que aparecer, sem comparar, raramente
+ *  acerta o maior (só por sorte), então na prática só quem compara ganha o
+ *  bônus de forma consistente. */
+export const GIRASSOL_BEST_BONUS = 5;
 /** Bônus de Fibra por unidade de sequência crescente de cacto colhido em ordem. */
 export const CACTO_STREAK_BONUS = 1;
 
@@ -116,12 +126,14 @@ export const SHOP_ITEMS: ShopItemDef[] = [
     desc: "Desbloqueia plant('arvore') — rende Madeira, mas árvore plantada colada em outra árvore (N/S/L/O) morre na hora. Confira as vizinhas com drone.info() antes de plantar.",
     cost: () => ({ madeira: 600 }),
     maxLevel: 1,
-    requiresStructure: 'variaveis',
+    // Checar as vizinhas de verdade exige if (IfStatement) — por isso o gate é
+    // Operadores, não só Variáveis: sem if, a única opção é plantar no escuro.
+    requiresStructure: 'operadores',
   },
   {
     id: 'girassol',
     name: 'Sementes de girassol',
-    desc: "Desbloqueia plant('girassol') — cada pé nasce com um valor aleatório (drone.info().value). Só compensa colher o de maior valor da região.",
+    desc: `Desbloqueia plant('girassol') — cada pé nasce com um valor aleatório (drone.info().value). Colher o de MAIOR valor pronto agora em toda a fazenda rende ${GIRASSOL_BEST_BONUS}x mais — colher o primeiro que aparecer, sem comparar, raramente acerta o maior.`,
     cost: () => ({ feno: 2000, madeira: 500 }),
     maxLevel: 1,
     requiresStructure: 'operadores',
@@ -129,7 +141,7 @@ export const SHOP_ITEMS: ShopItemDef[] = [
   {
     id: 'abobora',
     name: 'Sementes de abóbora',
-    desc: `Desbloqueia plant('abobora') — colher um bloco ${ABOBORA_BLOCK}×${ABOBORA_BLOCK} inteiro maduro ao mesmo tempo rende ${ABOBORA_BLOCK_BONUS}x mais. Colher fora de sincronia rende só 1x.`,
+    desc: `Desbloqueia plant('abobora') — plante um bloco ${ABOBORA_BLOCK}×${ABOBORA_BLOCK} inteiro em sequência próxima (até ${ABOBORA_SYNC_WINDOW_MS / 1000}s de diferença entre a 1ª e a última) e colher qualquer uma das 4 colhe o bloco todo de uma vez, cada casa valendo ${ABOBORA_BLOCK_BONUS}x. Plantar espalhado no tempo nunca sincroniza — cada casa rende só 1x, sozinha.`,
     cost: () => ({ madeira: 1500, cenoura: 800 }),
     maxLevel: 1,
     requiresStructure: 'funcoes',
@@ -341,21 +353,38 @@ function hasAdjacentTree(state: FarmState, x: number, y: number): boolean {
   });
 }
 
-/** Bloco ABOBORA_BLOCK×ABOBORA_BLOCK inteiro maduro ao mesmo tempo = bônus.
- *  Colher uma abóbora antes da hora do bloco não estraga as vizinhas, só
- *  deixa de render o bônus — obriga rastrear várias coordenadas pendentes. */
+/** Bloco ABOBORA_BLOCK×ABOBORA_BLOCK sincronizado = bônus. Exige que as 4
+ *  estejam maduras agora E que tenham sido PLANTADAS dentro da mesma janela de
+ *  tempo (ABOBORA_SYNC_WINDOW_MS) — não basta esperar todas ficarem prontas
+ *  não importa quando plantadas; se o intervalo de plantio for grande demais,
+ *  o bloco nunca sincroniza, obrigando plantio em sequência próxima de verdade. */
 function aboboraBlockReady(state: FarmState, x: number, y: number, now: number): boolean {
   const bx = Math.floor(x / ABOBORA_BLOCK) * ABOBORA_BLOCK;
   const by = Math.floor(y / ABOBORA_BLOCK) * ABOBORA_BLOCK;
+  const plantedTimes: number[] = [];
   for (let dx = 0; dx < ABOBORA_BLOCK; dx++) {
     for (let dy = 0; dy < ABOBORA_BLOCK; dy++) {
       const nx = bx + dx, ny = by + dy;
       if (nx >= state.gridSize || ny >= state.gridSize) return false;
       const t = state.tiles[tileIndex(state, nx, ny)];
-      if (t.crop !== 'abobora' || !isCropReady(t, now)) return false;
+      if (t.crop !== 'abobora' || !isCropReady(t, now) || t.plantedAt === null) return false;
+      plantedTimes.push(t.plantedAt);
     }
   }
-  return true;
+  const spread = Math.max(...plantedTimes) - Math.min(...plantedTimes);
+  return spread <= ABOBORA_SYNC_WINDOW_MS;
+}
+
+/** Maior valor entre os girassóis prontos AGORA em toda a fazenda — colher
+ *  esse (em vez do primeiro que aparecer, sem comparar) é o que rende o
+ *  bônus. Só existe de verdade se o jogador ler drone.info().value de vários
+ *  antes de decidir qual colher. */
+function girassolRegionMax(state: FarmState, now: number): number {
+  let max = 0;
+  for (const t of state.tiles) {
+    if (t.crop === 'girassol' && isCropReady(t, now) && (t.value ?? 0) > max) max = t.value ?? 0;
+  }
+  return max;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -442,11 +471,35 @@ export function applyAction(state: FarmState, action: DroneAction, now: number):
       const crop = tile.crop as CropId;
       const item = CROP_TO_ITEM[crop];
       let yieldAmount = tile.value ?? 1;
+      const tiles = state.tiles.slice();
 
-      // Abóbora: bloco 2×2 inteiro maduro ao mesmo tempo rende bônus — colher
-      // fora de sincronia rende só a unidade normal.
+      // Girassol: colher o de MAIOR valor pronto agora em toda a fazenda rende
+      // bônus — colher o primeiro que aparecer sem comparar raramente acerta
+      // o maior por sorte, então só compensa de verdade quem lê drone.info()
+      // de vários antes de decidir qual colher.
+      if (crop === 'girassol') {
+        const regionMax = girassolRegionMax(state, now);
+        if (regionMax > 0 && yieldAmount >= regionMax) {
+          yieldAmount *= GIRASSOL_BEST_BONUS;
+        }
+      }
+
+      // Abóbora: bloco 2×2 sincronizado (mesma janela de plantio) colhe as 4
+      // casas de uma vez, cada uma valendo o bônus — colher fora de sincronia
+      // rende só a casa atual, valor normal (as outras continuam no campo).
       if (crop === 'abobora' && aboboraBlockReady(state, state.drone.x, state.drone.y, now)) {
-        yieldAmount *= ABOBORA_BLOCK_BONUS;
+        const bx = Math.floor(state.drone.x / ABOBORA_BLOCK) * ABOBORA_BLOCK;
+        const by = Math.floor(state.drone.y / ABOBORA_BLOCK) * ABOBORA_BLOCK;
+        yieldAmount = 0;
+        for (let dx = 0; dx < ABOBORA_BLOCK; dx++) {
+          for (let dy = 0; dy < ABOBORA_BLOCK; dy++) {
+            const nIdx = tileIndex(state, bx + dx, by + dy);
+            yieldAmount += (tiles[nIdx].value ?? 1) * ABOBORA_BLOCK_BONUS;
+            tiles[nIdx] = tileAfterClear(tiles[nIdx].tilled, now);
+          }
+        }
+      } else {
+        tiles[idx] = tileAfterClear(tile.tilled, now);
       }
 
       // Cacto: colher em ordem crescente de tamanho mantém/aumenta a
@@ -463,8 +516,6 @@ export function applyAction(state: FarmState, action: DroneAction, now: number):
         lastCactoValue = size;
       }
 
-      const tiles = state.tiles.slice();
-      tiles[idx] = tileAfterClear(tile.tilled, now);
       const stock = { ...state.stock, [item]: state.stock[item] + yieldAmount };
       return {
         state: {

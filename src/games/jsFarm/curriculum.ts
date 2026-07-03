@@ -12,6 +12,17 @@
    é expandir a fazenda e escrever código que cubra várias casas por
    ciclo (loop + array de posições), não ficar preso numa casa só.
    Cada item só pode ser comprado depois do anterior na cadeia.
+
+   IMPORTANTE — dependência sintática, não só econômica: nodeTypes
+   não seguem 1-pra-1 o nome "amigável" da estrutura. Laços só libera
+   while/do-while (o único jeito de repetir que não depende de mais
+   nada); ForStatement (for contado) foi movido pra dentro de
+   Operadores, porque um for contado de verdade precisa de variável
+   de controle + comparação — sem isso "ter" for não serve pra nada.
+   Pelo mesmo motivo, ForOfStatement/ForInStatement foram movidos pra
+   dentro de Listas — for...of sem nada iterável também não serve.
+   Isso garante que toda compra já seja 100% utilizável no momento em
+   que é feita, nunca uma "meia-estrutura" esperando a próxima.
 ═══════════════════════════════════════════════════════════════ */
 import type { ItemId } from './types';
 
@@ -32,9 +43,9 @@ export const STRUCTURE_ORDER: StructureId[] = ['lacos', 'variaveis', 'operadores
 export const STRUCTURES: Record<StructureId, StructureDef> = {
   lacos: {
     id: 'lacos', name: 'Laços', cost: { feno: 80 },
-    desc: 'Repita ações com while, for e for...of. A primeira compra — barata, só Feno.',
-    nodeTypes: ['WhileStatement', 'DoWhileStatement', 'ForStatement', 'ForOfStatement', 'ForInStatement', 'BreakStatement', 'ContinueStatement'],
-    example: "while (true) { await drone.move('right'); }",
+    desc: 'Repita ações com while e do...while. A primeira compra — barata, só Feno. (for contado libera com Operadores; for...of libera com Listas — não adianta comprar Laços e tentar contar repetições sem eles.)',
+    nodeTypes: ['WhileStatement', 'DoWhileStatement', 'BreakStatement', 'ContinueStatement'],
+    example: "while (true) { await drone.harvest(); await drone.move('right'); }",
   },
   variaveis: {
     id: 'variaveis', name: 'Variáveis', cost: { madeira: 200 },
@@ -44,9 +55,9 @@ export const STRUCTURES: Record<StructureId, StructureDef> = {
   },
   operadores: {
     id: 'operadores', name: 'Operadores e condicionais', cost: { feno: 1200, madeira: 300 },
-    desc: 'Operadores aritméticos, de comparação, lógicos, e if/else.',
-    nodeTypes: ['BinaryExpression', 'LogicalExpression', 'UnaryExpression', 'UpdateExpression', 'IfStatement', 'ConditionalExpression', 'SwitchStatement'],
-    example: "if (await drone.canHarvest()) { await drone.harvest(); }",
+    desc: 'Operadores aritméticos, de comparação, lógicos, if/else — e o for contado, que precisa de comparação (i < n) pra saber quando parar.',
+    nodeTypes: ['BinaryExpression', 'LogicalExpression', 'UnaryExpression', 'UpdateExpression', 'IfStatement', 'ConditionalExpression', 'SwitchStatement', 'ForStatement'],
+    example: "for (let i = 0; i < await drone.size(); i++) {\n  if (await drone.canHarvest()) { await drone.harvest(); }\n}",
   },
   funcoes: {
     id: 'funcoes', name: 'Funções', cost: { madeira: 900, cenoura: 400 },
@@ -56,9 +67,9 @@ export const STRUCTURES: Record<StructureId, StructureDef> = {
   },
   listas: {
     id: 'listas', name: 'Listas', cost: { cenoura: 8000 },
-    desc: 'Guarde vários valores em um array com [ ] — ideal pra guardar várias posições da fazenda e percorrer todas num loop só.',
-    nodeTypes: ['ArrayExpression'],
-    example: "const posicoes = ['right', 'right', 'down'];",
+    desc: 'Guarde vários valores em um array com [ ] — e o for...of, que percorre a lista direto. Ideal pra guardar várias posições da fazenda e percorrer todas num loop só.',
+    nodeTypes: ['ArrayExpression', 'ForOfStatement', 'ForInStatement'],
+    example: "const posicoes = ['right', 'right', 'down'];\nfor (const dir of posicoes) { await drone.move(dir); }",
   },
   dicionarios: {
     id: 'dicionarios', name: 'Dicionários', cost: { cenoura: 30000 },

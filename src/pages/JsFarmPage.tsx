@@ -92,10 +92,19 @@ const OBJECTIVES: Objective[] = [
   { id: 'dicionarios', label: 'Desbloqueie "Dicionários"', isDone: f => f.unlocks.dicionarios },
 ];
 
-/** Eficiência: fração das ações (move/plant/till/harvest) que renderam
- *  colheita de verdade — base do bônus de pontos na Arena de Desafios. */
+/** Peso extra pras ações que falharam de verdade (harvest vazio, plant/till
+ *  errado, move na borda) — sem isso, "colheitas / ações totais" empata um
+ *  código preso na borda (metade das ações é um move que falha sempre) com um
+ *  código bem escrito que nunca falha nada (metade das ações é um move que
+ *  sempre funciona, só porque cada casa visitada custa 1 move + 1 harvest).
+ *  Multiplicar wasted por esse peso separa "nunca erra" de "fica preso". */
+const WASTE_PENALTY = 4;
+
+/** Eficiência: colheitas de verdade contra ações totais + o peso extra das
+ *  ações desperdiçadas — base do bônus de pontos na Arena de Desafios. */
 function efficiency(stats: FarmState['stats']): number {
-  return stats.actions === 0 ? 0 : stats.harvests / stats.actions;
+  const denom = stats.actions + WASTE_PENALTY * stats.wasted;
+  return denom === 0 ? 0 : stats.harvests / denom;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -552,9 +561,42 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   AJUDA PROGRESSIVA DAS CULTURAS — não despeja as 7 de uma vez pro
+   jogador novo: mostra só as já desbloqueadas + a próxima (preview),
+   revelando mais conforme compra as Ferramentas correspondentes.
+═══════════════════════════════════════════════════════════════ */
+const CROP_PROGRESSION: CropId[] = ['arbusto', 'cenoura', 'arvore', 'girassol', 'abobora', 'cacto'];
+
+function isCropOwned(farm: FarmState, crop: CropId): boolean {
+  if (crop === 'grama') return true;
+  return farm.upgrades[crop] >= 1;
+}
+
+/** Grama + culturas já desbloqueadas + a próxima ainda não comprada (preview) — pára aí. */
+function progressiveCrops(farm: FarmState): CropId[] {
+  const visible: CropId[] = ['grama'];
+  for (const c of CROP_PROGRESSION) {
+    visible.push(c);
+    if (!isCropOwned(farm, c)) break;
+  }
+  return visible;
+}
+
+const CROP_HELP_TEXT: Record<CropId, string> = {
+  grama: 'Cresce sozinha em qualquer casa vazia não arada, sem precisar plantar — vira o item Feno.',
+  arbusto: "Precisa de plant('arbusto') — cresce mais devagar que a grama. Vira o item Madeira.",
+  cenoura: "Só cresce em terra arada — use till() antes de plant('cenoura'). Vira o item Cenoura (mesmo nome).",
+  arvore: "Morre se plantada colada em outra árvore (N/S/L/O) — confira as 4 vizinhas com drone.info() antes de plantar. Vira o item Madeira.",
+  girassol: 'Nasce com um valor aleatório (drone.info().value) — colher o de MAIOR valor pronto agora em toda a fazenda rende 5x mais. Vira o item Óleo.',
+  abobora: 'Só rende bônus (5x) se as 4 casas de um bloco 2×2 forem plantadas em sequência próxima — não basta esperar todas ficarem prontas. Vira o item Abóbora (mesmo nome).',
+  cacto: 'Nasce com um tamanho aleatório — só rende bônus de Fibra se colhido em ordem crescente de tamanho.',
+};
+
+/* ═══════════════════════════════════════════════════════════════
    MODAL DE AJUDA — API do drone e estruturas de JS disponíveis
 ═══════════════════════════════════════════════════════════════ */
 function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme; onClose: () => void }) {
+  const [showAllCrops, setShowAllCrops] = useState(false);
   const section = (title: string) => (
     <div style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: C.accent, margin: '20px 0 12px' }}>{title}</div>
   );
@@ -588,22 +630,27 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
             um aviso, sem rodar nada.
           </p>
 
-          {section('AS 7 CULTURAS')}
-          <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
-            Cada cultura nova quebra a estratégia que resolvia a anterior — não dá pra usar o mesmo
-            código de novo, precisa evoluir. <strong style={{ color: CROPS.grama.color }}>Grama</strong> cresce
-            sozinha, sem plantio. <strong style={{ color: CROPS.arbusto.color }}>Arbusto</strong> precisa
-            de <code>plant('arbusto')</code>. <strong style={{ color: CROPS.cenoura.color }}>Cenoura</strong> só
-            cresce em terra arada (<code>till()</code> antes). <strong style={{ color: CROPS.arvore.color }}>Árvore</strong> morre
-            se plantada colada em outra árvore — precisa checar as 4 vizinhas
-            antes. <strong style={{ color: CROPS.girassol.color }}>Girassol</strong> nasce com um valor aleatório —
-            só compensa colher o maior da região, exige comparar vários antes de agir. <strong style={{ color: CROPS.abobora.color }}>Abóbora</strong> só
-            rende bônus se um bloco 2×2 inteiro amadurecer ao mesmo tempo. <strong style={{ color: CROPS.cacto.color }}>Cacto</strong> nasce
-            com um tamanho aleatório e só rende bônus de Fibra se colhido em ordem crescente. Igual ao jogo
-            original, o item colhido tem nome diferente da planta em quase todas: Grama vira <strong>Feno</strong>,
-            Arbusto e Árvore viram <strong>Madeira</strong>, Girassol vira <strong>Óleo</strong>, Cacto
-            vira <strong>Fibra</strong> — só Cenoura e Abóbora mantêm o próprio nome como item.
+          {section('CULTURAS')}
+          <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: '0 0 12px' }}>
+            Cada cultura nova quebra a estratégia que resolvia a anterior — não dá pra usar o mesmo código
+            de novo, precisa evoluir.
           </p>
+          {(showAllCrops ? (['grama', ...CROP_PROGRESSION] as CropId[]) : progressiveCrops(farm)).map(c => {
+            const owned = isCropOwned(farm, c);
+            return (
+              <p key={c} style={{ fontSize: 15, color: C.text, lineHeight: 1.6, margin: '0 0 10px' }}>
+                <strong style={{ color: CROPS[c].color }}>{CROPS[c].name}</strong>
+                {!owned && <span style={{ color: C.sub, fontWeight: 600 }}> (próxima — ainda não desbloqueada)</span>}
+                {' '}{CROP_HELP_TEXT[c]}
+              </p>
+            );
+          })}
+          {!showAllCrops && progressiveCrops(farm).length < 1 + CROP_PROGRESSION.length && (
+            <button onClick={() => setShowAllCrops(true)}
+              style={{ background: 'none', border: `1px solid ${C.border}`, borderRadius: 4, color: C.sub, fontSize: 13, padding: '6px 10px', cursor: 'pointer', marginBottom: 4 }}>
+              Ver todas as {1 + CROP_PROGRESSION.length} culturas (spoiler)
+            </button>
+          )}
 
           {section('API DO DRONE (sempre disponível)')}
           {apiRow(
@@ -643,7 +690,7 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
           )}
           {apiRow(
             'await drone.sell()',
-            'Troca todo o estoque de itens por moedas e pontos na SUA CONTA do hub (visíveis na Arena de Desafios), zerando o estoque. Retorna as moedas ganhas. Concede também um bônus de pontos proporcional à sua EFICIÊNCIA (colheitas ÷ ações totais) — código que erra menos ganha mais, não só quem colhe mais devagar com força bruta.',
+            'Troca todo o estoque de itens por moedas e pontos na SUA CONTA do hub (visíveis na Arena de Desafios), zerando o estoque. Retorna as moedas ganhas. Concede também um bônus de pontos proporcional à sua EFICIÊNCIA (colheitas contra ações totais, com as que falharam pesando bem mais) — código que erra menos ganha mais, não só quem colhe mais devagar com força bruta.',
             'await drone.sell();'
           )}
           {apiRow(
@@ -718,11 +765,14 @@ while (true) {                                                        // Laços
           {section('EFICIÊNCIA (ARENA DE DESAFIOS)')}
           <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
             O placar de cada venda não é só "quanto colheu" — é quantas das suas ações (mover, plantar,
-            arar, colher) realmente renderam colheita. Um código que erra pouco (confere com
-            <code> info()</code>/<code>canHarvest()</code> antes de agir) tem eficiência alta e ganha
-            bônus de pontos ao vender; um loop cego que fica tentando ações que falham (harvest vazio,
-            plant em casa ocupada, mover pra fora da borda) desperdiça ações e ganha menos, mesmo colhendo
-            a mesma quantidade. O painel "EFICIÊNCIA" ao lado do placar de objetivos mostra esse número em
+            arar, colher) realmente renderam colheita, com as que <strong>falharam de verdade</strong> (harvest
+            vazio, plant em casa ocupada, mover pra fora da borda) pesando 4x mais que uma ação normal na
+            conta. Isso separa um código que nunca erra nada (mas ainda visita casa por casa) de um código
+            preso na borda repetindo a mesma falha sem parar — os dois colhem, mas só o primeiro tem
+            eficiência alta de verdade. Um código que erra pouco (confere com <code>info()</code>/
+            <code>canHarvest()</code> antes de agir) ganha bônus de pontos ao vender; um loop cego que fica
+            tentando ações que falham desperdiça muito mais nessa conta e ganha bem menos, mesmo colhendo a
+            mesma quantidade. O painel "EFICIÊNCIA" ao lado do placar de objetivos mostra esse número em
             tempo real.
           </p>
 
