@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Trophy, Swords, Search, LogIn, LogOut, Crown, Medal,
   Lock, User, ChevronLeft, Users, Shield, X, Bug, Cpu,
-  ShoppingBag, Check, Palette, Star, Sprout,
+  ShoppingBag, Check, Palette, Star, Sprout, Terminal,
 } from 'lucide-react';
 import { useGameState, GameUser, LoginResult } from '../hooks/useGameState';
 import { COSMETICS, CosmeticDef } from '../data/cosmetics';
@@ -358,12 +358,13 @@ function GameCard({ title, subtitle, desc, tags, icon, color, onPlay }: {
 interface GamesHubPageProps {
   onBackToHub: () => void; onOpenDetetive: () => void; onOpenCssBattle: () => void;
   onOpenFlexRocket: () => void; onOpenFlexTower: () => void; onOpenReactBugHunter: () => void;
-  onOpenBlockCode: () => void; onOpenGodotArena: () => void; onOpenJsFarm: () => void; isDark?: boolean;
+  onOpenBlockCode: () => void; onOpenGodotArena: () => void; onOpenJsFarm: () => void;
+  onOpenPySystems: () => void; isDark?: boolean;
 }
 
 export default function GamesHubPage({
   onBackToHub, onOpenDetetive, onOpenCssBattle, onOpenFlexRocket, onOpenFlexTower,
-  onOpenReactBugHunter, onOpenBlockCode, onOpenGodotArena, onOpenJsFarm, isDark = true,
+  onOpenReactBugHunter, onOpenBlockCode, onOpenGodotArena, onOpenJsFarm, onOpenPySystems, isDark = true,
 }: GamesHubPageProps) {
   const { currentUser, leaderboard, users, login, registerUser, logout, buyCosmetic, equipCosmetic } = useGameState();
   const [showAuth, setShowAuth] = useState(false);
@@ -453,6 +454,12 @@ export default function GamesHubPage({
       desc: 'Escreva JavaScript de verdade pra controlar um drone que planta, colhe e vende — automatize a fazenda com loops e condicionais.',
       tags: ['JavaScript', 'Automação', 'Loops'],
       icon: <Sprout size={20} color={C.lime} />, color: C.lime, onPlay: onOpenJsFarm,
+    },
+    {
+      id: 'pysystems', title: 'SISTEMAS.PY', subtitle: 'LEETCODE COM INTERFACE GRÁFICA',
+      desc: 'Escreva uma classe Python pra resolver o desafio e veja o resultado numa interface de verdade — com botões, não num terminal cru.',
+      tags: ['Python', 'POO', 'Estruturas de dados'],
+      icon: <Terminal size={20} color={C.blue} />, color: C.blue, onPlay: onOpenPySystems,
     },
   ];
 

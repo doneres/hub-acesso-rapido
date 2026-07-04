@@ -31,6 +31,7 @@ import GamesHubPage from './pages/GamesHubPage';
 import FlexRocketPage from './pages/FlexRocketPage';
 import FlexTowerPage from './pages/FlexTowerPage';
 import JsFarmPage from './pages/JsFarmPage';
+import PySystemsPage from './pages/PySystemsPage';
 import ReactBugHunterPage from './pages/ReactBugHunterPage';
 import BlockCodePage from './pages/BlockCodePage';
 import GodotArenaPage from './pages/GodotArenaPage';
@@ -1588,7 +1589,7 @@ const App: React.FC = () => {
     new URLSearchParams(window.location.search).get('sala')?.toUpperCase() ?? ''
   );
 
-  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'flextower' | 'reactbughunter' | 'blockcode' | 'godotar' | 'jsfarm'>(() => {
+  const [currentPage, setCurrentPage] = useState<'hub' | 'roadmaps' | 'suporte' | 'professor' | 'maker' | 'noticias' | 'desafios' | 'detetive' | 'cssbattle' | 'flexrocket' | 'flextower' | 'reactbughunter' | 'blockcode' | 'godotar' | 'jsfarm' | 'pysystems'>(() => {
     if (window.location.hash === '#roadmaps')       return 'roadmaps';
     if (window.location.hash === '#suporte')        return 'suporte';
     if (window.location.hash === '#maker')          return 'maker';
@@ -1602,6 +1603,7 @@ const App: React.FC = () => {
     if (window.location.hash === '#flextower')      return 'flextower';
     if (window.location.hash === '#godotar')        return 'godotar';
     if (window.location.hash === '#jsfarm')         return 'jsfarm';
+    if (window.location.hash === '#pysystems')      return 'pysystems';
     if (new URLSearchParams(window.location.search).get('sala'))  return 'cssbattle';
     // #professor nunca restaura via hash — requer autenticação sempre
     return 'hub';
@@ -1669,6 +1671,8 @@ const App: React.FC = () => {
       window.location.hash = 'godotar';
     } else if (currentPage === 'jsfarm') {
       window.location.hash = 'jsfarm';
+    } else if (currentPage === 'pysystems') {
+      window.location.hash = 'pysystems';
     } else {
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -1691,6 +1695,7 @@ const App: React.FC = () => {
       else if (hash === '#flextower')      setCurrentPage('flextower');
       else if (hash === '#godotar')        setCurrentPage('godotar');
       else if (hash === '#jsfarm')         setCurrentPage('jsfarm');
+      else if (hash === '#pysystems')      setCurrentPage('pysystems');
       else setCurrentPage('hub');
     };
     window.addEventListener('popstate', handlePopstate);
@@ -1949,6 +1954,7 @@ const App: React.FC = () => {
         onOpenBlockCode={() => setCurrentPage('blockcode')}
         onOpenGodotArena={() => setCurrentPage('godotar')}
         onOpenJsFarm={() => setCurrentPage('jsfarm')}
+        onOpenPySystems={() => setCurrentPage('pysystems')}
         isDark={isDark}
       />
     );
@@ -1992,6 +1998,11 @@ const App: React.FC = () => {
   /* Fazenda.js — automação com JavaScript */
   if (currentPage === 'jsfarm') {
     return <JsFarmPage onBack={() => setCurrentPage('desafios')} />;
+  }
+
+  /* Sistemas.py — LeetCode com visualização gráfica em Python */
+  if (currentPage === 'pysystems') {
+    return <PySystemsPage onBack={() => setCurrentPage('desafios')} isDark={isDark} />;
   }
 
   return (
