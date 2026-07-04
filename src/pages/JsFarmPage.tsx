@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ChevronLeft, Play, Square, RotateCcw, Eraser, Coins, Terminal, HelpCircle, X, Lock,
-  Sun, Moon, Target, ChevronDown, ChevronUp, Check, BarChart3,
+  Sun, Moon, Target, ChevronDown, ChevronUp, Check, BarChart3, GitBranch, Wrench,
 } from 'lucide-react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
@@ -11,7 +11,7 @@ import {
   actionDelayMs, shopItemLevel, canBuyShopItem, buyShopItem, canBuyStructure, buyStructure, canBuyExpand, buyExpand,
 } from '../games/jsFarm/engine';
 import { CropId, ItemId, FarmState, MainToWorker, SaveData, WorkerToMain } from '../games/jsFarm/types';
-import { STRUCTURE_ORDER, STRUCTURES, StructureId, nextStructure, createEmptyUnlocks } from '../games/jsFarm/curriculum';
+import { STRUCTURE_ORDER, STRUCTURE_TIERS, STRUCTURES, StructureId, buyableNow, createEmptyUnlocks } from '../games/jsFarm/curriculum';
 import { validateCode, formatViolation } from '../games/jsFarm/validator';
 import { useGameState } from '../hooks/useGameState';
 
@@ -20,7 +20,17 @@ import { useGameState } from '../hooks/useGameState';
 ═══════════════════════════════════════════════════════════════ */
 const SAVE_KEY = 'jsfarm-save-v2';
 const THEME_KEY = 'jsfarm-theme';
-const CELL = 46;
+const CELL = 56;
+
+/** Cor de cada item colhido nos contadores do header (independente da cor
+ *  da planta em si — feno/madeira/cenoura têm ícone e cor próprios ali). */
+const ITEM_COLORS: Record<ItemId, string> = {
+  feno: '#ca8a04', madeira: '#8b5e34', cenoura: '#ea7c1e',
+  oleo: '#eab308', abobora: '#c2410c', fibra: '#4ade80',
+};
+
+/** Ícone que "voa" da casa colhida até o contador do item no header. */
+interface Flight { id: string; item: ItemId; x1: number; y1: number; x2: number; y2: number }
 
 const DEFAULT_CODE = `// Bem-vindo à Fazenda.js!
 // A grama já cresce sozinha em qualquer casa vazia — não precisa
@@ -84,7 +94,7 @@ const OBJECTIVES: Objective[] = [
   { id: 'lacos', label: 'Desbloqueie "Laços" na loja', isDone: f => f.unlocks.lacos },
   { id: 'arbusto', label: 'Compre "Sementes de arbusto" e colha Madeira', isDone: f => f.stock.madeira > 0 },
   { id: 'variaveis', label: 'Desbloqueie "Variáveis" e plante uma Árvore sem matar a muda', isDone: f => f.stock.madeira > 0 && f.upgrades.arvore > 0 },
-  { id: 'operadores', label: 'Desbloqueie "Operadores e condicionais" e colha o Girassol de maior valor da região', isDone: f => f.unlocks.operadores },
+  { id: 'condicionais', label: 'Desbloqueie "Condicionais" e colha o Girassol de maior valor da região', isDone: f => f.unlocks.condicionais },
   { id: 'cenoura', label: 'Compre "Sementes de cenoura", are a terra com till() e colha uma Cenoura', isDone: f => f.stock.cenoura > 0 },
   { id: 'funcoes', label: 'Desbloqueie "Funções" e feche um bloco 2×2 de Abóbora sincronizado', isDone: f => f.unlocks.funcoes },
   { id: 'expand', label: 'Expanda a fazenda pela primeira vez', isDone: f => f.upgrades.expand > 0 },
@@ -116,7 +126,9 @@ function loadSave(): SaveData {
     if (raw) {
       const parsed = JSON.parse(raw) as SaveData;
       if (parsed.farm && typeof parsed.code === 'string') {
-        if (!parsed.farm.unlocks) parsed.farm.unlocks = createEmptyUnlocks();
+        // Object.assign preserva compras antigas e preenche as novas
+        // estruturas da árvore (saves anteriores não têm essas chaves).
+        parsed.farm.unlocks = Object.assign(createEmptyUnlocks(), parsed.farm.unlocks);
         // Saves antigos não têm os campos das culturas/placar novos — preenche
         // com os valores neutros em vez de invalidar o save inteiro.
         parsed.farm.stock = Object.assign({ feno: 0, madeira: 0, cenoura: 0, oleo: 0, abobora: 0, fibra: 0 }, parsed.farm.stock);
@@ -155,6 +167,9 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
   const [showHelp, setShowHelp] = useState(isFirstVisit);
   const [isDark, setIsDark] = useState(loadTheme);
   const [objectivesOpen, setObjectivesOpen] = useState(false);
+  const [showStructModal, setShowStructModal] = useState(false);
+  const [showToolsModal, setShowToolsModal] = useState(false);
+  const [flights, setFlights] = useState<Flight[]>([]);
   const [, forceTick] = useState(0);
 
   const C = isDark ? DARK : LIGHT;
@@ -163,6 +178,26 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
   const farmRef = useRef(farm);
   farmRef.current = farm;
   const consoleEndRef = useRef<HTMLDivElement | null>(null);
+  const fenoRef = useRef<HTMLDivElement | null>(null);
+  const madeiraRef = useRef<HTMLDivElement | null>(null);
+  const cenouraRef = useRef<HTMLDivElement | null>(null);
+  const itemRefs = useRef<Partial<Record<ItemId, React.RefObject<HTMLDivElement>>>>({});
+  itemRefs.current = { feno: fenoRef, madeira: madeiraRef, cenoura: cenouraRef };
+
+  /* Voa um ícone do item da casa colhida até o contador correspondente no
+     header — feedback visual de "pra onde" a colheita foi, só pros itens
+     que têm contador visível (feno/madeira/cenoura). */
+  const handleCollect = useCallback((item: ItemId, x: number, y: number) => {
+    const ref = itemRefs.current[item];
+    if (!ref?.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const id = `${item}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    setFlights(prev => [...prev, { id, item, x1: x, y1: y, x2: rect.left + rect.width / 2, y2: rect.top + rect.height / 2 }]);
+  }, []);
+
+  const removeFlight = useCallback((id: string) => {
+    setFlights(prev => prev.filter(f => f.id !== id));
+  }, []);
 
   /* Salva progresso sempre que fazenda ou código mudam */
   useEffect(() => {
@@ -345,17 +380,17 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
           FAZENDA.JS
         </span>
         <div style={{ flex: 1 }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={`${ITEM_NAMES.feno} — item da Grama`}>
-          <CropIcon crop="grama" ready />
-          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: CROPS.grama.color }}>{farm.stock.feno}</span>
+        <div ref={fenoRef} style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={`${ITEM_NAMES.feno} — item da Grama`}>
+          <ItemIcon item="feno" />
+          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: ITEM_COLORS.feno }}>{farm.stock.feno}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={`${ITEM_NAMES.madeira} — item do Arbusto`}>
-          <CropIcon crop="arbusto" ready />
-          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: CROPS.arbusto.color }}>{farm.stock.madeira}</span>
+        <div ref={madeiraRef} style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={`${ITEM_NAMES.madeira} — item do Arbusto`}>
+          <ItemIcon item="madeira" />
+          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: ITEM_COLORS.madeira }}>{farm.stock.madeira}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={`${ITEM_NAMES.cenoura} — item da Cenoura`}>
-          <CropIcon crop="cenoura" ready />
-          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: CROPS.cenoura.color }}>{farm.stock.cenoura}</span>
+        <div ref={cenouraRef} style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={`${ITEM_NAMES.cenoura} — item da Cenoura`}>
+          <ItemIcon item="cenoura" />
+          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 11, color: ITEM_COLORS.cenoura }}>{farm.stock.cenoura}</span>
         </div>
         {currentUser && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingLeft: 10, borderLeft: `1px solid ${C.border}` }} title="Moedas da conta">
@@ -430,8 +465,9 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
         </div>
 
         {/* RIGHT: objetivos + farm + shop */}
-        <div style={{ flex: '1 1 50%', display: 'flex', flexDirection: 'column', overflow: 'auto', minWidth: 0 }}>
+        <div style={{ flex: '1 1 50%', display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
 
+        <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
           {/* OBJETIVOS */}
           <div style={{ margin: '14px 16px 0', border: `1px solid ${C.border}`, borderRadius: 6, background: C.card, overflow: 'hidden', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
             <button onClick={() => setObjectivesOpen(o => !o)}
@@ -475,87 +511,219 @@ export default function JsFarmPage({ onBack, onBackToHub }: Props) {
           </div>
 
           <div style={{ padding: 16, display: 'flex', justifyContent: 'center' }}>
-            <FarmGrid farm={farm} now={now} droneMoveMs={actionDelayMs(farm.upgrades)} theme={C} />
-          </div>
-
-          <div style={{ padding: '0 16px 16px' }}>
-            <div style={{ fontSize: 12, color: C.accent, letterSpacing: '0.04em', marginBottom: 9, fontWeight: 700 }}>ESTRUTURAS DE PROGRAMAÇÃO</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 22 }}>
-              {STRUCTURE_ORDER.map(id => {
-                const def = STRUCTURES[id];
-                const owned = farm.unlocks[id];
-                const { allowed, reason } = canBuyStructure(farm, id);
-                const costLabel = (Object.keys(def.cost) as ItemId[])
-                  .map(c => `${def.cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
-                  .join(' + ');
-                return (
-                  <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${owned ? C.borderStrong : C.border}`, borderRadius: 5, opacity: owned || allowed || reason === 'colheita insuficiente' ? 1 : 0.55 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14.5, fontWeight: 700, color: owned ? C.accent : C.text }}>{def.name}</div>
-                      <div style={{ fontSize: 12.5, color: C.sub }}>{owned ? def.desc : (reason && reason !== 'colheita insuficiente' ? reason : def.desc)}</div>
-                    </div>
-                    <button onClick={() => buyStruct(id)} disabled={!allowed}
-                      style={{ flexShrink: 0, padding: '8px 13px', background: owned ? 'transparent' : allowed ? C.accent : 'transparent', border: `1px solid ${owned ? C.borderStrong : allowed ? C.accent : C.border}`, borderRadius: 4, color: owned ? C.accent : allowed ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: allowed ? 'pointer' : 'not-allowed' }}>
-                      {owned ? 'OK' : !allowed && reason !== 'colheita insuficiente' ? <Lock size={13} /> : costLabel}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div style={{ fontSize: 12, color: C.sub, letterSpacing: '0.04em', marginBottom: 9, fontWeight: 700 }}>FERRAMENTAS</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {SHOP_ITEMS.map(item => {
-                const level = shopItemLevel(farm, item.id);
-                const maxed = level >= item.maxLevel;
-                const cost = item.cost(level);
-                const { allowed, reason } = canBuyShopItem(farm, item.id);
-                const locked = !!item.requiresStructure && !farm.unlocks[item.requiresStructure];
-                const costLabel = (Object.keys(cost) as ItemId[])
-                  .map(c => `${cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
-                  .join(' + ');
-                return (
-                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 5, opacity: maxed || allowed || !locked ? 1 : 0.55 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14.5, fontWeight: 700, color: C.text }}>{item.name} {item.maxLevel > 1 && <span style={{ color: C.sub, fontWeight: 400 }}>({level}/{item.maxLevel})</span>}</div>
-                      <div style={{ fontSize: 12.5, color: C.sub }}>{maxed ? item.desc : (locked && reason ? reason : item.desc)}</div>
-                    </div>
-                    <button onClick={() => buy(item.id)} disabled={!allowed}
-                      style={{ flexShrink: 0, padding: '8px 13px', background: maxed ? 'transparent' : allowed ? C.accent : 'transparent', border: `1px solid ${maxed ? C.border : allowed ? C.accent : C.border}`, borderRadius: 4, color: maxed ? C.sub : allowed ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: allowed ? 'pointer' : 'not-allowed' }}>
-                      {maxed ? 'MAX' : locked ? <Lock size={13} /> : costLabel}
-                    </button>
-                  </div>
-                );
-              })}
-
-              {(() => {
-                const expandLevel = farm.upgrades.expand;
-                const maxed = expandLevel >= EXPAND_LEVELS.length;
-                const { allowed } = canBuyExpand(farm);
-                const costLabel = maxed ? null : (Object.keys(EXPAND_LEVELS[expandLevel].cost) as ItemId[])
-                  .map(c => `${EXPAND_LEVELS[expandLevel].cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
-                  .join(' + ');
-                return (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 5 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14.5, fontWeight: 700, color: C.text }}>
-                        Expandir fazenda <span style={{ color: C.sub, fontWeight: 400 }}>({farm.gridSize}×{farm.gridSize}, máx {MAX_GRID_SIZE}×{MAX_GRID_SIZE})</span>
-                      </div>
-                      <div style={{ fontSize: 12.5, color: C.sub }}>Aumenta o campo em +1. Limpa as plantações atuais, igual ao jogo original.</div>
-                    </div>
-                    <button onClick={expandFarm} disabled={!allowed}
-                      style={{ flexShrink: 0, padding: '8px 13px', background: maxed ? 'transparent' : allowed ? C.accent : 'transparent', border: `1px solid ${maxed ? C.border : C.accent}`, borderRadius: 4, color: maxed ? C.sub : allowed ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: allowed ? 'pointer' : 'not-allowed' }}>
-                      {maxed ? 'MAX' : costLabel}
-                    </button>
-                  </div>
-                );
-              })()}
-            </div>
+            <FarmGrid farm={farm} now={now} droneMoveMs={actionDelayMs(farm.upgrades)} theme={C} onCollect={handleCollect} />
           </div>
         </div>
+
+        {/* Botões fixos no rodapé — não rolam junto com objetivos/fazenda */}
+        <div style={{ flexShrink: 0, padding: '10px 16px 16px', display: 'flex', gap: 10, borderTop: `1px solid ${C.border}`, background: C.panel }}>
+          <button onClick={() => setShowStructModal(true)}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3, padding: '12px 14px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, cursor: 'pointer', textAlign: 'left' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 7, color: C.accent, fontWeight: 700, fontSize: 13.5 }}>
+              <GitBranch size={15} /> Estruturas
+            </span>
+            <span style={{ fontSize: 12, color: C.sub }}>{STRUCTURE_ORDER.filter(id => farm.unlocks[id]).length}/{STRUCTURE_ORDER.length} desbloqueadas</span>
+          </button>
+          <button onClick={() => setShowToolsModal(true)}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3, padding: '12px 14px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, cursor: 'pointer', textAlign: 'left' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 7, color: C.accent, fontWeight: 700, fontSize: 13.5 }}>
+              <Wrench size={15} /> Ferramentas
+            </span>
+            <span style={{ fontSize: 12, color: C.sub }}>
+              {SHOP_ITEMS.filter(item => shopItemLevel(farm, item.id) >= 1).length + (farm.upgrades.expand >= 1 ? 1 : 0)}/{SHOP_ITEMS.length + 1} compradas
+            </span>
+          </button>
+        </div>
+      </div>
       </div>
 
+      {flights.map(f => (
+        <FlightIcon key={f.id} item={f.item} x1={f.x1} y1={f.y1} x2={f.x2} y2={f.y2} onDone={() => removeFlight(f.id)} />
+      ))}
+
       {showHelp && <HelpModal farm={farm} theme={C} onClose={() => setShowHelp(false)} />}
+      {showStructModal && <StructureTreeModal farm={farm} onBuy={buyStruct} theme={C} onClose={() => setShowStructModal(false)} />}
+      {showToolsModal && (
+        <ToolsModal farm={farm} theme={C} onBuy={buy} onExpand={expandFarm} onClose={() => setShowToolsModal(false)} />
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ÁRVORE DE ESTRUTURAS — layout fixo em pixels: cada estrutura tem
+   uma posição (x, linha) escolhida à mão pra que os filhos fiquem
+   alinhados embaixo do pai (mesma coordenada x quando há 1 pai só).
+   As linhas do SVG usam essas mesmas coordenadas, sem precisar medir
+   o DOM.
+═══════════════════════════════════════════════════════════════ */
+const TREE_W = 760;
+const TREE_ROW_H = 132;
+const TREE_CARD_W = 118;
+const TREE_CARD_H = 72;
+
+const TREE_LAYOUT: Record<StructureId, { x: number; row: number }> = {
+  lacos:         { x: 150, row: 0 },
+  variaveis:     { x: 550, row: 0 },
+  controle_laco: { x: 150, row: 1 },
+  operadores:    { x: 420, row: 1 },
+  listas:        { x: 680, row: 1 },
+  condicionais:  { x: 290, row: 2 },
+  logicos:       { x: 420, row: 2 },
+  laco_for:      { x: 550, row: 2 },
+  for_of:        { x: 680, row: 2 },
+  funcoes:       { x: 290, row: 3 },
+  dicionarios:   { x: 680, row: 3 },
+};
+
+function StructureTreeModal({ farm, onBuy, theme: C, onClose }: { farm: FarmState; onBuy: (id: StructureId) => void; theme: Theme; onClose: () => void }) {
+  const [selected, setSelected] = useState<StructureId>(
+    () => buyableNow(farm.unlocks)[0] ?? STRUCTURE_ORDER.find(id => !farm.unlocks[id]) ?? STRUCTURE_ORDER[0]
+  );
+  const def = STRUCTURES[selected];
+  const owned = farm.unlocks[selected];
+  const { allowed, reason } = canBuyStructure(farm, selected);
+  const costLabel = (Object.keys(def.cost) as ItemId[])
+    .map(c => `${def.cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
+    .join(' + ');
+  const prereqNames = def.prereqs.map(p => STRUCTURES[p].name).join(' + ');
+  const treeHeight = STRUCTURE_TIERS.length * TREE_ROW_H;
+
+  const edges = STRUCTURE_ORDER.flatMap(id => STRUCTURES[id].prereqs.map(p => ({ from: p, to: id })));
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'rgba(0,0,0,0.75)' }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 820, maxHeight: '88vh', display: 'flex', flexDirection: 'column', background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, animation: 'jsf-in .18s ease' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 18px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 13, color: C.accent, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <GitBranch size={16} /> ESTRUTURAS DE PROGRAMAÇÃO
+          </span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.sub, padding: 4, lineHeight: 0 }}>
+            <X size={18} />
+          </button>
+        </div>
+
+        <div style={{ overflow: 'auto', padding: 18 }}>
+          <div style={{ position: 'relative', width: TREE_W, height: treeHeight, margin: '0 auto' }}>
+            <svg width={TREE_W} height={treeHeight} style={{ position: 'absolute', top: 0, left: 0 }}>
+              {edges.map(({ from, to }) => {
+                const a = TREE_LAYOUT[from], b = TREE_LAYOUT[to];
+                const active = farm.unlocks[from];
+                return (
+                  <line key={`${from}-${to}`}
+                    x1={a.x} y1={a.row * TREE_ROW_H + TREE_CARD_H} x2={b.x} y2={b.row * TREE_ROW_H}
+                    stroke={active ? C.accent : C.border} strokeWidth={2} />
+                );
+              })}
+            </svg>
+            {STRUCTURE_ORDER.map(id => {
+              const pos = TREE_LAYOUT[id];
+              const o = farm.unlocks[id];
+              const buyableCandidate = canBuyStructure(farm, id).allowed;
+              const isSelected = id === selected;
+              return (
+                <button key={id} onClick={() => setSelected(id)}
+                  style={{
+                    position: 'absolute', left: pos.x - TREE_CARD_W / 2, top: pos.row * TREE_ROW_H, width: TREE_CARD_W, height: TREE_CARD_H,
+                    background: o ? `${C.accent}1f` : C.card,
+                    border: `2px solid ${isSelected ? C.accent : o ? C.borderStrong : buyableCandidate ? `${C.accent}88` : C.border}`,
+                    borderRadius: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer', padding: 6,
+                    opacity: o || buyableCandidate ? 1 : 0.5,
+                  }}>
+                  {o ? <Check size={13} color={C.accent} /> : !buyableCandidate ? <Lock size={12} color={C.sub} /> : null}
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: o ? C.accent : C.text, textAlign: 'center', lineHeight: 1.25 }}>{STRUCTURES[id].name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div style={{ borderTop: `1px solid ${C.border}`, padding: '14px 18px', flexShrink: 0 }}>
+          {prereqNames && <div style={{ fontSize: 11.5, color: C.sub, marginBottom: 2 }}>↳ requer {prereqNames}</div>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: owned ? C.accent : C.text }}>{def.name}</span>
+            <div style={{ flex: 1 }} />
+            <button onClick={() => onBuy(selected)} disabled={!allowed}
+              style={{ padding: '8px 14px', background: owned ? 'transparent' : allowed ? C.accent : 'transparent', border: `1px solid ${owned ? C.borderStrong : allowed ? C.accent : C.border}`, borderRadius: 4, color: owned ? C.accent : allowed ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: allowed ? 'pointer' : 'not-allowed' }}>
+              {owned ? 'OK' : !allowed && reason !== 'colheita insuficiente' ? reason : costLabel}
+            </button>
+          </div>
+          <p style={{ fontSize: 14, color: C.text, lineHeight: 1.55, margin: '0 0 10px' }}>{def.desc}</p>
+          {owned && (
+            <code style={{ display: 'block', color: C.text, fontSize: 13, fontFamily: 'monospace', background: C.bg, padding: '9px 11px', borderRadius: 3, whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{def.example}</code>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FERRAMENTAS — lista de upgrades/culturas + expansão da fazenda
+═══════════════════════════════════════════════════════════════ */
+function ToolsModal({ farm, onBuy, onExpand, theme: C, onClose }: {
+  farm: FarmState; onBuy: (id: string) => void; onExpand: () => void; theme: Theme; onClose: () => void;
+}) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'rgba(0,0,0,0.75)' }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 640, maxHeight: '86vh', overflowY: 'auto', background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, animation: 'jsf-in .18s ease' }}>
+        <div style={{ position: 'sticky', top: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 18px', borderBottom: `1px solid ${C.border}`, background: C.panel }}>
+          <span style={{ fontFamily: "'Press Start 2P',monospace", fontSize: 13, color: C.accent, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Wrench size={16} /> FERRAMENTAS
+          </span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.sub, padding: 4, lineHeight: 0 }}>
+            <X size={18} />
+          </button>
+        </div>
+
+        <div style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {SHOP_ITEMS.map(item => {
+            const level = shopItemLevel(farm, item.id);
+            const maxed = level >= item.maxLevel;
+            const cost = item.cost(level);
+            const { allowed, reason } = canBuyShopItem(farm, item.id);
+            const locked = !!item.requiresStructure && !farm.unlocks[item.requiresStructure];
+            const costLabel = (Object.keys(cost) as ItemId[])
+              .map(c => `${cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
+              .join(' + ');
+            return (
+              <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 5, opacity: maxed || allowed || !locked ? 1 : 0.55 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14.5, fontWeight: 700, color: C.text }}>{item.name} {item.maxLevel > 1 && <span style={{ color: C.sub, fontWeight: 400 }}>({level}/{item.maxLevel})</span>}</div>
+                  <div style={{ fontSize: 12.5, color: C.sub }}>{maxed ? item.desc : (locked && reason ? reason : item.desc)}</div>
+                </div>
+                <button onClick={() => onBuy(item.id)} disabled={!allowed}
+                  style={{ flexShrink: 0, padding: '8px 13px', background: maxed ? 'transparent' : allowed ? C.accent : 'transparent', border: `1px solid ${maxed ? C.border : allowed ? C.accent : C.border}`, borderRadius: 4, color: maxed ? C.sub : allowed ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: allowed ? 'pointer' : 'not-allowed' }}>
+                  {maxed ? 'MAX' : locked ? <Lock size={13} /> : costLabel}
+                </button>
+              </div>
+            );
+          })}
+
+          {(() => {
+            const expandLevel = farm.upgrades.expand;
+            const maxed = expandLevel >= EXPAND_LEVELS.length;
+            const { allowed } = canBuyExpand(farm);
+            const costLabel = maxed ? null : (Object.keys(EXPAND_LEVELS[expandLevel].cost) as ItemId[])
+              .map(c => `${EXPAND_LEVELS[expandLevel].cost[c]} ${ITEM_NAMES[c].toLowerCase()}`)
+              .join(' + ');
+            return (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', background: C.card, border: `1px solid ${C.border}`, borderRadius: 5 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14.5, fontWeight: 700, color: C.text }}>
+                    Expandir fazenda <span style={{ color: C.sub, fontWeight: 400 }}>({farm.gridSize}×{farm.gridSize}, máx {MAX_GRID_SIZE}×{MAX_GRID_SIZE})</span>
+                  </div>
+                  <div style={{ fontSize: 12.5, color: C.sub }}>Aumenta o campo em +1. Limpa as plantações atuais.</div>
+                </div>
+                <button onClick={onExpand} disabled={!allowed}
+                  style={{ flexShrink: 0, padding: '8px 13px', background: maxed ? 'transparent' : allowed ? C.accent : 'transparent', border: `1px solid ${maxed ? C.border : C.accent}`, borderRadius: 4, color: maxed ? C.sub : allowed ? C.accentText : C.sub, fontSize: 13, fontWeight: 700, cursor: allowed ? 'pointer' : 'not-allowed' }}>
+                  {maxed ? 'MAX' : costLabel}
+                </button>
+              </div>
+            );
+          })()}
+        </div>
+      </div>
     </div>
   );
 }
@@ -609,7 +777,7 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
   );
 
   const unlocked = STRUCTURE_ORDER.filter(id => farm.unlocks[id]);
-  const next = nextStructure(farm.unlocks);
+  const next = buyableNow(farm.unlocks);
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'rgba(0,0,0,0.75)' }} onClick={onClose}>
@@ -626,8 +794,8 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
             Você escreve JavaScript de verdade, mas do zero: no começo só dá pra chamar o drone em sequência,
             uma linha depois da outra. Cada estrutura da linguagem — laços, variáveis, condicionais, funções,
             listas, dicionários — é <strong>comprada na loja pagando com a própria colheita</strong> (grama,
-            arbusto e cenoura), sempre nessa ordem. Usar uma estrutura ainda não comprada trava a execução com
-            um aviso, sem rodar nada.
+            arbusto e cenoura), numa árvore de pré-requisitos: cada item só libera depois dos anteriores
+            necessários. Usar uma estrutura ainda não comprada trava a execução com um aviso, sem rodar nada.
           </p>
 
           {section('CULTURAS')}
@@ -713,15 +881,17 @@ function HelpModal({ farm, theme: C, onClose }: { farm: FarmState; theme: Theme;
             </div>
           ))}
 
-          {next && (
+          {next.length > 0 && (
             <>
-              {section('PRÓXIMA ESTRUTURA')}
-              <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
-                <strong style={{ color: C.gold }}>{STRUCTURES[next].name}</strong> — {STRUCTURES[next].desc} Custa{' '}
-                <strong style={{ color: C.gold }}>
-                  {(Object.keys(STRUCTURES[next].cost) as ItemId[]).map(c => `${STRUCTURES[next].cost[c]} ${ITEM_NAMES[c].toLowerCase()}`).join(' + ')}
-                </strong> na loja.
-              </p>
+              {section('PRÓXIMAS ESTRUTURAS')}
+              {next.map(id => (
+                <p key={id} style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: '0 0 8px' }}>
+                  <strong style={{ color: C.gold }}>{STRUCTURES[id].name}</strong> — {STRUCTURES[id].desc} Custa{' '}
+                  <strong style={{ color: C.gold }}>
+                    {(Object.keys(STRUCTURES[id].cost) as ItemId[]).map(c => `${STRUCTURES[id].cost[c]} ${ITEM_NAMES[c].toLowerCase()}`).join(' + ')}
+                  </strong> na loja.
+                </p>
+              ))}
             </>
           )}
 
@@ -778,7 +948,7 @@ while (true) {                                                        // Laços
 
           {section('EXPANDIR A FAZENDA')}
           <p style={{ fontSize: 15, color: C.text, lineHeight: 1.65, margin: 0 }}>
-            A fazenda começa pequena (3×3) — igual ao jogo original. Compre "Expandir fazenda" nas Ferramentas
+            A fazenda começa pequena (3×3). Compre "Expandir fazenda" nas Ferramentas
             pra aumentar o campo em +1 por vez (até 9×9). Cada expansão limpa as plantações atuais e volta o
             drone pra (0,0), então planeje: colha e venda antes de expandir. Como a fazenda é finita, um
             código com posições fixas (tipo <code>move('right'); move('right')</code> sempre igual) fica
@@ -802,18 +972,28 @@ const SEED_GREEN = '#4ade80';
 
 interface Burst { id: string; x: number; y: number }
 
-function FarmGrid({ farm, now, droneMoveMs, theme: C }: { farm: FarmState; now: number; droneMoveMs: number; theme: Theme }) {
+function FarmGrid({ farm, now, droneMoveMs, theme: C, onCollect }: {
+  farm: FarmState; now: number; droneMoveMs: number; theme: Theme; onCollect?: (item: ItemId, x: number, y: number) => void;
+}) {
   const size = farm.gridSize * CELL;
   const [bursts, setBursts] = useState<Burst[]>([]);
   const prevTilesRef = useRef(farm.tiles);
+  const gridRef = useRef<HTMLDivElement>(null);
 
-  /* Detecta colheita (tile tinha planta, agora não tem) pra disparar um efeito de partícula */
+  /* Detecta colheita (tile tinha planta, agora não tem) pra disparar um efeito de partícula
+     e mandar o ícone do item colhido voando até o contador dele no header. */
   useEffect(() => {
     const prev = prevTilesRef.current;
     const added: Burst[] = [];
+    const gridRect = gridRef.current?.getBoundingClientRect();
     farm.tiles.forEach((tile, i) => {
       if (prev[i]?.crop && !tile.crop) {
-        added.push({ id: `${i}-${now}-${Math.random().toString(36).slice(2)}`, x: i % farm.gridSize, y: Math.floor(i / farm.gridSize) });
+        const x = i % farm.gridSize;
+        const y = Math.floor(i / farm.gridSize);
+        added.push({ id: `${i}-${now}-${Math.random().toString(36).slice(2)}`, x, y });
+        if (onCollect && gridRect) {
+          onCollect(CROP_TO_ITEM[prev[i].crop as CropId], gridRect.left + x * CELL + CELL / 2, gridRect.top + y * CELL + CELL / 2);
+        }
       }
     });
     prevTilesRef.current = farm.tiles;
@@ -826,7 +1006,7 @@ function FarmGrid({ farm, now, droneMoveMs, theme: C }: { farm: FarmState; now: 
   }, [farm.tiles, now]);
 
   return (
-    <div style={{ position: 'relative', width: size, height: size, background: '#241a10', border: `1px solid ${C.border}`, borderRadius: 4 }}>
+    <div ref={gridRef} style={{ position: 'relative', width: size, height: size, background: '#241a10', border: `1px solid ${C.border}`, borderRadius: 4 }}>
       {farm.tiles.map((tile, i) => {
         const x = i % farm.gridSize;
         const y = Math.floor(i / farm.gridSize);
@@ -910,11 +1090,23 @@ function CropIcon({ crop, ready }: { crop: CropId; ready: boolean }) {
   }
 
   if (crop === 'grama') {
+    // Tufo de grama: folhas preenchidas (não traços cruzados) saindo de uma
+    // base comum, cada uma com altura/inclinação própria — silhueta de moita.
+    const blades = [
+      { dx: -6, h: 12 }, { dx: -3, h: 15 }, { dx: 0, h: 17 }, { dx: 3, h: 15 }, { dx: 6, h: 12 },
+    ];
     return (
       <svg width="22" height="22" viewBox="0 0 20 20" style={{ animation: 'jsf-ready-glow 1.4s ease-in-out infinite' }}>
-        {[-5, -1.7, 1.7, 5].map((dx, i) => (
-          <path key={dx} d={`M${10 + dx} 18 Q${10 + dx + (i % 2 ? 2.2 : -2.2)} 10 ${10 + dx} 3`} stroke={def.color} strokeWidth="1.9" fill="none" strokeLinecap="round" />
-        ))}
+        {blades.map((b, i) => {
+          const baseX = 10 + b.dx * 0.4;
+          const tipX = 10 + b.dx;
+          const tipY = 18 - b.h;
+          return (
+            <path key={i}
+              d={`M${baseX - 1} 18 Q${baseX - 1.8} ${18 - b.h * 0.55} ${tipX} ${tipY} Q${baseX + 1.8} ${18 - b.h * 0.55} ${baseX + 1} 18 Z`}
+              fill={def.color} opacity={i === 2 ? 1 : 0.85} />
+          );
+        })}
       </svg>
     );
   }
@@ -1003,7 +1195,7 @@ function DroneIcon() {
     </g>
   );
   return (
-    <svg className="jsf-drone-body" width="28" height="28" viewBox="0 0 32 32" style={{ filter: 'drop-shadow(0 0 5px rgba(74,222,128,0.55))' }}>
+    <svg className="jsf-drone-body" width="38" height="38" viewBox="0 0 32 32" style={{ filter: 'drop-shadow(0 0 5px rgba(74,222,128,0.55))' }}>
       <ellipse cx="16" cy="27" rx="7" ry="1.6" fill="#000" opacity="0.35" />
       <line x1="16" y1="16" x2="5" y2="6" stroke="#2f7d4f" strokeWidth="1.6" />
       <line x1="16" y1="16" x2="27" y2="6" stroke="#2f7d4f" strokeWidth="1.6" />
@@ -1016,5 +1208,97 @@ function DroneIcon() {
       <rect x="10" y="11" width="12" height="11" rx="3" fill="#0f2015" stroke="#4ade80" strokeWidth="1.6" />
       <circle cx="16" cy="16.5" r="2.2" fill="#4ade80" />
     </svg>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ÍCONE DO ITEM COLHIDO — usado nos contadores do header. Deliberadamente
+   diferente do ícone da planta (CropIcon): aqui é o item já guardado no
+   estoque (fardo de feno, tora de madeira, cenoura colhida...), não a
+   planta crescendo na terra.
+═══════════════════════════════════════════════════════════════ */
+function ItemIcon({ item, size = 18 }: { item: ItemId; size?: number }) {
+  if (item === 'feno') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20">
+        <rect x="3" y="6" width="14" height="9" rx="3" fill={ITEM_COLORS.feno} />
+        <line x1="4.5" y1="7" x2="14" y2="14" stroke="#7c5a06" strokeWidth="1.2" />
+        <line x1="6.5" y1="6.2" x2="16" y2="13.5" stroke="#7c5a06" strokeWidth="1.2" />
+      </svg>
+    );
+  }
+  if (item === 'madeira') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20">
+        <circle cx="10" cy="10" r="7" fill="#a9713f" />
+        <circle cx="10" cy="10" r="4.4" fill="none" stroke="#7a4e28" strokeWidth="1.2" />
+        <circle cx="10" cy="10" r="1.6" fill="#7a4e28" />
+      </svg>
+    );
+  }
+  if (item === 'cenoura') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20">
+        <path d="M10 18 L6.3 8 Q10 6 13.7 8 Z" fill={ITEM_COLORS.cenoura} />
+        <line x1="9" y1="7.5" x2="7.3" y2="2" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
+        <line x1="10" y1="7" x2="10" y2="1.3" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
+        <line x1="11" y1="7.5" x2="12.7" y2="2" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (item === 'oleo') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20">
+        <path d="M10 2 Q15 10 15 13.5 A5 5 0 0 1 5 13.5 Q5 10 10 2 Z" fill={ITEM_COLORS.oleo} />
+      </svg>
+    );
+  }
+  if (item === 'abobora') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20">
+        <line x1="10" y1="4" x2="10" y2="1.5" stroke="#3f6212" strokeWidth="1.6" strokeLinecap="round" />
+        <ellipse cx="7" cy="11" rx="3.4" ry="5.2" fill={ITEM_COLORS.abobora} />
+        <ellipse cx="10" cy="11" rx="3.4" ry="5.6" fill={ITEM_COLORS.abobora} />
+        <ellipse cx="13" cy="11" rx="3.4" ry="5.2" fill={ITEM_COLORS.abobora} />
+      </svg>
+    );
+  }
+  // fibra
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20">
+      <path d="M6 3 Q9 10 6 17" stroke={ITEM_COLORS.fibra} strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      <path d="M10 2 Q11 10 10 18" stroke={ITEM_COLORS.fibra} strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      <path d="M14 3 Q11 10 14 17" stroke={ITEM_COLORS.fibra} strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      <line x1="4.5" y1="10" x2="15.5" y2="10" stroke={ITEM_COLORS.fibra} strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FLIGHT ICON — ícone do item que voa da casa colhida até o contador
+   no header. Monta na posição de origem e, um frame depois, muda pra
+   posição de destino: a transição CSS de left/top/opacity faz o "voo".
+═══════════════════════════════════════════════════════════════ */
+function FlightIcon({ item, x1, y1, x2, y2, onDone }: {
+  item: ItemId; x1: number; y1: number; x2: number; y2: number; onDone: () => void;
+}) {
+  const [arrived, setArrived] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setArrived(true));
+    const timeout = window.setTimeout(onDone, 650);
+    return () => { cancelAnimationFrame(raf); window.clearTimeout(timeout); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div style={{
+      position: 'fixed', left: arrived ? x2 : x1, top: arrived ? y2 : y1, zIndex: 200,
+      transform: `translate(-50%, -50%) scale(${arrived ? 0.4 : 1})`,
+      opacity: arrived ? 0 : 1, pointerEvents: 'none',
+      transition: 'left .55s cubic-bezier(.2,.8,.3,1), top .55s cubic-bezier(.2,.8,.3,1), transform .55s ease, opacity .55s ease',
+    }}>
+      <ItemIcon item={item} size={20} />
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 import { CropDef, CropId, DroneAction, FarmState, ItemId, ShopItemDef, Tile, Upgrades } from './types';
-import { STRUCTURE_ORDER, STRUCTURES, StructureId, createEmptyUnlocks } from './curriculum';
+import { STRUCTURES, StructureId, createEmptyUnlocks } from './curriculum';
 
 /* ═══════════════════════════════════════════════════════════════
    CONSTANTES DO MOTOR
@@ -127,8 +127,8 @@ export const SHOP_ITEMS: ShopItemDef[] = [
     cost: () => ({ madeira: 600 }),
     maxLevel: 1,
     // Checar as vizinhas de verdade exige if (IfStatement) — por isso o gate é
-    // Operadores, não só Variáveis: sem if, a única opção é plantar no escuro.
-    requiresStructure: 'operadores',
+    // Condicionais: sem if, a única opção é plantar no escuro.
+    requiresStructure: 'condicionais',
   },
   {
     id: 'girassol',
@@ -136,7 +136,7 @@ export const SHOP_ITEMS: ShopItemDef[] = [
     desc: `Desbloqueia plant('girassol') — cada pé nasce com um valor aleatório (drone.info().value). Colher o de MAIOR valor pronto agora em toda a fazenda rende ${GIRASSOL_BEST_BONUS}x mais — colher o primeiro que aparecer, sem comparar, raramente acerta o maior.`,
     cost: () => ({ feno: 2000, madeira: 500 }),
     maxLevel: 1,
-    requiresStructure: 'operadores',
+    requiresStructure: 'condicionais',
   },
   {
     id: 'abobora',
@@ -307,9 +307,8 @@ export function buyExpand(state: FarmState): { state: FarmState; ok: boolean } {
 ═══════════════════════════════════════════════════════════════ */
 export function canBuyStructure(state: FarmState, id: StructureId): { allowed: boolean; reason?: string } {
   if (state.unlocks[id]) return { allowed: false, reason: 'já comprado' };
-  const idx = STRUCTURE_ORDER.indexOf(id);
-  const prereq = STRUCTURE_ORDER[idx - 1];
-  if (prereq && !state.unlocks[prereq]) return { allowed: false, reason: `compre "${STRUCTURES[prereq].name}" primeiro` };
+  const missingPrereq = STRUCTURES[id].prereqs.find(p => !state.unlocks[p]);
+  if (missingPrereq) return { allowed: false, reason: `compre "${STRUCTURES[missingPrereq].name}" primeiro` };
   const cost = STRUCTURES[id].cost;
   const missing = (Object.keys(cost) as ItemId[]).find(c => state.stock[c] < (cost[c] ?? 0));
   if (missing) return { allowed: false, reason: 'colheita insuficiente' };

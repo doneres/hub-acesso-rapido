@@ -69,8 +69,8 @@ export interface Upgrades {
   speed: number;
   arbusto: number; // 0 ou 1 — desbloqueia plant('arbusto')
   cenoura: number; // 0 ou 1 — desbloqueia till() + plant('cenoura')
-  arvore: number; // 0 ou 1 — desbloqueia plant('arvore'), exige "Variáveis"
-  girassol: number; // 0 ou 1 — desbloqueia plant('girassol'), exige "Operadores e condicionais"
+  arvore: number; // 0 ou 1 — desbloqueia plant('arvore'), exige "Condicionais"
+  girassol: number; // 0 ou 1 — desbloqueia plant('girassol'), exige "Condicionais"
   abobora: number; // 0 ou 1 — desbloqueia plant('abobora'), exige "Funções"
   cacto: number; // 0 ou 1 — desbloqueia plant('cacto'), exige "Listas"
   expand: number; // nível de expansão da fazenda — cada nível soma +1 no lado do grid
